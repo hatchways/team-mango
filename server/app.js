@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
+const accountRouter = require("./routes/account");
+
 
 const { json, urlencoded } = express;
 
@@ -27,6 +29,9 @@ db.once('open', () => {
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
+app.use("/", accountRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
