@@ -1,12 +1,12 @@
 const express = require("express");
-const e = require("express");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const {
   body,
   validationResult,
   sanitizeParam,
 } = require("express-validator/check");
-const jwt = require("jsonwebtoken");
+
 
 router.post(
   "/signup",
