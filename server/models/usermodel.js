@@ -26,8 +26,9 @@ UserSchema
     let fullname = '';
     if (this.first_name && this.last_name) {
         fullname = this.first_name + ' ' + this.last_name;
-    }
-    if (!this.first_name || !this.last_name) {
+    } else if(!this.last_name && this.first_name) {
+        fullname = this.first_name;
+    } else {
         fullname = '';
     }
     
