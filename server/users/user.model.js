@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let UserSchema = new Schema({
-    first_name: {
+    firstName: {
         type: String,
         required: true
     },
-    last_name: {
+    lastName: {
         type: String,
         required: true
     },
@@ -27,16 +27,16 @@ let UserSchema = new Schema({
 UserSchema
 .virtual('name')
 .get(() => {
-    let fullname = '';
-    if (this.first_name && this.last_name) {
-        fullname = this.first_name + ' ' + this.last_name;
-    } else if(!this.last_name && this.first_name) {
-        fullname = this.first_name;
+    let fullName = '';
+    if (this.firstName && this.lastName) {
+        fullName = this.firstName + ' ' + this.lastName;
+    } else if(!this.lastName && this.firstName) {
+        fullName = this.firstName;
     } else {
-        fullname = '';
+        fullName = '';
     }
     
-    return fullname;
+    return fullName;
 });
 
 UserSchema.set('toJSON', {
