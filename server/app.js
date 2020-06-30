@@ -20,7 +20,12 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-
+mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {useNewUrlParser: true, useUnifiedTopology: true});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, "MongoDB connection error:"));
+db.once('open', () => {
+  console.log("MongoDB connection successful");
+})
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
