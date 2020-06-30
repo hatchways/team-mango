@@ -3,11 +3,10 @@ const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const mongoose = require('mongoose');
 
-const indexRouter = require("./routes/index");
-const pingRouter = require("./routes/ping");
-const accountRouter = require("./routes/account");
+
+
+const accountRouter = require("./users/users.controller");
 
 
 const { json, urlencoded } = express;
@@ -22,8 +21,7 @@ app.use(express.static(join(__dirname, "public")));
 
 
 
-app.use("/", indexRouter);
-app.use("/ping", pingRouter);
+
 app.use("/", accountRouter);
 app.use('/users', require('./users/users.controller'));
 
