@@ -8,7 +8,7 @@ router.post(
   "/signup",
   [
     body("firstName").isLength({ min: 3, max: 30 }).exists(),
-    body("email").isEmail().normalizeEmail().exists(),
+    body("email").isEmail().exists(),
     body("lastName").isLength({ min: 3, max: 30 }).exists(),
     body("password")
       .isLength({ min: 6, max: 30 })
@@ -34,7 +34,7 @@ router.post(
       .then(() => res.status(201).redirect(307, '/signin'))
       .catch((err) => next(err));
 
-      
+
   }
 );
 
@@ -47,7 +47,7 @@ router.post(
 
   function (req, res, next) {
 
-    
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -61,7 +61,7 @@ router.post(
         user
           ? res.cookie("token", user.token,{
             expires: new Date(Date.now() + 10000000),
-            secure: false, 
+            secure: false,
             httpOnly: true,
           }
           ).json(user)

@@ -22,7 +22,7 @@ app.use(express.static(join(__dirname, "public")));
 
 
 
-app.use("/", accountRouter);
+app.use("/signup", accountRouter);
 app.use('/users', require('./users/users.controller'));
 
 
