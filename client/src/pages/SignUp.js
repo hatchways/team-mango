@@ -180,17 +180,16 @@ class SignUp extends Component {
     if (success === true) {
       //fetch here
 
-      const res = fetch("http://localhost:3001/signup", {
+      const res = fetch("/signup", {
         method: "POST",
-        mode: 'cors',
         headers: { "Content-Type": "application/json"},
-        body: {
+        body: JSON.stringify({
           firstName: this.state.firstName,
           lastName: this.state.lastName,
           email: this.state.email,
           password: this.state.password,
           confirmPassword: this.state.passwordConfirmed
-        },
+        }),
       })
         .then((response) => response.json())
         .then((responseJson) => {

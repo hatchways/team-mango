@@ -118,10 +118,10 @@ class Login extends Component {
     const res = fetch("/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
-      body: {
-        email: this.state.email,
-        password: this.state.password,
-      },
+      body: JSON.stringify({
+        email : this.state.email,
+        password : this.state.password,
+      }),
     })
       .then((response) => response.json())
       .then((responseJson) => {
