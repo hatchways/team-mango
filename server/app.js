@@ -7,6 +7,10 @@ const mongoose = require('mongoose');
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
+const interviewRouter = require("./interview/interview.controller");
+
+const questionService = require("./question/question.service");
+const { collection } = require("./models/usermodel");
 
 const { json, urlencoded } = express;
 
@@ -22,11 +26,18 @@ mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {useNewUrlParser: 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "MongoDB connection error:"));
 db.once('open', () => {
-  console.log("MongoDB connection successful");
+  //Adding sample questions after dropping "questions" collection if it already exists
+  db.db.listCollections().toArray((err, collections) => {
+    collections.forEach(item => {
+      if (item.name === 'questions') db.db.dropCollection('questions');
+    });
+    questionService.seedQuestions();
+  });
 })
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
+app.use("/interviews", interviewRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
