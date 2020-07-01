@@ -14,11 +14,14 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 import { Route, Link } from "react-router-dom";
 import pic1 from "../assets/pic1.png";
+import pic2 from "../assets/pic2.png";
+import pic3 from "../assets/pic3.png";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
+const width = window.innerWidth;
+//src={pic1}
 const signUpStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -43,7 +46,8 @@ const signUpStyle = (theme) => ({
   },
   text: {
     paddingTop: "0.5rem",
-    paddingLeft: "6rem",
+    paddingLeft: "5%",
+    paddingRight: "5%",
   },
   account: {
     paddingTop: "0.5rem",
@@ -51,10 +55,11 @@ const signUpStyle = (theme) => ({
   button: {
     borderRadius: 35,
     marginLeft: "1rem",
-    marginRight: "1.5rem",
+    marginRight: "0rem",
     marginBottom: "2rem",
     paddingLeft: "1.5rem",
     paddingRight: "1.5rem",
+    minWidth: "6rem",
   },
   start: {
     paddingBottom: "1.5rem",
@@ -65,7 +70,7 @@ const signUpStyle = (theme) => ({
   },
   continue: {
     backgroundColor: "#0000ff",
-    color: "#ffffff",
+//    color: "#ffffff",
     borderRadius: 35,
     marginTop: "1rem",
     paddingLeft: "1.5rem",
@@ -175,15 +180,15 @@ class SignUp extends Component {
     if (success === true) {
       //fetch here
 
-      const res = fetch("/signup", {
+      const res = fetch("http://localhost:3001/signup", {
         method: "post",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json"},
         body: {
-          "first_name": this.state.firstName,
-          "last_name": this.state.lastName,
-          "email": this.state.email,
-          "password": this.state.password,
-          "confirmPassword": this.state.passwordConfirmed,
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          email: this.state.email,
+          password: this.state.password,
+          confirmPassword: this.state.passwordConfirmed
         },
       })
         .then((response) => response.json())
@@ -194,7 +199,7 @@ class SignUp extends Component {
           console.error(error);
         });
 
-      /*
+/*
       axios
         .post("http://localhost:3001/signup", {
           first_name: this.state.firstName,
@@ -231,10 +236,10 @@ class SignUp extends Component {
     return (
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={0}>
-          <Grid container spacing={0}>
+          <Grid class="frame" container spacing={0}>
             <Grid item>
-              <Grid className={classes.image}>
-                <img className={classes.img} alt="complex" src={pic1} />
+              <Grid class="image">
+                <img className={classes.img} alt="complex" src={(width < 680) ? pic2 : (width > 1100) ? pic1 : pic3}/>
               </Grid>
             </Grid>
             <Grid className={classes.text} item xs={12} sm container>
@@ -253,7 +258,7 @@ class SignUp extends Component {
                   <Typography className={classes.start} variant="h3">
                     Get started!
                   </Typography>
-                  <Grid item xs={11} sm={9} md={7} lg={4} xl={3}>
+                  <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
                     <Typography>First name</Typography>
                     <TextField
                       className={classes.input}
@@ -308,6 +313,7 @@ class SignUp extends Component {
                       variant="contained"
                       className={classes.continue}
                       onClick={this.handleClick}
+                      color = "primary"
                     >
                       CONTINUE
                     </Button>
