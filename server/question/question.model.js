@@ -9,6 +9,12 @@ let QuestionSchema = new Schema({
     description: {
         type: String,
         required: true
+    },
+    difficulty: {
+        type: String,
+        required: true, 
+        enum: ['Easy', 'Medium', 'Hard'],
+        default: 'Easy'
     }
 });
 
