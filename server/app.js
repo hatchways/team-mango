@@ -11,6 +11,7 @@ const interviewRouter = require("./interview/interview.controller");
 
 const questionService = require("./question/question.service");
 const { collection } = require("./models/usermodel");
+const interviewService = require("./interview/interview.service");
 
 const { json, urlencoded } = express;
 
@@ -33,22 +34,15 @@ db.once('open', () => {
     });
     questionService.seedQuestions()
       .then(() => {
-        questionService.findARandomQuestionByDifficulty("Expert")
-              .then(
-                q => {
-                  console.log("q1 in app.js\n" + q);
-                  questionService.findARandomQuestionByDifficulty("Expert", q._id)
-                    .then(
-                      q2 => {
-                        console.log("q2 in app.js\n" + q2);
-                        
-                      }
-                    );
-                }
-              );
-      })
-      .catch(() => {
-        console.log("some error occured app.js:50");
+        interviewService.createInterview(1, "Beginner")
+          .then(q => {
+            setTimeout(function() {
+              interviewService.createInterview(1, "Beginner", q._id)
+              .then(q1 => {
+
+              });
+            }, 1000);
+          });
       });
   });
 })

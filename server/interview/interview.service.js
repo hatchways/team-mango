@@ -1,7 +1,5 @@
-const QuestionModel = require("../question/question.model");
 const InterviewModel = require("./interview.model");
 const UserModel = require("../models/usermodel");
-const interviewModel = require("./interview.model");
 
 const questionService = require("../question/question.service");
 
@@ -9,32 +7,40 @@ module.exports = {
     createInterview
 }
 
-async function createInterview(userid, difficulty, interviewId) {
-    const participant = await UserModel.findById(userid);
+async function createInterview(userId, difficulty, interviewId) {
     let interview;
-    let question;
+    let participant;
+    await UserModel
+        .findById(userId, (err, result) => {
+            if (err) throw Error('User not found');
+            participant = result;
+        }
+    );
     if (interviewId) {
-        //User joining an interview
-        interview = await InterviewModel.findById(interviewId);
-        const excludeQuestion = await interview.findOne({}).populate('questions');
-        console.log("Excluded question\n" + excludeQuestionId);
-        question = findARandomQuestionByDifficulty(difficulty, excludeQuestion._id);
-    }
-    else {
-        //User creating an interview
+        //Existing interview
+        InterviewModel
+            .findById(interviewId)
+            .populate('questions')
+            .exec((err, item) => {
+                interview = item;
+                const question = interview.questions[0];
+                questionService.findARandomQuestionByDifficulty(difficulty, question._id)
+                    .then(randomQuestion => {
+                        interview.participants.push(participant);
+                        interview.questions.push(randomQuestion);
+                        interview.save();
+                    });
+            });
+    } else {
+        //New interview
         interview = new InterviewModel();
+        await questionService.findARandomQuestionByDifficulty(difficulty)
+            .then(randomQuestion => {
+                interview.participants.push(participant);
+                interview.questions.push(randomQuestion);    
+                interview.save();
+            });
     }
-    interview.participants.push(participant);
     
-    return interview.save();
+    return interview;
 }
-
-/*
-let InterviewSchema = new Schema({
-    participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-    startTime: {
-        type: Date
-    }
-});
-*/

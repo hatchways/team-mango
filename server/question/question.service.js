@@ -26,37 +26,22 @@ async function seedQuestions() {
 
 async function findARandomQuestionByDifficulty(difficulty, excludeQuestionId) {
     let randomQuestion;
-    let random;
-    let res;
+    let random = 0;
 
-    if(excludeQuestionId) {
-        res = await QuestionModel
-            .find({_id: {$ne: excludeQuestionId}, 'difficulty': difficulty})
-            .countDocuments({}, (err, count) => {
-                random = Math.floor(Math.random() * count);
-            })
-            .cursor()
-            .eachAsync(async function(doc, i) {
-                if (i === random) {
-                    randomQuestion = doc;
-                    console.log("Second random question\n" + randomQuestion);
-                }
+    let query = {'difficulty': difficulty};
+    if (excludeQuestionId) query._id = {$ne: excludeQuestionId}
+
+    await QuestionModel
+        .find(query)
+        .countDocuments({}, (err, count) => {
+            random = Math.floor(Math.random() * count);
+        })
+        .cursor()
+        .eachAsync(async function(doc, i) {
+            if (i === random) {
+                randomQuestion = doc;
             }
-        );       
-    } else {
-        res = await QuestionModel
-            .find({'difficulty': difficulty})
-            .countDocuments({}, (err, count) => {
-                random = Math.floor(Math.random() * count);
-            })
-            .cursor()
-            .eachAsync(async function(doc, i) {
-                if (i === random) {
-                    randomQuestion = doc;
-                }
-            }
-        )
-        ;
-    }
+        });
+
     return randomQuestion;
 }
