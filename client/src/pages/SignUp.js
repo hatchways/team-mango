@@ -179,7 +179,8 @@ class SignUp extends Component {
       //fetch here
 
       const res = fetch("http://localhost:3001/signup", {
-        method: "post",
+        method: "POST",
+        mode: 'cors',
         headers: { "Content-Type": "application/json"},
         body: {
           firstName: this.state.firstName,
