@@ -3,18 +3,11 @@ const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const mongoose = require('mongoose');
 
-<<<<<<< HEAD
 const interviewRouter = require("./interview/interview.controller");
 const accountRouter = require("./users/users.controller");
 
 const questionService = require("./question/question.service");
-=======
-const indexRouter = require("./routes/index");
-const pingRouter = require("./routes/ping");
-const interviewRouter = require("./interview/interview.controller");
->>>>>>> 35e79c09b1a0f20b0124a62cde74a80a3350296c
 
 const { json, urlencoded } = express;
 
@@ -26,7 +19,6 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-<<<<<<< HEAD
 const db = require("./helpers/db");
 const connection = db.getConnection();
 connection
@@ -40,42 +32,10 @@ connection
     });
   });
 
-// mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {useNewUrlParser: true, useUnifiedTopology: true});
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, "MongoDB connection error:"));
-// db.once('open', () => {
-//   //Adding sample questions after dropping "questions" collection if it already exists
-  // db.db.listCollections().toArray((err, collections) => {
-  //   collections.forEach(item => {
-  //     if (item.name === 'questions') db.db.dropCollection('questions');
-  //   });
-  //   questionService.seedQuestions()
-  //     .then((res) => {}); 
-  // });
-// });
-
 app.use("/", accountRouter);
 app.use('/users', require('./users/users.controller'));
 app.use("/interviews", interviewRouter);
 
-=======
-mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {useNewUrlParser: true, useUnifiedTopology: true});
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, "MongoDB connection error:"));
-db.once('open', () => {
-  //Adding sample questions after dropping "questions" collection if it already exists
-  db.db.listCollections().toArray((err, collections) => {
-    collections.forEach(item => {
-      if (item.name === 'questions') db.db.dropCollection('questions');
-    });
-    questionService.seedQuestions()
-      .then((res) => {}); 
-  });
-});
-app.use("/", indexRouter);
-app.use("/ping", pingRouter);
-app.use("/interviews", interviewRouter);
->>>>>>> 35e79c09b1a0f20b0124a62cde74a80a3350296c
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

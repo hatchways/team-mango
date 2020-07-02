@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 const express = require('express');
 const router = express.Router();
 
 const interviewService = require('./interview.service');
-=======
-const express = require("express");
-const router = express.Router();
-
-const interviewService = require("./interview.service");
->>>>>>> 35e79c09b1a0f20b0124a62cde74a80a3350296c
 
 //Create interview
 router.post('/', async function(req, res) {
