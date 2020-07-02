@@ -10,6 +10,6 @@ export const theme = createMuiTheme({
   },
   palette: {
 //    primary: { main: "#DF1B1B" },
-    primary: { main: "#2B2BD0" },
+    primary: { main: "#8585F5" },
   },
 });

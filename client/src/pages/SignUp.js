@@ -21,7 +21,6 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 const width = window.innerWidth;
-//src={pic1}
 const signUpStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -63,14 +62,13 @@ const signUpStyle = (theme) => ({
   },
   start: {
     paddingBottom: "1.5rem",
+    fontFamily: "Arial",
   },
   input: {
     marginTop: "0.5rem",
     marginBottom: "1rem",
   },
   continue: {
-    backgroundColor: "#0000ff",
-//    color: "#ffffff",
     borderRadius: 35,
     marginTop: "1rem",
     paddingLeft: "1.5rem",

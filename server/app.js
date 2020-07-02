@@ -3,11 +3,8 @@ const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-
-
-
+//const mongoose = require('mongoose');
 const accountRouter = require("./users/users.controller");
-
 
 const { json, urlencoded } = express;
 
@@ -19,7 +16,12 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-
+/*mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {useNewUrlParser: true, useUnifiedTopology: true});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, "MongoDB connection error:"));
+db.once('open', () => {
+  console.log("MongoDB connection successful");
+})*/
 
 
 app.use("/", accountRouter);

@@ -13,11 +13,13 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 import { Route, Link } from "react-router-dom";
 import pic1 from "../assets/pic1.png";
+import pic2 from "../assets/pic2.png";
+import pic3 from "../assets/pic3.png";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
+const width = window.innerWidth;
 const loginStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -42,7 +44,8 @@ const loginStyle = (theme) => ({
   },
   text: {
     paddingTop: "0.5rem",
-    paddingLeft: "6rem",
+    paddingLeft: "5%",
+    paddingRight: "5%",
   },
   account: {
     paddingTop: "0.5rem",
@@ -50,21 +53,21 @@ const loginStyle = (theme) => ({
   button: {
     borderRadius: 35,
     marginLeft: "1rem",
-    marginRight: "1.5rem",
+    marginRight: "0rem",
     marginBottom: "2rem",
     paddingLeft: "1.5rem",
     paddingRight: "1.5rem",
+    minWidth: "6.2rem",
   },
   start: {
     paddingBottom: "1.5rem",
+    fontFamily: "Arial",
   },
   input: {
     marginTop: "0.5rem",
     marginBottom: "1rem",
   },
   continue: {
-    backgroundColor: "#0000ff",
-    color: "#ffffff",
     borderRadius: 35,
     marginTop: "1rem",
     paddingLeft: "1.5rem",
@@ -154,10 +157,10 @@ class Login extends Component {
     return (
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={0}>
-          <Grid container spacing={0}>
+        <Grid class="frame" container spacing={0}>
             <Grid item>
-              <Grid className={classes.image}>
-                <img className={classes.img} alt="complex" src={pic1} />
+              <Grid class="image">
+                <img className={classes.img} alt="complex" src={(width < 680) ? pic2 : (width > 1100) ? pic1 : pic3}/>
               </Grid>
             </Grid>
             <Grid className={classes.text} item xs={12} sm container>
@@ -176,7 +179,7 @@ class Login extends Component {
                   <Typography className={classes.start} variant="h3">
                     Sign In
                   </Typography>
-                  <Grid item xs={11} sm={9} md={7} lg={4} xl={3}>
+                  <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
                     <Typography>Email address</Typography>
                     <TextField
                       className={classes.input}
@@ -202,6 +205,7 @@ class Login extends Component {
                       variant="contained"
                       className={classes.continue}
                       onClick={this.handleClick}
+                      color = "primary"
                     >
                       CONTINUE
                     </Button>

@@ -63,6 +63,7 @@ const loginStyle = (theme) => ({
   },
   title: {
     color: "#0000ff",
+    fontFamily: "Arial",
     marginTop: "3rem",
     paddingBottom: "1rem",
   },
