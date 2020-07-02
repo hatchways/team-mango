@@ -1,7 +1,9 @@
-const InterviewModel = require("./interview.model");
-const UserModel = require("../models/usermodel");
+const db = require('../helpers/db');
 
-const questionService = require("../question/question.service");
+const questionService = require('../question/question.service');
+const userService = require('../users/user.service');
+
+const Interview = db.Interview;
 
 module.exports = {
     createInterview,
@@ -9,8 +11,8 @@ module.exports = {
 }
 
 async function createInterview(userId, difficulty) {
-    let interview = new InterviewModel();
-    let participant = await UserModel.findById(userId);
+    let interview = new Interview();
+    let participant = await userService.getById(userId);
     let question = await questionService.findARandomQuestionByDifficulty(difficulty);
     interview.participants.push(participant);
     interview.questions.push(question);
@@ -20,12 +22,12 @@ async function createInterview(userId, difficulty) {
 }
 
 async function updateInterview(userId, difficulty, interviewId) {
-    let updatedInterview = await InterviewModel
+    let updatedInterview = await Interview
         .findById(interviewId)
         .populate('participants')
         .populate('questions');
     
-    let participant = await UserModel.findById(userId);
+    let participant = await userService.getById(userId);
     let question = updatedInterview.questions[0];
     let randomQuestion = await questionService.findARandomQuestionByDifficulty(difficulty, question._id);
 

@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const interviewService = require("./interview.service");
+const interviewService = require('./interview.service');
 
 //Create interview
 router.post('/', async function(req, res) {
