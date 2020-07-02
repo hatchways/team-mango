@@ -4,43 +4,34 @@ const UserModel = require("../models/usermodel");
 const questionService = require("../question/question.service");
 
 module.exports = {
-    createInterview
+    createInterview,
+    updateInterview
 }
 
-async function createInterview(userId, difficulty, interviewId) {
-    let interview;
-    let participant;
-    await UserModel
-        .findById(userId, (err, result) => {
-            if (err) throw Error('User not found');
-            participant = result;
-        }
-    );
-    if (interviewId) {
-        //Existing interview
-        InterviewModel
-            .findById(interviewId)
-            .populate('questions')
-            .exec((err, item) => {
-                interview = item;
-                const question = interview.questions[0];
-                questionService.findARandomQuestionByDifficulty(difficulty, question._id)
-                    .then(randomQuestion => {
-                        interview.participants.push(participant);
-                        interview.questions.push(randomQuestion);
-                        interview.save();
-                    });
-            });
-    } else {
-        //New interview
-        interview = new InterviewModel();
-        await questionService.findARandomQuestionByDifficulty(difficulty)
-            .then(randomQuestion => {
-                interview.participants.push(participant);
-                interview.questions.push(randomQuestion);    
-                interview.save();
-            });
-    }
-    
+async function createInterview(userId, difficulty) {
+    let interview = new InterviewModel();
+    let participant = await UserModel.findById(userId);
+    let question = await questionService.findARandomQuestionByDifficulty(difficulty);
+    interview.participants.push(participant);
+    interview.questions.push(question);
+    await interview.save();
+
     return interview;
+}
+
+async function updateInterview(userId, difficulty, interviewId) {
+    let updatedInterview = await InterviewModel
+        .findById(interviewId)
+        .populate('participants')
+        .populate('questions');
+    
+    let participant = await UserModel.findById(userId);
+    let question = updatedInterview.questions[0];
+    let randomQuestion = await questionService.findARandomQuestionByDifficulty(difficulty, question._id);
+
+    updatedInterview.participants.push(participant);
+    updatedInterview.questions.push(randomQuestion);
+    updatedInterview.save();
+ 
+    return updatedInterview;
 }

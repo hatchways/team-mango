@@ -9,10 +9,6 @@ const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
 const interviewRouter = require("./interview/interview.controller");
 
-const questionService = require("./question/question.service");
-const { collection } = require("./models/usermodel");
-const interviewService = require("./interview/interview.service");
-
 const { json, urlencoded } = express;
 
 var app = express();
@@ -33,20 +29,9 @@ db.once('open', () => {
       if (item.name === 'questions') db.db.dropCollection('questions');
     });
     questionService.seedQuestions()
-      .then(() => {
-        interviewService.createInterview(1, "Beginner")
-          .then(q => {
-            setTimeout(function() {
-              interviewService.createInterview(1, "Beginner", q._id)
-              .then(q1 => {
-
-              });
-            }, 1000);
-          });
-      });
+      .then((res) => {}); 
   });
-})
-
+});
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
 app.use("/interviews", interviewRouter);
