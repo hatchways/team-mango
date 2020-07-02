@@ -6,7 +6,10 @@ let User = require('../models/usermodel');
 
 let InterviewSchema = new Schema({
     participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }]
+    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
+    startTime: {
+        type: Date
+    }
 });
 
 module.exports = mongoose.model('Interview', InterviewSchema);

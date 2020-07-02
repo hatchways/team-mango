@@ -31,7 +31,25 @@ db.once('open', () => {
     collections.forEach(item => {
       if (item.name === 'questions') db.db.dropCollection('questions');
     });
-    questionService.seedQuestions();
+    questionService.seedQuestions()
+      .then(() => {
+        questionService.findARandomQuestionByDifficulty("Expert")
+              .then(
+                q => {
+                  console.log("q1 in app.js\n" + q);
+                  questionService.findARandomQuestionByDifficulty("Expert", q._id)
+                    .then(
+                      q2 => {
+                        console.log("q2 in app.js\n" + q2);
+                        
+                      }
+                    );
+                }
+              );
+      })
+      .catch(() => {
+        console.log("some error occured app.js:50");
+      });
   });
 })
 

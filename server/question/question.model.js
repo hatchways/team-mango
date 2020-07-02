@@ -13,8 +13,8 @@ let QuestionSchema = new Schema({
     difficulty: {
         type: String,
         required: true, 
-        enum: ['Easy', 'Medium', 'Hard'],
-        default: 'Easy'
+        enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert'],
+        default: 'Beginner'
     }
 });
 
