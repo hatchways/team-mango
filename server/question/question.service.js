@@ -1,6 +1,7 @@
-//const QuestionModel = require('./question.model');
 const db = require('../helpers/db');
+
 const Question = db.Question;
+
 module.exports = {
     seedQuestions,
     findARandomQuestionByDifficulty
@@ -22,6 +23,7 @@ async function seedQuestions() {
 
     const res = await Question.insertMany([question1, question2, question3, question4, question5, question6, 
         question7, question8, question9, question10, question11, question12]);
+        
     return res;
 }
 
