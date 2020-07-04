@@ -7,33 +7,41 @@ const Interview = db.Interview;
 
 module.exports = {
     createInterview,
-    updateInterview
+    addParticipantToAnInterview
 }
 
-async function createInterview(userId, difficulty) {
+async function createInterview(user, difficulty) {
     let interview = new Interview();
-    let participant = await userService.getById(userId);
-    let question = await questionService.findARandomQuestionByDifficulty(difficulty);
-    interview.participants.push(participant);
-    interview.questions.push(question);
-    await interview.save();
+    interview.owner = user;
+    interview.difficulty = difficulty;
+
+    let excludedQuestionIDs = user.questions;
+    let question = await questionService.findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs);
+
+    interview.participants.push({ user: user, question: question });
+    user.interviews.push(interview);
+    user.questions.push(question);
+    
+    [interview, user] = await Promise.all([interview.save(), user.save()]);
 
     return interview;
 }
 
-async function updateInterview(userId, difficulty, interviewId) {
-    let updatedInterview = await Interview
-        .findById(interviewId)
-        .populate('participants')
-        .populate('questions');
+async function addParticipantToAnInterview(user, interviewId) {
+    let interview = await Interview.findById(interviewId);
+    let difficulty = interview.difficulty;
     
-    let participant = await userService.getById(userId);
-    let question = updatedInterview.questions[0];
-    let randomQuestion = await questionService.findARandomQuestionByDifficulty(difficulty, question._id);
+    let excludedQuestionIDs = user.questions.concat(interview.participants[0].question);
+    excludedQuestionIDs = excludedQuestionIDs.filter((item, index) => excludedQuestionIDs.indexOf(item) === index);
+    let question = await questionService.findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs).catch((err) => {
+        throw err;
+    });
 
-    updatedInterview.participants.push(participant);
-    updatedInterview.questions.push(randomQuestion);
-    updatedInterview.save();
- 
-    return updatedInterview;
+    interview.participants.push({ user: user, question: question });
+    user.interviews.push(interview);
+    user.questions.push(question);
+    
+    [interview, user] = await Promise.all([interview.save(), user.save()]);
+
+    return interview;
 }

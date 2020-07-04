@@ -7,8 +7,6 @@ const logger = require("morgan");
 const interviewRouter = require("./interview/interview.controller");
 const accountRouter = require("./users/users.controller");
 
-const questionService = require("./question/question.service");
-
 const { json, urlencoded } = express;
 
 var app = express();
@@ -19,22 +17,9 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-const db = require("./helpers/db");
-const connection = db.getConnection();
-connection
-  .once('open', () => {
-    connection.db.listCollections().toArray((err, collections) => {
-      collections.forEach(item => {
-        if (item.name === 'questions') connection.db.dropCollection('questions');
-      });
-      questionService.seedQuestions()
-        .then((res) => {}); 
-    });
-  });
-
 app.use("/", accountRouter);
 app.use('/users', require('./users/users.controller'));
-app.use("/interviews", interviewRouter);
+app.use('/interviews', interviewRouter);
 
 
 // catch 404 and forward to error handler

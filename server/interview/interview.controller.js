@@ -1,26 +1,32 @@
 const express = require('express');
 const router = express.Router();
 
+const verifyToken = require('../helpers/verifyToken');
 const interviewService = require('./interview.service');
+const questionService = require('../question/question.service');
+const db = require('../helpers/db');
+const userService = require('../users/user.service');
 
 //Create interview
-router.post('/', async function(req, res) {
+router.post('/', verifyToken, async function(req, res) {
     const postBody = req.body;
-    const userId = postBody.userId;
+    const user = postBody.user;
     const difficulty = postBody.difficulty;
-    const interviewId = postBody.interviewId;
 
-    if (interviewId) {
-        interviewService.updateInterview(userId, difficulty, interviewId)
-            .then(interview => {
-                res.json(interview);
-            });   
-    } else {
-        interviewService.createInterview(userId, difficulty)
-            .then(interview => {
-                res.json(interview);
-            }); 
-    }
+    let interview = await interviewService.createInterview(user, difficulty);
+
+    res.json(interview);
 });
+
+//Update interview
+router.put('/*', verifyToken, async function(req, res) {
+    const postBody = req.body;
+    const user = postBody.user;
+    let interviewId = req.path.replace(/\//g, '');
+    await interviewService.addParticipantToAnInterview(user, interviewId)
+        .then(interview => res.json(interview))
+        .catch(err => res.status(500).json({ Error: err}));
+});
+
 
 module.exports = router;

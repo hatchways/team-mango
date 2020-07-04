@@ -15,7 +15,13 @@ let QuestionSchema = new Schema({
         required: true, 
         enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert'],
         default: 'Beginner'
+    },
+    random: {//Added for efficient querying of random question
+        type: Number,
+        default: Math.random()
     }
 });
+
+QuestionSchema.index({ random : 1 });
 
 module.exports = mongoose.model('Question', QuestionSchema);
