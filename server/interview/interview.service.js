@@ -12,15 +12,15 @@ module.exports = {
 
 async function createInterview(user, difficulty) {
     let interview = new Interview();
-    interview.owner = user;
+    interview.owner = user._id;
     interview.difficulty = difficulty;
 
     let excludedQuestionIDs = user.questions;
     let question = await questionService.findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs);
 
-    interview.participants.push({ user: user, question: question });
-    user.interviews.push(interview);
-    user.questions.push(question);
+    interview.participants.push({ user: user._id, question: question._id });
+    user.interviews.push(interview._id);
+    user.questions.push(question._id);
     
     [interview, user] = await Promise.all([interview.save(), user.save()]);
 
@@ -38,9 +38,9 @@ async function addParticipantToAnInterview(user, interviewId) {
         throw err;
     });
 
-    interview.participants.push({ user: user, question: question });
-    user.interviews.push(interview);
-    user.questions.push(question);
+    interview.participants.push({ user: user._id, question: question._id });
+    user.interviews.push(interview._id);
+    user.questions.push(question._id);
     
     [interview, user] = await Promise.all([interview.save(), user.save()]);
 
