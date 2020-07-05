@@ -3,9 +3,6 @@ const router = express.Router();
 
 const verifyToken = require('../helpers/verifyToken');
 const interviewService = require('./interview.service');
-const questionService = require('../question/question.service');
-const db = require('../helpers/db');
-const userService = require('../users/user.service');
 
 //Create interview
 router.post('/', verifyToken, async function(req, res) {

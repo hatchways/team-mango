@@ -32,6 +32,7 @@ async function addParticipantToAnInterview(user, interviewId) {
     let difficulty = interview.difficulty;
     
     let excludedQuestionIDs = user.questions.concat(interview.participants[0].question);
+    //Removing duplicates from array
     excludedQuestionIDs = excludedQuestionIDs.filter((item, index) => excludedQuestionIDs.indexOf(item) === index);
     let question = await questionService.findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs).catch((err) => {
         throw err;
