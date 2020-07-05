@@ -74,8 +74,9 @@ router.post(
 );
 
 //Testing verification
-router.get("/auth/verify", verifyToken, function (req, res, next) {
-  res.status(200).json("You are logged in");
+
+router.get("/auth/verify",verifyToken, function (req, res, next) { 
+   res.status(200).json(req.user);
 });
 
 router.get("/current", getCurrent);

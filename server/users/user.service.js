@@ -30,7 +30,11 @@ async function getAll() {
 }
 
 async function getById(id) {
-  return await User.findById(id);
+  const user = await User.findById(id)
+  if(user)
+  return {...user.toJSON()};
+  else
+  return "cant find user";
 }
 
 async function create(userParam) {
