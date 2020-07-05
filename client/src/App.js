@@ -1,6 +1,6 @@
 import React, {useState, useMemo, useEffect} from "react";
 import { MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Redirect } from "react-router";
 import Navbar from "./pages/navbar"
 import { theme } from "./themes/theme";
@@ -48,9 +48,12 @@ function App() {
         <Route path="/signup" component={SignUp} />
         <Route path="/login" component={Login} />
         <Route path="/background" component={Background} />
+        <Navbar/>
+        <Switch>
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/faq" component={Faq} />
         <Route path="/blog" component={Blog}/>
+        </Switch>
       </BrowserRouter>
     </MuiThemeProvider>
     </UserContext.Provider>

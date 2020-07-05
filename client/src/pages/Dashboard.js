@@ -6,18 +6,15 @@ import { Redirect } from "react-router-dom";
 function Dashboard(props){
   
   const {user} = useContext(UserContext)
-  let curUserName = null;
-  if(user){
-     curUserName = user.firstName + " " + user.lastName;
-  }  
-
-          return(   
+  if(user === null){
+    return <p>Loading profile...</p>;
+  }   return(   
                  
                  <div>
                  
-                   <Navbar/>    
+                     
                    <h1> Dashboard Now</h1>
-                   <pre>Here is firstName: {curUserName}</pre>
+                   <pre>Here is firstName:  { user.firstName + " " + user.lastName}</pre>
                    </div>
           
           )
