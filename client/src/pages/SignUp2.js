@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 
 import {
   Typography,
@@ -67,75 +67,105 @@ const signUpStyle = (theme) => ({
   },
 });
 
-function SignUp(props){
-      const [firstName, setFirstName] = useState('');
-      const [lastName, setLastName] = useState('');
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
-      const [passwordConfirmed, setPasswordConfirmed] = useState('');
-      const [openSnack, setOpenSnack] = useState(false);
-      const [severity, setSeverity] = useState('error');
-      const [firstNameMessage, setFirstNameMessage] = useState('First name is required!');
-      const [lastNameMessage, setLastNameMessage] = useState('Last name is required!');
-      const [emailMessage, setEmailMessage] = useState('Invalid email!');
-      const [passwordMessage, setPasswordMessage] = useState('Password needs 6 characters or more!');
-      const [passwordConfirmedMessage, setPasswordConfirmedMessage] = useState('Both passwords are needed to be the same!');
-      const [successMessage, setSuccessMessage] = useState('');
-    
-  
-  const onChangeFirstName = e => {
-    setFirstName(e.target.value);
+class SignUp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      passwordConfirmed: "",
+      openSnack: false,
+      severity: "error",
+      firstNameMessage: "First name is required!",
+      lastNameMessage: "Last name is required!",
+      emailMessage: "Invalid email!",
+      passwordMessage: "Password needs 6 characters or more!",
+      passwordConfirmedMessage: "Both passwords are needed to be the same!",
+      successMessage: "",
+    };
+  }
+
+  componentDidMount() {
+    fetch("/welcome")
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) return res.json();
+        else throw Error("Couldn't connect to the server");
+      })
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
+  onChangeFirstName = (e) => {
+    this.setState({ firstName: e.target.value });
   };
-  const onChangeLastName = (e) => {
-    setLastName(e.target.value);
+  onChangeLastName = (e) => {
+    this.setState({ lastName: e.target.value });
   };
-  const onChangeEmail = (e) => {
-    setEmail(e.target.value);
+  onChangeEmail = (e) => {
+    this.setState({ email: e.target.value });
   };
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
+  onChangePassword = (e) => {
+    this.setState({ password: e.target.value });
   };
-  const onChangePasswordConfirmed = (e) => {
-    setPasswordConfirmed(e.target.value);
+  onChangePasswordConfirmed = (e) => {
+    this.setState({ passwordConfirmed: e.target.value });
   };
-  const signIn = () => {
-    props.history.push({
+  signIn = () => {
+    this.props.history.push({
       pathname: "/login",
       state: {},
     });
   };
-  const handleClick = (e) => {
+  handleClick = (e) => {
     e.preventDefault();
-    validation();
-    setOpenSnack(true);
+    this.validation();
+    this.setState({ openSnack: true });
   };
-  async function validation() {
-    await setFirstNameMessage((firstName === "") ? "First name is required!" : "");
-    
-    await setLastNameMessage((lastName === "") ? "Last name is required!" : "");
-    
-    await setEmailMessage((/^\S+@\S+\.\S+$/.test(email)) ? "" : "Invalid email!");
-    
-    await setPasswordMessage((password.length > 5) ? "" : "Password needs 6 characters or more!");
-    
-    await setPasswordConfirmedMessage((password === passwordConfirmed) ? "" : "Both passwords are needed to be the same!");
-    
+  async validation() {
+    await this.setState({
+      firstNameMessage:
+        this.state.firstName === "" ? "First name is required!" : "",
+    });
+    await this.setState({
+      lastNameMessage:
+        this.state.lastName === "" ? "Last name is required!" : "",
+    });
+    await this.setState({
+      emailMessage: /^\S+@\S+\.\S+$/.test(this.state.email)
+        ? ""
+        : "Invalid email!",
+    });
+    await this.setState({
+      passwordMessage:
+        this.state.password.length > 5
+          ? ""
+          : "Password needs 6 characters or more!",
+    });
+    await this.setState({
+      passwordConfirmedMessage:
+        this.state.password === this.state.passwordConfirmed
+          ? ""
+          : "Both passwords are needed to be the same!",
+    });
     var success = false;
     if (
-      firstName !== "" &&
-      lastName !== "" &&
-      (/^\S+@\S+\.\S+$/.test(email)) &&
-      (password.length > 5) &&
-      (password === passwordConfirmed)
+      this.state.firstNameMessage === "" &&
+      this.state.lastNameMessage === "" &&
+      this.state.emailMessage === "" &&
+      this.state.passwordMessage === "" &&
+      this.state.passwordConfirmedMessage === ""
     ) {
       success = true;
     }
-    else {
-      success = false;
-    }
-    await setSeverity((success) ? "success" : "error");
-    await setSuccessMessage((success) ? "Sign up successfully!" : "");
-    
+    await this.setState({
+      severity: success ? "success" : "error",
+      successMessage: success ? "Sign up successfully!" : "",
+    });
     if (success === true) {
       //fetch here
 
@@ -143,11 +173,11 @@ function SignUp(props){
         method: "POST",
         headers: { "Content-Type": "application/json"},
         body: JSON.stringify({
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          password: password,
-          confirmPassword: passwordConfirmed
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          email: this.state.email,
+          password: this.state.password,
+          confirmPassword: this.state.passwordConfirmed
         }),
       })
         .then((response) => response.json())
@@ -157,17 +187,41 @@ function SignUp(props){
         .catch((error) => {
           console.error(error);
         });
+
+/*
+      axios
+        .post("http://localhost:3001/signup", {
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          email: this.state.email,
+          password: this.state.password,
+          confirmPassword: this.state.passwordConfirmed
+        })
+        .then((response) => {
+          this.setState(
+            {
+              //      successMessage: response.data.msg
+              successMessage: response.status,
+            },
+            () => {}
+          )
+          .catch(function (error) {
+            console.log(error);
+          });
+        });
+        */
     }
   }
 
-  const handleClose = (event, reason) => {
+  handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpenSnack(false);
+    this.setState({ openSnack: false });
   };
 
-    const { classes } = props;
+  render() {
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={0}>
@@ -185,7 +239,7 @@ function SignUp(props){
                     <Button
                       variant="outlined"
                       className={classes.button}
-                      onClick={signIn}
+                      onClick={this.signIn}
                     >
                       SIGN IN
                     </Button>
@@ -201,8 +255,8 @@ function SignUp(props){
                       placeholder="First name"
                       type="first name"
                       variant="outlined"
-                      value={firstName}
-                      onChange={onChangeFirstName}
+                      value={this.state.firstName}
+                      onChange={this.onChangeFirstName}
                     />
                     <Typography>Last name</Typography>
                     <TextField
@@ -211,8 +265,8 @@ function SignUp(props){
                       placeholder="Last name"
                       type="last name"
                       variant="outlined"
-                      value={lastName}
-                      onChange={onChangeLastName}
+                      value={this.state.lastName}
+                      onChange={this.onChangeLastName}
                     />
                     <Typography>Email address</Typography>
                     <TextField
@@ -221,8 +275,8 @@ function SignUp(props){
                       placeholder="john@mail.com"
                       type="email"
                       variant="outlined"
-                      value={email}
-                      onChange={onChangeEmail}
+                      value={this.state.email}
+                      onChange={this.onChangeEmail}
                     />
                     <Typography>Password</Typography>
                     <TextField
@@ -231,8 +285,8 @@ function SignUp(props){
                       placeholder="Password"
                       type="password"
                       variant="outlined"
-                      value={password}
-                      onChange={onChangePassword}
+                      value={this.state.password}
+                      onChange={this.onChangePassword}
                     />
                     <Typography>Confirm password</Typography>
                     <TextField
@@ -241,32 +295,32 @@ function SignUp(props){
                       placeholder="Confirm password"
                       type="password"
                       variant="outlined"
-                      value={passwordConfirmed}
-                      onChange={onChangePasswordConfirmed}
+                      value={this.state.passwordConfirmed}
+                      onChange={this.onChangePasswordConfirmed}
                     />
                     <Button
                       variant="contained"
                       className={classes.continue}
-                      onClick={handleClick}
+                      onClick={this.handleClick}
                       color = "primary"
                     >
                       CONTINUE
                     </Button>
                     <Snackbar
-                      open={openSnack}
+                      open={this.state.openSnack}
                       autoHideDuration={6000}
-                      onClose={handleClose}
+                      onClose={this.handleClose}
                     >
                       <Alert
-                        onClose={handleClose}
-                        severity={severity}
+                        onClose={this.handleClose}
+                        severity={this.state.severity}
                       >
-                        <div>{firstNameMessage}</div>
-                        <div>{lastNameMessage}</div>
-                        <div>{emailMessage}</div>
-                        <div>{passwordMessage}</div>
-                        <div>{passwordConfirmedMessage}</div>
-                        <div>{successMessage}</div>
+                        <div>{this.state.firstNameMessage}</div>
+                        <div>{this.state.lastNameMessage}</div>
+                        <div>{this.state.emailMessage}</div>
+                        <div>{this.state.passwordMessage}</div>
+                        <div>{this.state.passwordConfirmedMessage}</div>
+                        <div>{this.state.successMessage}</div>
                       </Alert>
                     </Snackbar>
                   </Grid>
@@ -278,6 +332,6 @@ function SignUp(props){
       </div>
     );
   }
-
+}
 
 export default withStyles(signUpStyle)(SignUp);

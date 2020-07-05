@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 
 import {
   Typography,
@@ -81,32 +81,95 @@ const details = {
   5: "Had more than twelve interviews before, and know much about interview skills",
 }
 
-function Background(props){
+class Background extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      openSnack: false,
+      severity: "error",
+      message: "Invalid email or password!",
+      language: "React",
+      experience: "",
+      value: 2,
+      hover: -1,
+    };
+  }
 
-  const [openSnack, setOpenSnack] = useState(false);
-  const [severity, setSeverity] = useState('error');
-  const [language, setLanguage] = useState('React');
-  const [experience, setExperience] = useState('');
-  const [value, setValue] = useState(2);
-  const [hover, setHover] = useState(-1);
- 
-  const handleClick = () => {
-    setOpenSnack((experience === "" ) ? true : false );
-  }; 
-  const handleClose = (event, reason) => {
+  componentDidMount() {
+    fetch("/welcome")
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) return res.json();
+        else throw Error("Couldn't connect to the server");
+      })
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
+  onChangeEmail = (e) => {
+    this.setState({ email: e.target.value });
+  };
+  onChangePassword = (e) => {
+    this.setState({ password: e.target.value });
+  };
+  signUp = () => {
+    this.props.history.push({
+      pathname: "/signup",
+      state: {},
+    });
+  };
+  handleClick = () => {
+//    this.validation();
+    this.setState({ openSnack: (this.state.experience === "" ) ? true : false });
+  };
+  async validation() {
+    //fetch here
+    const res = fetch("/signin", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: {
+        email: this.state.email,
+        password: this.state.password,
+      },
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.cookie;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    var success = false;
+    if (true) {
+      success = true;
+    }
+    await this.setState({
+      severity: success ? "success" : "error",
+      message: success ? "Sign in successfully!" : "Invalid email or password!",
+    });
+    if (success === true) {
+    }
+  }
+  handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpenSnack(false);
+    this.setState({ openSnack: false });
   };
-  const languageChange = (e) => {
-    setLanguage(e.target.value);
+  languageChange = (e) => {
+    this.setState({language: e.target.value});
   };
-  const experienceChange = (e) => {
-    setExperience(e.target.value);
+  experienceChange = (e) => {
+    this.setState({experience: e.target.value});
   };
 
-    const { classes } = props;
+  render() {
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={0}>
@@ -133,8 +196,8 @@ function Background(props){
                       <Select
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
-                        value={language}
-                        onChange={languageChange}
+                        value={this.state.language}
+                        onChange={this.selectChange}
                       >
                         <MenuItem value={"React"}>React</MenuItem>
                         <MenuItem value={"JavaScript"}>JavaScript</MenuItem>
@@ -152,8 +215,8 @@ function Background(props){
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
                         displayEmpty
-                        value={experience}
-                        onChange={experienceChange}
+                        value={this.state.experience}
+                        onChange={this.experienceChange}
                       >
                         <MenuItem disabled value="">
                           Select your experience
@@ -169,23 +232,23 @@ function Background(props){
                     <div>
                       <Rating
                         name="hover-feedback"
-                        value={value}
+                        value={this.state.value}
                         precision={1}
                         onChange={(event, newValue) => {
-                          setValue(newValue);
+                          this.setState({value: newValue});
                         }}
                         onChangeActive={(event, newHover) => {
-                          setHover(newHover);
+                          this.setState({hover: newHover});
                         }}
                       />
-                      {value !== null
+                      {this.state.value !== null
                         &&
                         <div>
                         <Box ml={0} style={{color: "#0000ff"}}>
-                        {labels[hover !== -1 ? hover : value]}
+                        {labels[this.state.hover !== -1 ? this.state.hover : this.state.value]}
                         </Box>
                         <Box ml={0} style={{color: "#888888"}}>
-                        {details[hover !== -1 ? hover : value]}
+                        {details[this.state.hover !== -1 ? this.state.hover : this.state.value]}
                         </Box>
                         </div>
                       }
@@ -194,19 +257,19 @@ function Background(props){
                     <Button
                       variant="contained"
                       className={classes.nextStep}
-                      onClick={handleClick}
+                      onClick={this.handleClick}
                       color = "primary"
                     >
                       NEXT STEP
                     </Button>
                     <Snackbar
-                      open={openSnack}
+                      open={this.state.openSnack}
                       autoHideDuration={6000}
-                      onClose={handleClose}
+                      onClose={this.handleClose}
                     >
                       <Alert
-                        onClose={handleClose}
-                        severity={severity}
+                        onClose={this.handleClose}
+                        severity={this.state.severity}
                       >
                         <div>Please select your experience!</div>
                       </Alert>
@@ -221,6 +284,6 @@ function Background(props){
       </div>
     );
   }
-
+}
 
 export default withStyles(backgroundStyle)(Background);

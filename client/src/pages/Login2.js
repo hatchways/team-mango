@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 
 import {
   Typography,
@@ -68,37 +68,55 @@ const loginStyle = (theme) => ({
   },
 });
 
-function Login(props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [openSnack, setOpenSnack] = useState(false);
-  const [severity, setSeverity] = useState('error');
-  const [message, setMessage] = useState('Invalid email or password!');
-  
-  const onChangeEmail = (e) => {
-    setEmail(e.target.value);
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      openSnack: false,
+      severity: "error",
+      message: "Invalid email or password!",
+    };
+  }
+
+  componentDidMount() {
+    fetch("/welcome")
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) return res.json();
+        else throw Error("Couldn't connect to the server");
+      })
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
+  onChangeEmail = (e) => {
+    this.setState({ email: e.target.value });
   };
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
+  onChangePassword = (e) => {
+    this.setState({ password: e.target.value });
   };
-  const signUp = () => {
-    props.history.push({
+  signUp = () => {
+    this.props.history.push({
       pathname: "/signup",
       state: {},
     });
   };
-  const handleClick = () => {
-    validation();
-    setOpenSnack(true);
+  handleClick = () => {
+    this.validation();
+    this.setState({ openSnack: true });
   };
-  async function validation() {
+  async validation() {
     //fetch here
     const res = fetch("/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: {
-        email: email,
-        password: password,
+        email: this.state.email,
+        password: this.state.password,
       },
     })
       .then((response) => response.json())
@@ -113,20 +131,22 @@ function Login(props) {
     if (true) {
       success = true;
     }
-    await setSeverity((success) ? "success" : "error");
-    await setMessage((success) ? "Sign in successfully!" : "Invalid email or password!");
-    
+    await this.setState({
+      severity: success ? "success" : "error",
+      message: success ? "Sign in successfully!" : "Invalid email or password!",
+    });
     if (success === true) {
     }
   }
-  const handleClose = (event, reason) => {
+  handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpenSnack(false);
+    this.setState({ openSnack: false });
   };
 
-    const { classes } = props;
+  render() {
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={0}>
@@ -144,7 +164,7 @@ function Login(props) {
                     <Button
                       variant="outlined"
                       className={classes.button}
-                      onClick={signUp}
+                      onClick={this.signUp}
                     >
                       SIGN UP
                     </Button>
@@ -160,8 +180,8 @@ function Login(props) {
                       placeholder="john@mail.com"
                       type="email"
                       variant="outlined"
-                      value={email}
-                      onChange={onChangeEmail}
+                      value={this.state.email}
+                      onChange={this.onChangeEmail}
                     />
                     <Typography>Password</Typography>
                     <TextField
@@ -170,28 +190,28 @@ function Login(props) {
                       placeholder="Password"
                       type="password"
                       variant="outlined"
-                      value={password}
-                      onChange={onChangePassword}
+                      value={this.state.password}
+                      onChange={this.onChangePassword}
                     />
                     <Typography>Forgot password?</Typography>
                     <Button
                       variant="contained"
                       className={classes.continue}
-                      onClick={handleClick}
+                      onClick={this.handleClick}
                       color = "primary"
                     >
                       CONTINUE
                     </Button>
                     <Snackbar
-                      open={openSnack}
+                      open={this.state.openSnack}
                       autoHideDuration={6000}
-                      onClose={handleClose}
+                      onClose={this.handleClose}
                     >
                       <Alert
-                        onClose={handleClose}
-                        severity={severity}
+                        onClose={this.handleClose}
+                        severity={this.state.severity}
                       >
-                        <div>{message}</div>
+                        <div>{this.state.message}</div>
                       </Alert>
                     </Snackbar>
                   </Grid>
@@ -203,6 +223,6 @@ function Login(props) {
       </div>
     );
   }
-
+}
 
 export default withStyles(loginStyle)(Login);
