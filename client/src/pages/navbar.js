@@ -1,17 +1,11 @@
 import React, {Component, useContext, useEffect, useState } from 'react'
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
-import {NewUserContext} from '../App';
 import {AppBar, Toolbar, Typography, IconButton, Tab, Tabs}   from '@material-ui/core/';
 import {Link as RouterLink} from 'react-router-dom'
-import FAQ from './faq';
-import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {UserContext}from '../contexts/UserContext'
-import { BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
-import Dashboard from './Dashboard';
-import Faq from './faq';
-import Blog from './Blog';
+import { Redirect} from "react-router-dom";
+
 
 
 const styles = theme => ({

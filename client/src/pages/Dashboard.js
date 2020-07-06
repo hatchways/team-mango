@@ -1,7 +1,7 @@
 import React, { useContext} from "react";
-import Navbar from "./navbar";
+
 import {UserContext}from '../contexts/UserContext'
-import { Redirect } from "react-router-dom";
+
 
 function Dashboard(props){
   
