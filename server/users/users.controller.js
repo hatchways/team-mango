@@ -4,7 +4,6 @@ const userService = require("./user.service");
 const { body, validationResult, sanitizeParam } = require("express-validator");
 const verifyToken = require("../helpers/verifyToken");
 
-
 router.post(
   "/signup",
   [
@@ -35,7 +34,7 @@ router.post(
       .then(() => res.status(201).redirect(307, '/signin'))
       .catch((err) => next(err));
 
-
+      
   }
 );
 
@@ -48,7 +47,7 @@ router.post(
 
   function (req, res, next) {
 
-
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -62,7 +61,7 @@ router.post(
         user
           ? res.cookie("token", user.token,{
             expires: new Date(Date.now() + 10000000),
-            secure: false,
+            secure: false, 
             httpOnly: true,
           }
           ).json(user)

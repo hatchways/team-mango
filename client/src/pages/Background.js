@@ -71,14 +71,18 @@ const labels = { //array for Rating component
   3: "INTERMEDIATE",
   4: "SENIOR",
   5: "ADVANCED SENIOR",
-}
+};
 const details = { //array for Rating component
   1: "Do not have any experience on interviews",
   2: "Had one or two interviews before",
   3: "Had a few job interviews, but need more practice",
   4: "Had seven to twelve interviews before, and want to know more about interview skills",
   5: "Had more than twelve interviews before, and know much about interview skills",
-}
+};
+const selectLists = [
+  ["React", "JavaScript", "Node.js", "Angular", "Python"], 
+  ["Less than 1 year", "1 to 3 years", "4 to 6 years", "7 to 10 years", "More than 10 years"]
+];
 
 function Background(props){ //the function component for the background page is declared here
 
@@ -105,8 +109,13 @@ function Background(props){ //the function component for the background page is 
     setExperience(e.target.value);
   };
 
-    const { classes } = props; //classes property for styling is passed at the last line of this file
-    return (
+  const ItemList = (selectID)  => {  
+    return selectLists[selectID].map((item, i) => {
+      return <MenuItem key={i} value={item}>{item}</MenuItem>
+    });   
+  }    
+  const { classes } = props; //classes property for styling is passed at the last line of this file
+  return (
       <div className={classes.root}> {/*use classNmae instead of class in React. div is a HTML tag */}
         <Paper className={classes.paper} elevation={0}> {/*Paper and Grid are Material-UI components*/}
           <Grid container spacing={0}>
@@ -135,11 +144,7 @@ function Background(props){ //the function component for the background page is 
                         value={language}
                         onChange={languageChange}
                       > {/*Select component with five options. I will use "map" and array instead of following five lines*/}
-                        <MenuItem value={"React"}>React</MenuItem>
-                        <MenuItem value={"JavaScript"}>JavaScript</MenuItem>
-                        <MenuItem value={"Node.js"}>Node.js</MenuItem>
-                        <MenuItem value={"Angular"}>Angular</MenuItem>
-                        <MenuItem value={"Python"}>Python</MenuItem>
+                        {ItemList(0)} 
                       </Select>
                     </FormControl>
                     <Typography className={classes.question}>Years of professional experience:</Typography>
@@ -157,11 +162,7 @@ function Background(props){ //the function component for the background page is 
                         <MenuItem disabled value="">
                           Select your experience
                         </MenuItem>
-                        <MenuItem value={"<1"}>Less than 1 year</MenuItem>
-                        <MenuItem value={"1-3"}>1 to 3 years</MenuItem>
-                        <MenuItem value={"4-6"}>4 to 6 years</MenuItem>
-                        <MenuItem value={"7-10"}>7 to 10 years</MenuItem>
-                        <MenuItem value={">10"}>More than 10 years</MenuItem>
+                        {ItemList(1)}
                       </Select>
                     </FormControl>
                     <Typography className={classes.question}>What is your level at job interviews?</Typography>
