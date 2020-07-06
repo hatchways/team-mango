@@ -6,11 +6,9 @@ import {
   Paper,
   Button,
   Box,
-  TextField,
   Snackbar,
   FormControl,
   Select,
-  InputLabel,
   MenuItem,
 } from "@material-ui/core"; //Styled components from Material-UI/core
 import MuiAlert from "@material-ui/lab/Alert";
@@ -35,7 +33,6 @@ const backgroundStyle = (theme) => ({//styling for this page. It will be used wi
     border: 0,
   },
   image: {
-    //    width: '90vh',
     height: "100vh",
   },
   img: {
@@ -221,6 +218,5 @@ function Background(props){ //the function component for the background page is 
       </div>
     );
   }
-
 
 export default withStyles(backgroundStyle)(Background);
