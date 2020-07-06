@@ -70,7 +70,7 @@ const signUpStyle = (theme) => ({
   },
   continue: {
     backgroundColor: "#0000ff",
-//    color: "#ffffff",
+    //    color: "#ffffff",
     borderRadius: 35,
     marginTop: "1rem",
     paddingLeft: "1.5rem",
@@ -182,13 +182,13 @@ class SignUp extends Component {
 
       const res = fetch("/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: this.state.firstName,
           lastName: this.state.lastName,
           email: this.state.email,
           password: this.state.password,
-          confirmPassword: this.state.passwordConfirmed
+          confirmPassword: this.state.passwordConfirmed,
         }),
       })
         .then((response) => response.json())
@@ -199,7 +199,7 @@ class SignUp extends Component {
           console.error(error);
         });
 
-/*
+      /*
       axios
         .post("http://localhost:3001/signup", {
           first_name: this.state.firstName,
@@ -239,7 +239,11 @@ class SignUp extends Component {
           <Grid class="frame" container spacing={0}>
             <Grid item>
               <Grid class="image">
-                <img className={classes.img} alt="complex" src={(width < 680) ? pic2 : (width > 1100) ? pic1 : pic3}/>
+                <img
+                  className={classes.img}
+                  alt="complex"
+                  src={width < 680 ? pic2 : width > 1100 ? pic1 : pic3}
+                />
               </Grid>
             </Grid>
             <Grid className={classes.text} item xs={12} sm container>
@@ -313,7 +317,7 @@ class SignUp extends Component {
                       variant="contained"
                       className={classes.continue}
                       onClick={this.handleClick}
-                      color = "primary"
+                      color="primary"
                     >
                       CONTINUE
                     </Button>
