@@ -7,6 +7,8 @@ import {
   IconButton,
   Tab,
   Tabs,
+  Menu,
+  MenuItem,
 } from "@material-ui/core/";
 import { Link as RouterLink } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -30,6 +32,17 @@ const styles = (theme) => ({
 function Navbar(props) {
   const [value, setValue] = React.useState(0);
   const { user } = useContext(UserContext);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const logout = async (event) => {
+    let res = await fetch("/logout");
+    window.location.href = "/login";
+  };
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   if (user === null) {
     return <p>Loading profile...</p>;
   } else if (user === "failed to fetch") {
@@ -72,9 +85,17 @@ function Navbar(props) {
                 setValue(2);
               }}
             />
-            <IconButton color="contrast">
+            <IconButton color="contrast" onClick={handleMenu}>
               <AccountCircle />
             </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={logout}>Logout</MenuItem>
+            </Menu>
           </Tabs>
         </div>
         <Typography type="userName" color="inherit" variant="h6">
