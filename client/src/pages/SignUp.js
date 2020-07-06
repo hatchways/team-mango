@@ -28,32 +28,32 @@ const signUpStyle = (theme) => ({
     width: "Full",
     height: "100%",
     border: 0,
-  },  
+  },
   frame: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down("xs")]: {
       direction: "column",
     },
   },
   img: {
     margin: "auto",
     objectFit: "cover",
-    [theme.breakpoints.down('xs')]: {
-            width: "100%",
-            height: "300px",
-          },
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      height: "300px",
+    },
+    [theme.breakpoints.up("sm")]: {
       width: "300px",
       height: "100vh",
     },
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up("md")]: {
       width: "500px",
       height: "100vh",
     },
-    [theme.breakpoints.up('lg')]: {
+    [theme.breakpoints.up("lg")]: {
       width: "800px",
       height: "100vh",
     },
-    [theme.breakpoints.up('xl')]: {
+    [theme.breakpoints.up("xl")]: {
       width: "100px",
       height: "100vh",
     },
@@ -84,25 +84,33 @@ const signUpStyle = (theme) => ({
   },
 });
 
-function SignUp(props){
-      const [firstName, setFirstName] = useState('');
-      const [lastName, setLastName] = useState('');
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
-      const [passwordConfirmed, setPasswordConfirmed] = useState('');
-      const [openSnack, setOpenSnack] = useState(false);
-      const [severity, setSeverity] = useState('error');
-      const [firstNameMessage, setFirstNameMessage] = useState('First name is required!');
-      const [lastNameMessage, setLastNameMessage] = useState('Last name is required!');
-      const [emailMessage, setEmailMessage] = useState('Invalid email!');
-      const [passwordMessage, setPasswordMessage] = useState('Password needs 6 characters or more!');
-      const [passwordConfirmedMessage, setPasswordConfirmedMessage] = useState('Both passwords are needed to be the same!');
-      const [successMessage, setSuccessMessage] = useState('');
-      const [message, setMessage] = useState('Invalid email or password!');
-      console.log(props.location.pathname);
-    
+function SignUp(props) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmed, setPasswordConfirmed] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [severity, setSeverity] = useState("error");
+  const [firstNameMessage, setFirstNameMessage] = useState(
+    "First name is required!"
+  );
+  const [lastNameMessage, setLastNameMessage] = useState(
+    "Last name is required!"
+  );
+  const [emailMessage, setEmailMessage] = useState("Invalid email!");
+  const [passwordMessage, setPasswordMessage] = useState(
+    "Password needs 6 characters or more!"
+  );
+  const [passwordConfirmedMessage, setPasswordConfirmedMessage] = useState(
+    "Both passwords are needed to be the same!"
+  );
+  const [successMessage, setSuccessMessage] = useState("");
+  const [message, setMessage] = useState("Invalid email or password!");
+  console.log(props.location.pathname);
+
   const pathname = props.location.pathname;
-  const onChangeFirstName = e => {
+  const onChangeFirstName = (e) => {
     setFirstName(e.target.value);
   };
   const onChangeLastName = (e) => {
@@ -119,54 +127,61 @@ function SignUp(props){
   };
   const signIn = () => {
     props.history.push({
-      pathname: (props.location.pathname === "/signup") ? "/login" : "/signup",
+      pathname: props.location.pathname === "/signup" ? "/login" : "/signup",
       state: {},
     });
   };
   const handleClick = (e) => {
     e.preventDefault();
-    (pathname === "/signup") ? validation1(): validation2();
+    pathname === "/signup" ? validation1() : validation2();
     setOpenSnack(true);
   };
   async function validation1() {
-    await setFirstNameMessage((firstName === "") ? "First name is required!" : "");
-    
-    await setLastNameMessage((lastName === "") ? "Last name is required!" : "");
-    
-    await setEmailMessage((/^\S+@\S+\.\S+$/.test(email)) ? "" : "Invalid email!");
-    
-    await setPasswordMessage((password.length > 5) ? "" : "Password needs 6 characters or more!");
-    
-    await setPasswordConfirmedMessage((password === passwordConfirmed) ? "" : "Both passwords are needed to be the same!");
-    
+    await setFirstNameMessage(
+      firstName === "" ? "First name is required!" : ""
+    );
+
+    await setLastNameMessage(lastName === "" ? "Last name is required!" : "");
+
+    await setEmailMessage(/^\S+@\S+\.\S+$/.test(email) ? "" : "Invalid email!");
+
+    await setPasswordMessage(
+      password.length > 5 ? "" : "Password needs 6 characters or more!"
+    );
+
+    await setPasswordConfirmedMessage(
+      password === passwordConfirmed
+        ? ""
+        : "Both passwords are needed to be the same!"
+    );
+
     var success = false;
     if (
       firstName !== "" &&
       lastName !== "" &&
-      (/^\S+@\S+\.\S+$/.test(email)) &&
-      (password.length > 5) &&
-      (password === passwordConfirmed)
+      /^\S+@\S+\.\S+$/.test(email) &&
+      password.length > 5 &&
+      password === passwordConfirmed
     ) {
       success = true;
-    }
-    else {
+    } else {
       success = false;
     }
-    await setSeverity((success) ? "success" : "error");
-    await setSuccessMessage((success) ? "Sign up successfully!" : "");
-    
+    await setSeverity(success ? "success" : "error");
+    await setSuccessMessage(success ? "Sign up successfully!" : "");
+
     if (success === true) {
       //fetch here
 
       const res = fetch("http://localhost:3001/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: firstName,
           lastName: lastName,
           email: email,
           password: password,
-          confirmPassword: passwordConfirmed
+          confirmPassword: passwordConfirmed,
         }),
       })
         .then((response) => response.json())
@@ -201,9 +216,11 @@ function SignUp(props){
     if (true) {
       success = true;
     }
-    await setSeverity((success) ? "success" : "error");
-    await setMessage((success) ? "Sign in successfully!" : "Invalid email or password!");
-    
+    await setSeverity(success ? "success" : "error");
+    await setMessage(
+      success ? "Sign in successfully!" : "Invalid email or password!"
+    );
+
     if (success === true) {
     }
   }
@@ -215,170 +232,162 @@ function SignUp(props){
     setOpenSnack(false);
   };
 
-    const { classes } = props;
-    const question = (pathname === "/signup") ? "Already have an account?" : "Don't have an account?";
-    const buttonText = (pathname === "/signup") ? "SIGN IN" : "SIGN UP";
-    const textTitle = (pathname === "/signup") ? "Get started!" : "Sign In";
-    return (
-      <div className={classes.root}>
-        <Paper className={classes.paper} elevation={0}>
-          <Grid className={classes.frame} container spacing={0}>
-            <Grid item>
-              <Grid>
-                <img className={classes.img} alt="complex" src={pic1}/>
-              </Grid>
+  const { classes } = props;
+  const question =
+    pathname === "/signup"
+      ? "Already have an account?"
+      : "Don't have an account?";
+  const buttonText = pathname === "/signup" ? "SIGN IN" : "SIGN UP";
+  const textTitle = pathname === "/signup" ? "Get started!" : "Sign In";
+  return (
+    <div className={classes.root}>
+      <Paper className={classes.paper} elevation={0}>
+        <Grid className={classes.frame} container spacing={0}>
+          <Grid item>
+            <Grid>
+              <img className={classes.img} alt="complex" src={pic1} />
             </Grid>
-            <Grid className={classes.text} item xs={12} sm container>
-              <Grid item xs container direction="column" spacing={0}>
-                <Grid item xs>
-                  <Box display="flex" justifyContent="flex-end" m={1} p={1}>
-                    <a className={classes.account}>{question}</a>
-                    <Button
-                      variant="outlined"
-                      className={classes.button}
-                      onClick={signIn}
-                    >
-                      {buttonText}
-                    </Button>
-                  </Box>
-                  <Typography className={classes.start} variant="h3">
-                    {textTitle}
-                  </Typography>
-                  {(pathname === "/signup") ? 
-                  (
-                    <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
-                      <Typography>First name</Typography>
-                      <TextField
-                        className={classes.input}
-                        fullWidth
-                        placeholder="First name"
-                        type="first name"
-                        variant="outlined"
-                        value={firstName}
-                        onChange={onChangeFirstName}
-                      />
-                      <Typography>Last name</Typography>
-                      <TextField
-                        className={classes.input}
-                        fullWidth
-                        placeholder="Last name"
-                        type="last name"
-                        variant="outlined"
-                        value={lastName}
-                        onChange={onChangeLastName}
-                      />
-                      <Typography>Email address</Typography>
-                      <TextField
-                        className={classes.input}
-                        fullWidth
-                        placeholder="john@mail.com"
-                        type="email"
-                        variant="outlined"
-                        value={email}
-                        onChange={onChangeEmail}
-                      />
-                      <Typography>Password</Typography>
-                      <TextField
-                        className={classes.input}
-                        fullWidth
-                        placeholder="Password"
-                        type="password"
-                        variant="outlined"
-                        value={password}
-                        onChange={onChangePassword}
-                      />
-                      <Typography>Confirm password</Typography>
-                      <TextField
-                        className={classes.input}
-                        fullWidth
-                        placeholder="Confirm password"
-                        type="password"
-                        variant="outlined"
-                        value={passwordConfirmed}
-                        onChange={onChangePasswordConfirmed}
-                      />
-                      <Button
-                        variant="contained"
-                        className={classes.continue}
-                        onClick={handleClick}
-                        color = "primary"
-                      >
-                        CONTINUE
-                      </Button>
-                      <Snackbar
-                        open={openSnack}
-                        autoHideDuration={6000}
-                        onClose={handleClose}
-                      >
-                        <Alert
-                          onClose={handleClose}
-                          severity={severity}
-                        >
-                          <div>{firstNameMessage}</div>
-                          <div>{lastNameMessage}</div>
-                          <div>{emailMessage}</div>
-                          <div>{passwordMessage}</div>
-                          <div>{passwordConfirmedMessage}</div>
-                          <div>{successMessage}</div>
-                        </Alert>
-                      </Snackbar>
-                    </Grid>
-      )
-                :  
-                (
+          </Grid>
+          <Grid className={classes.text} item xs={12} sm container>
+            <Grid item xs container direction="column" spacing={0}>
+              <Grid item xs>
+                <Box display="flex" justifyContent="flex-end" m={1} p={1}>
+                  <a className={classes.account}>{question}</a>
+                  <Button
+                    variant="outlined"
+                    className={classes.button}
+                    onClick={signIn}
+                  >
+                    {buttonText}
+                  </Button>
+                </Box>
+                <Typography className={classes.start} variant="h3">
+                  {textTitle}
+                </Typography>
+                {pathname === "/signup" ? (
                   <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
-                                <Typography>Email address</Typography>
-                                <TextField
-                                  className={classes.input}
-                                  fullWidth
-                                  placeholder="john@mail.com"
-                                  type="email"
-                                  variant="outlined"
-                                  value={email}
-                                  onChange={onChangeEmail}
-                                />
-                                <Typography>Password</Typography>
-                                <TextField
-                                  className={classes.input}
-                                  fullWidth
-                                  placeholder="Password"
-                                  type="password"
-                                  variant="outlined"
-                                  value={password}
-                                  onChange={onChangePassword}
-                                />
-                                <Typography>Forgot password?</Typography>
-                                <Button
-                                  variant="contained"
-                                  className={classes.continue}
-                                  onClick={handleClick}
-                                  color = "primary"
-                                >
-                                  CONTINUE
-                                </Button>
-                                <Snackbar
-                                  open={openSnack}
-                                  autoHideDuration={6000}
-                                  onClose={handleClose}
-                                >
-                                  <Alert
-                                    onClose={handleClose}
-                                    severity={severity}
-                                  >
-                                    <div>{message}</div>
-                                  </Alert>
-                                </Snackbar>
-                              </Grid>
-                )
-                }                  
-                </Grid>
+                    <Typography>First name</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="First name"
+                      type="first name"
+                      variant="outlined"
+                      value={firstName}
+                      onChange={onChangeFirstName}
+                    />
+                    <Typography>Last name</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="Last name"
+                      type="last name"
+                      variant="outlined"
+                      value={lastName}
+                      onChange={onChangeLastName}
+                    />
+                    <Typography>Email address</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="john@mail.com"
+                      type="email"
+                      variant="outlined"
+                      value={email}
+                      onChange={onChangeEmail}
+                    />
+                    <Typography>Password</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="Password"
+                      type="password"
+                      variant="outlined"
+                      value={password}
+                      onChange={onChangePassword}
+                    />
+                    <Typography>Confirm password</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="Confirm password"
+                      type="password"
+                      variant="outlined"
+                      value={passwordConfirmed}
+                      onChange={onChangePasswordConfirmed}
+                    />
+                    <Button
+                      variant="contained"
+                      className={classes.continue}
+                      onClick={handleClick}
+                      color="primary"
+                    >
+                      CONTINUE
+                    </Button>
+                    <Snackbar
+                      open={openSnack}
+                      autoHideDuration={6000}
+                      onClose={handleClose}
+                    >
+                      <Alert onClose={handleClose} severity={severity}>
+                        <div>{firstNameMessage}</div>
+                        <div>{lastNameMessage}</div>
+                        <div>{emailMessage}</div>
+                        <div>{passwordMessage}</div>
+                        <div>{passwordConfirmedMessage}</div>
+                        <div>{successMessage}</div>
+                      </Alert>
+                    </Snackbar>
+                  </Grid>
+                ) : (
+                  <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
+                    <Typography>Email address</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="john@mail.com"
+                      type="email"
+                      variant="outlined"
+                      value={email}
+                      onChange={onChangeEmail}
+                    />
+                    <Typography>Password</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="Password"
+                      type="password"
+                      variant="outlined"
+                      value={password}
+                      onChange={onChangePassword}
+                    />
+                    <Typography>Forgot password?</Typography>
+                    <Button
+                      variant="contained"
+                      className={classes.continue}
+                      onClick={handleClick}
+                      color="primary"
+                    >
+                      CONTINUE
+                    </Button>
+                    <Snackbar
+                      open={openSnack}
+                      autoHideDuration={6000}
+                      onClose={handleClose}
+                    >
+                      <Alert onClose={handleClose} severity={severity}>
+                        <div>{message}</div>
+                      </Alert>
+                    </Snackbar>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           </Grid>
-        </Paper>
-      </div>
-    );
-  }
-
+        </Grid>
+      </Paper>
+    </div>
+  );
+}
 
 export default withStyles(signUpStyle)(SignUp);
