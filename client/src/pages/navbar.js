@@ -1,4 +1,4 @@
-import React, {Component, useContext, useEffect, useState} from 'react'
+import React, {Component, useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import {NewUserContext} from '../App';
@@ -8,7 +8,7 @@ import FAQ from './faq';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {UserContext}from '../contexts/UserContext'
-import { BrowserRouter, Route, Switch} from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
 import Dashboard from './Dashboard';
 import Faq from './faq';
 import Blog from './Blog';
@@ -36,7 +36,10 @@ function Navbar (props) {
   const  {user} = useContext(UserContext);
   if(user === null){
     return <p>Loading profile...</p>;
-  }  return (
+  } else if(user==="failed to fetch"){
+    
+    return <Redirect to="/login" />;
+    }return (
   
       <AppBar position="static"  color="white" width="100%">
      

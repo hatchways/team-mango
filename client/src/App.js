@@ -28,13 +28,24 @@ function App() {
     [user, setUser]
   );
 
+  function handleErrors(response) {
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+    return response;
+}
 
-
+  
 
   useEffect(() => {
     async function getUser() {
-      fetch("/auth/verify").then(response => response.json()).then((data) => {let user = data; setUser(user);},
-          (error) => { let user = {}; setUser(user) })}
+      
+      fetch("/auth/verify")
+      .then(handleErrors)
+      .then(response => response.json())
+      .then((data) => {let user = data; setUser(user);})
+      .catch(function(error){ let user = "failed to fetch"; setUser(user)})
+    }
     getUser();
   
   },[]);
