@@ -13,6 +13,7 @@ import "./App.css";
 import { UserContext } from "./contexts/UserContext";
 import Blog from "./pages/Blog";
 
+
 function App() {
   const [user, setUser] = useState(null);
 
@@ -69,8 +70,7 @@ function App() {
         </BrowserRouter>
       </MuiThemeProvider>
     </UserContext.Provider>
-  );
-}
+
 
 export default App;
 
