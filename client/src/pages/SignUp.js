@@ -85,7 +85,6 @@ const signUpStyle = (theme) => ({
 });
 
 function SignUp(props) {
-//  const [isLoggedIn, setLoggedIn] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -189,8 +188,7 @@ function SignUp(props) {
         .then((response) => response.json())
         .then((responseJson) => {
           if ("token" in responseJson) {
-            setUser(responseJson); 
-//            setLoggedIn(true);
+            setUser(responseJson);
             props.history.push({
               pathname: "/background",
               state: {},
@@ -227,8 +225,7 @@ function SignUp(props) {
       .then((responseJson) => {
         console.log(responseJson);
         if ("token" in responseJson) {
-          setUser(responseJson); 
-//          setLoggedIn(true);
+          setUser(responseJson);
           props.history.push({
             pathname: "/background",
             state: {},

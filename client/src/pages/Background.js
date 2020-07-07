@@ -15,7 +15,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Rating from "@material-ui/lab/Rating"; //Some components from Material-UI/lab
 import { withStyles } from "@material-ui/core/styles"; //Hook from Material-UI for styles
 import { Route, Link } from "react-router-dom"; //components for routing to other pages
-//import { useAuth } from "../contexts/UserContext";
 import { UserContext } from "../contexts/UserContext";
 
 function Alert(props) {
@@ -95,7 +94,7 @@ const selectLists = [
 
 function Background(props) {
   //the function component for the background page is declared here
-  const { user, setUser} = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   console.log(user);
   const [openSnack, setOpenSnack] = useState(false); //openSnack is one of the states. setOpenSnack is its method to change it. False is default value.
   const [severity, setSeverity] = useState("error");
@@ -112,37 +111,20 @@ function Background(props) {
       user.backgroundCompleted = true;
       setUser(user);
       console.log(user);
-          //fetch here
-    const res = fetch("/" + user.id, {
-      method: "put",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-    })
-      .then((response) => response.json())
-      /*
-      .then((responseJson) => {
-        console.log(responseJson);
-        if ("token" in responseJson) {
-          setAuthTokens(responseJson); 
-          setLoggedIn(true);
-          props.history.push({
-            pathname: "/background",
-            state: {},
-          });
-        } else if ("message" in responseJson) {
-          setMessage(responseJson.message);
-          setSeverity("error");
-        } else if ("errors" in responseJson) {
-          setMessage(
-            responseJson.errors[0].param + ": " + responseJson.errors[0].msg
-          );
-          setSeverity("error");
-        }
+      //fetch here
+      const res = fetch("/" + user.id, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
       })
-      */
-      .catch((error) => {
-        console.error(error);
-      });
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log(responseJson);
+          return responseJson;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
   const handleClose = (event, reason) => {

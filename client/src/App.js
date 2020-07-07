@@ -3,7 +3,6 @@ import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { Redirect } from "react-router";
 import PrivateRoute from "./PrivateRoute";
-//import { AuthContext } from "./context/auth";
 import { UserContext } from "./contexts/UserContext";
 
 import { theme } from "./themes/theme";
@@ -13,7 +12,6 @@ import Background from "./pages/Background";
 import "./App.css";
 
 function App(props) {
-  //const existingTokens = JSON.parse(localStorage.getItem("tokens"));
   const [user, setUser] = useState(null);
 
   const value = useMemo(
@@ -23,11 +21,6 @@ function App(props) {
     }),
     [user, setUser]
   );
-  /*
-  const setTokens = (data) => {
-    localStorage.setItem("tokens", JSON.stringify(data));
-    setAuthTokens(data);
-  };*/
 
   function handleErrors(response) {
     if (!response.ok) {
