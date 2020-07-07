@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   Typography,
   Grid,
@@ -11,7 +10,8 @@ import {
 } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
-import { Route, Link } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
+import { useAuth } from "../context/auth";
 import pic1 from "../assets/pic1.png";
 
 function Alert(props) {
@@ -85,6 +85,7 @@ const signUpStyle = (theme) => ({
 });
 
 function SignUp(props) {
+  const [isLoggedIn, setLoggedIn] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -93,10 +94,10 @@ function SignUp(props) {
   const [openSnack, setOpenSnack] = useState(false);
   const [severity, setSeverity] = useState("error");
   const [firstNameMessage, setFirstNameMessage] = useState(
-    "First name is required!"
+    "First name requires at least 3 characters!"
   );
   const [lastNameMessage, setLastNameMessage] = useState(
-    "Last name is required!"
+    "Last name requires at least 3 characters!"
   );
   const [emailMessage, setEmailMessage] = useState("Invalid email!");
   const [passwordMessage, setPasswordMessage] = useState(
@@ -107,7 +108,8 @@ function SignUp(props) {
   );
   const [successMessage, setSuccessMessage] = useState("");
   const [message, setMessage] = useState("Invalid email or password!");
-  console.log(props.location.pathname);
+  const [user, setUser] = useState([]);
+  const { setAuthTokens } = useAuth();
 
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
@@ -138,11 +140,12 @@ function SignUp(props) {
   };
   async function validation1() {
     await setFirstNameMessage(
-      firstName === "" ? "First name is required!" : ""
+      firstName.length < 3 ? "First name requires at least 3 characters!" : ""
     );
 
-    await setLastNameMessage(lastName === "" ? "Last name is required!" : "");
-
+    await setLastNameMessage(
+      lastName.length < 3 ? "Last name requires at least 3 characters!" : ""
+    );
     await setEmailMessage(/^\S+@\S+\.\S+$/.test(email) ? "" : "Invalid email!");
 
     await setPasswordMessage(
@@ -173,7 +176,7 @@ function SignUp(props) {
     if (success === true) {
       //fetch here
 
-      const res = fetch("http://localhost:3001/signup", {
+      const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -186,7 +189,25 @@ function SignUp(props) {
       })
         .then((response) => response.json())
         .then((responseJson) => {
-          return responseJson.errors;
+          if ("token" in responseJson) {
+            setUser(responseJson); //may remove after auth
+            setAuthTokens(responseJson); //remove token to become user
+            setLoggedIn(true);
+            props.history.push({
+              pathname: "/background",
+              state: {},
+            });
+          } else if ("error" in responseJson) {
+            setEmailMessage(responseJson.error);
+            setSuccessMessage("");
+            setSeverity("error");
+          } else if ("errors" in responseJson) {
+            setEmailMessage(
+              responseJson.errors[0].param + ": " + responseJson.errors[0].msg
+            );
+            setSuccessMessage("");
+            setSeverity("error");
+          }
         })
         .catch((error) => {
           console.error(error);
@@ -196,33 +217,38 @@ function SignUp(props) {
 
   async function validation2() {
     //fetch here
-    const res = fetch("/signin", {
+    const res = await fetch("/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
-      body: {
+      body: JSON.stringify({
         email: email,
         password: password,
-      },
+      }),
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        return responseJson.cookie;
+        console.log(responseJson);
+        if ("token" in responseJson) {
+          setUser(responseJson); //may remove after
+          setAuthTokens(responseJson); //remove token to become user
+          setLoggedIn(true);
+          props.history.push({
+            pathname: "/background",
+            state: {},
+          });
+        } else if ("message" in responseJson) {
+          setMessage(responseJson.message);
+          setSeverity("error");
+        } else if ("errors" in responseJson) {
+          setMessage(
+            responseJson.errors[0].param + ": " + responseJson.errors[0].msg
+          );
+          setSeverity("error");
+        }
       })
       .catch((error) => {
         console.error(error);
       });
-
-    var success = false;
-    if (true) {
-      success = true;
-    }
-    await setSeverity(success ? "success" : "error");
-    await setMessage(
-      success ? "Sign in successfully!" : "Invalid email or password!"
-    );
-
-    if (success === true) {
-    }
   }
 
   const handleClose = (event, reason) => {

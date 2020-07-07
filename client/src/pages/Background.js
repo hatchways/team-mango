@@ -15,6 +15,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Rating from "@material-ui/lab/Rating"; //Some components from Material-UI/lab
 import { withStyles } from "@material-ui/core/styles"; //Hook from Material-UI for styles
 import { Route, Link } from "react-router-dom"; //components for routing to other pages
+import { useAuth } from "../context/auth";
 
 function Alert(props) {
   //MuiAlert is a standard original component from Material-UI. Alert is a styled one with following properties
@@ -93,7 +94,8 @@ const selectLists = [
 
 function Background(props) {
   //the function component for the background page is declared here
-
+  const { authTokens } = useAuth();
+  console.log(authTokens);
   const [openSnack, setOpenSnack] = useState(false); //openSnack is one of the states. setOpenSnack is its method to change it. False is default value.
   const [severity, setSeverity] = useState("error");
   const [language, setLanguage] = useState("React");
