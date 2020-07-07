@@ -4,7 +4,8 @@ const Question = db.Question;
 const Interview = db.Interview;
 
 module.exports = {
-    findARandomQuestionByDifficulty
+    findARandomQuestionByDifficulty,
+    getQuestionById
 }
 
 async function findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs) {
@@ -27,4 +28,9 @@ async function findARandomQuestionByDifficulty(difficulty, excludedQuestionIDs) 
     } while (randomQuestion == null);
 
     return randomQuestion;
+}
+
+async function getQuestionById(id) {
+    const question = await Question.findById(id).catch(err => { throw Error('Could not find a question with that id') });
+    return question;
 }
