@@ -77,6 +77,8 @@ const signUpStyle = (theme) => ({
     margin: ".5rem 0rem 1rem 0rem",
   },
   continue: {
+
+    backgroundColor: "#0000ff",
     borderRadius: 35,
     margin: "1rem 0rem 0rem 0rem",
     padding: ".5rem 1.5rem .5rem 1.5rem",
@@ -180,6 +182,7 @@ function SignUp(props) {
           email: email,
           password: password,
           confirmPassword: passwordConfirmed,
+
         }),
       })
         .then((response) => response.json())
@@ -207,6 +210,7 @@ function SignUp(props) {
     }
   }
 
+
   async function validation2() {
     //fetch here
     const res = await fetch("/signin", {
@@ -224,6 +228,7 @@ function SignUp(props) {
           props.history.push({
             pathname: "/background",
             state: {},
+
           });
         } else if ("message" in responseJson) {
           setMessage(responseJson.message);
@@ -246,6 +251,7 @@ function SignUp(props) {
     }
     setOpenSnack(false);
   };
+
 
   const { classes } = props;
   const question =
