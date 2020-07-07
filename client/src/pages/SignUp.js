@@ -11,7 +11,6 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 import { Redirect, Link } from "react-router-dom";
-import { UserContext } from "../contexts/UserContext";
 import pic1 from "../assets/pic1.png";
 
 function Alert(props) {
@@ -107,7 +106,6 @@ function SignUp(props) {
   );
   const [successMessage, setSuccessMessage] = useState("");
   const [message, setMessage] = useState("Invalid email or password!");
-  const { user, setUser } = useContext(UserContext);
 
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
@@ -173,18 +171,6 @@ function SignUp(props) {
 
     if (success === true) {
       //fetch here
-
-<<<<<<< HEAD
-      const res = fetch("/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json"},
-        body: JSON.stringify({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          email: this.state.email,
-          password: this.state.password,
-          confirmPassword: this.state.passwordConfirmed
-=======
       const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,13 +180,11 @@ function SignUp(props) {
           email: email,
           password: password,
           confirmPassword: passwordConfirmed,
->>>>>>> 994a8233b29f2ede956a3935c1bad4d9f36d98fc
         }),
       })
         .then((response) => response.json())
         .then((responseJson) => {
           if ("token" in responseJson) {
-            setUser(responseJson);
             props.history.push({
               pathname: "/background",
               state: {},
@@ -237,7 +221,6 @@ function SignUp(props) {
       .then((responseJson) => {
         console.log(responseJson);
         if ("token" in responseJson) {
-          setUser(responseJson);
           props.history.push({
             pathname: "/background",
             state: {},
