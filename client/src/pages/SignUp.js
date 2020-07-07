@@ -1,6 +1,4 @@
-import React, { Component } from "react";
-import axios from "axios";
-
+import React, { useState, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -12,16 +10,13 @@ import {
 } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
-import { Route, Link } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 import pic1 from "../assets/pic1.png";
-import pic2 from "../assets/pic2.png";
-import pic3 from "../assets/pic3.png";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-const width = window.innerWidth;
-//src={pic1}
 const signUpStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -34,152 +29,152 @@ const signUpStyle = (theme) => ({
     height: "100%",
     border: 0,
   },
-  image: {
-    //    width: '100',
-    height: "100vh",
+  frame: {
+    [theme.breakpoints.down("xs")]: {
+      direction: "column",
+    },
   },
   img: {
     margin: "auto",
-    display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%",
+    objectFit: "cover",
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      height: "300px",
+    },
+    [theme.breakpoints.up("sm")]: {
+      width: "300px",
+      height: "100vh",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "500px",
+      height: "100vh",
+    },
+    [theme.breakpoints.up("lg")]: {
+      width: "800px",
+      height: "100vh",
+    },
+    [theme.breakpoints.up("xl")]: {
+      width: "100px",
+      height: "100vh",
+    },
   },
   text: {
-    paddingTop: "0.5rem",
-    paddingLeft: "5%",
-    paddingRight: "5%",
+    padding: ".5rem 5% .5rem 5%",
   },
   account: {
     paddingTop: "0.5rem",
   },
   button: {
     borderRadius: 35,
-    marginLeft: "1rem",
-    marginRight: "0rem",
-    marginBottom: "2rem",
-    paddingLeft: "1.5rem",
-    paddingRight: "1.5rem",
-    minWidth: "6rem",
+    margin: "0rem 0rem 2rem 1rem",
+    padding: ".5rem 1.5rem .5rem 1.5rem",
+    minWidth: "6.3rem",
   },
   start: {
     paddingBottom: "1.5rem",
+    fontFamily: "Open Sans",
   },
   input: {
-    marginTop: "0.5rem",
-    marginBottom: "1rem",
+    margin: ".5rem 0rem 1rem 0rem",
   },
   continue: {
-    backgroundColor: "#0000ff",
-//    color: "#ffffff",
     borderRadius: 35,
-    marginTop: "1rem",
-    paddingLeft: "1.5rem",
-    paddingRight: "1.5rem",
+    margin: "1rem 0rem 0rem 0rem",
+    padding: ".5rem 1.5rem .5rem 1.5rem",
   },
 });
 
-class SignUp extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      passwordConfirmed: "",
-      openSnack: false,
-      severity: "error",
-      firstNameMessage: "First name is required!",
-      lastNameMessage: "Last name is required!",
-      emailMessage: "Invalid email!",
-      passwordMessage: "Password needs 6 characters or more!",
-      passwordConfirmedMessage: "Both passwords are needed to be the same!",
-      successMessage: "",
-    };
-  }
+function SignUp(props) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmed, setPasswordConfirmed] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [severity, setSeverity] = useState("error");
+  const [firstNameMessage, setFirstNameMessage] = useState(
+    "First name requires at least 3 characters!"
+  );
+  const [lastNameMessage, setLastNameMessage] = useState(
+    "Last name requires at least 3 characters!"
+  );
+  const [emailMessage, setEmailMessage] = useState("Invalid email!");
+  const [passwordMessage, setPasswordMessage] = useState(
+    "Password needs 6 characters or more!"
+  );
+  const [passwordConfirmedMessage, setPasswordConfirmedMessage] = useState(
+    "Both passwords are needed to be the same!"
+  );
+  const [successMessage, setSuccessMessage] = useState("");
+  const [message, setMessage] = useState("Invalid email or password!");
+  const { user, setUser } = useContext(UserContext);
 
-  componentDidMount() {
-    fetch("/welcome")
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200) return res.json();
-        else throw Error("Couldn't connect to the server");
-      })
-      .then((res) => {})
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
-  onChangeFirstName = (e) => {
-    this.setState({ firstName: e.target.value });
+  const pathname = props.location.pathname;
+  const onChangeFirstName = (e) => {
+    setFirstName(e.target.value);
   };
-  onChangeLastName = (e) => {
-    this.setState({ lastName: e.target.value });
+  const onChangeLastName = (e) => {
+    setLastName(e.target.value);
   };
-  onChangeEmail = (e) => {
-    this.setState({ email: e.target.value });
+  const onChangeEmail = (e) => {
+    setEmail(e.target.value);
   };
-  onChangePassword = (e) => {
-    this.setState({ password: e.target.value });
+  const onChangePassword = (e) => {
+    setPassword(e.target.value);
   };
-  onChangePasswordConfirmed = (e) => {
-    this.setState({ passwordConfirmed: e.target.value });
+  const onChangePasswordConfirmed = (e) => {
+    setPasswordConfirmed(e.target.value);
   };
-  signIn = () => {
-    this.props.history.push({
-      pathname: "/login",
+  const signIn = () => {
+    props.history.push({
+      pathname: props.location.pathname === "/signup" ? "/login" : "/signup",
       state: {},
     });
   };
-  handleClick = (e) => {
+  const handleClick = (e) => {
     e.preventDefault();
-    this.validation();
-    this.setState({ openSnack: true });
+    pathname === "/signup" ? validation1() : validation2();
+    setOpenSnack(true);
   };
-  async validation() {
-    await this.setState({
-      firstNameMessage:
-        this.state.firstName === "" ? "First name is required!" : "",
-    });
-    await this.setState({
-      lastNameMessage:
-        this.state.lastName === "" ? "Last name is required!" : "",
-    });
-    await this.setState({
-      emailMessage: /^\S+@\S+\.\S+$/.test(this.state.email)
+  async function validation1() {
+    await setFirstNameMessage(
+      firstName.length < 3 ? "First name requires at least 3 characters!" : ""
+    );
+
+    await setLastNameMessage(
+      lastName.length < 3 ? "Last name requires at least 3 characters!" : ""
+    );
+    await setEmailMessage(/^\S+@\S+\.\S+$/.test(email) ? "" : "Invalid email!");
+
+    await setPasswordMessage(
+      password.length > 5 ? "" : "Password needs 6 characters or more!"
+    );
+
+    await setPasswordConfirmedMessage(
+      password === passwordConfirmed
         ? ""
-        : "Invalid email!",
-    });
-    await this.setState({
-      passwordMessage:
-        this.state.password.length > 5
-          ? ""
-          : "Password needs 6 characters or more!",
-    });
-    await this.setState({
-      passwordConfirmedMessage:
-        this.state.password === this.state.passwordConfirmed
-          ? ""
-          : "Both passwords are needed to be the same!",
-    });
+        : "Both passwords are needed to be the same!"
+    );
+
     var success = false;
     if (
-      this.state.firstNameMessage === "" &&
-      this.state.lastNameMessage === "" &&
-      this.state.emailMessage === "" &&
-      this.state.passwordMessage === "" &&
-      this.state.passwordConfirmedMessage === ""
+      firstName !== "" &&
+      lastName !== "" &&
+      /^\S+@\S+\.\S+$/.test(email) &&
+      password.length > 5 &&
+      password === passwordConfirmed
     ) {
       success = true;
+    } else {
+      success = false;
     }
-    await this.setState({
-      severity: success ? "success" : "error",
-      successMessage: success ? "Sign up successfully!" : "",
-    });
+    await setSeverity(success ? "success" : "error");
+    await setSuccessMessage(success ? "Sign up successfully!" : "");
+
     if (success === true) {
       //fetch here
 
+<<<<<<< HEAD
       const res = fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json"},
@@ -189,75 +184,119 @@ class SignUp extends Component {
           email: this.state.email,
           password: this.state.password,
           confirmPassword: this.state.passwordConfirmed
+=======
+      const res = await fetch("/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+          confirmPassword: passwordConfirmed,
+>>>>>>> 994a8233b29f2ede956a3935c1bad4d9f36d98fc
         }),
       })
         .then((response) => response.json())
         .then((responseJson) => {
-          return responseJson.errors;
+          if ("token" in responseJson) {
+            setUser(responseJson);
+            props.history.push({
+              pathname: "/background",
+              state: {},
+            });
+          } else if ("error" in responseJson) {
+            setEmailMessage(responseJson.error);
+            setSuccessMessage("");
+            setSeverity("error");
+          } else if ("errors" in responseJson) {
+            setEmailMessage(
+              responseJson.errors[0].param + ": " + responseJson.errors[0].msg
+            );
+            setSuccessMessage("");
+            setSeverity("error");
+          }
         })
         .catch((error) => {
           console.error(error);
         });
-
-/*
-      axios
-        .post("http://localhost:3001/signup", {
-          first_name: this.state.firstName,
-          last_name: this.state.lastName,
-          email: this.state.email,
-          password: this.state.password,
-          confirmPassword: this.state.passwordConfirmed
-        })
-        .then((response) => {
-          this.setState(
-            {
-              //      successMessage: response.data.msg
-              successMessage: response.status,
-            },
-            () => {}
-          )
-          .catch(function (error) {
-            console.log(error);
-          });
-        });
-        */
     }
   }
 
-  handleClose = (event, reason) => {
+  async function validation2() {
+    //fetch here
+    const res = await fetch("/signin", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        if ("token" in responseJson) {
+          setUser(responseJson);
+          props.history.push({
+            pathname: "/background",
+            state: {},
+          });
+        } else if ("message" in responseJson) {
+          setMessage(responseJson.message);
+          setSeverity("error");
+        } else if ("errors" in responseJson) {
+          setMessage(
+            responseJson.errors[0].param + ": " + responseJson.errors[0].msg
+          );
+          setSeverity("error");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    this.setState({ openSnack: false });
+    setOpenSnack(false);
   };
 
-  render() {
-    const { classes } = this.props;
-    return (
-      <div className={classes.root}>
-        <Paper className={classes.paper} elevation={0}>
-          <Grid class="frame" container spacing={0}>
-            <Grid item>
-              <Grid class="image">
-                <img className={classes.img} alt="complex" src={(width < 680) ? pic2 : (width > 1100) ? pic1 : pic3}/>
-              </Grid>
+  const { classes } = props;
+  const question =
+    pathname === "/signup"
+      ? "Already have an account?"
+      : "Don't have an account?";
+  const buttonText = pathname === "/signup" ? "SIGN IN" : "SIGN UP";
+  const textTitle = pathname === "/signup" ? "Get started!" : "Sign In";
+  return (
+    <div className={classes.root}>
+      <Paper className={classes.paper} elevation={0}>
+        <Grid className={classes.frame} container spacing={0}>
+          <Grid item>
+            <Grid>
+              <img className={classes.img} alt="complex" src={pic1} />
             </Grid>
-            <Grid className={classes.text} item xs={12} sm container>
-              <Grid item xs container direction="column" spacing={0}>
-                <Grid item xs>
-                  <Box display="flex" justifyContent="flex-end" m={1} p={1}>
-                    <a className={classes.account}>Already have an account?</a>
-                    <Button
-                      variant="outlined"
-                      className={classes.button}
-                      onClick={this.signIn}
-                    >
-                      SIGN IN
-                    </Button>
-                  </Box>
-                  <Typography className={classes.start} variant="h3">
-                    Get started!
-                  </Typography>
+          </Grid>
+          <Grid className={classes.text} item xs={12} sm container>
+            <Grid item xs container direction="column" spacing={0}>
+              <Grid item xs>
+                <Box display="flex" justifyContent="flex-end" m={1} p={1}>
+                  <a className={classes.account}>{question}</a>
+                  <Button
+                    variant="outlined"
+                    className={classes.button}
+                    onClick={signIn}
+                  >
+                    {buttonText}
+                  </Button>
+                </Box>
+                <Typography className={classes.start} variant="h3">
+                  {textTitle}
+                </Typography>
+                {pathname === "/signup" ? (
                   <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
                     <Typography>First name</Typography>
                     <TextField
@@ -266,8 +305,8 @@ class SignUp extends Component {
                       placeholder="First name"
                       type="first name"
                       variant="outlined"
-                      value={this.state.firstName}
-                      onChange={this.onChangeFirstName}
+                      value={firstName}
+                      onChange={onChangeFirstName}
                     />
                     <Typography>Last name</Typography>
                     <TextField
@@ -276,8 +315,8 @@ class SignUp extends Component {
                       placeholder="Last name"
                       type="last name"
                       variant="outlined"
-                      value={this.state.lastName}
-                      onChange={this.onChangeLastName}
+                      value={lastName}
+                      onChange={onChangeLastName}
                     />
                     <Typography>Email address</Typography>
                     <TextField
@@ -286,8 +325,8 @@ class SignUp extends Component {
                       placeholder="john@mail.com"
                       type="email"
                       variant="outlined"
-                      value={this.state.email}
-                      onChange={this.onChangeEmail}
+                      value={email}
+                      onChange={onChangeEmail}
                     />
                     <Typography>Password</Typography>
                     <TextField
@@ -296,8 +335,8 @@ class SignUp extends Component {
                       placeholder="Password"
                       type="password"
                       variant="outlined"
-                      value={this.state.password}
-                      onChange={this.onChangePassword}
+                      value={password}
+                      onChange={onChangePassword}
                     />
                     <Typography>Confirm password</Typography>
                     <TextField
@@ -306,43 +345,81 @@ class SignUp extends Component {
                       placeholder="Confirm password"
                       type="password"
                       variant="outlined"
-                      value={this.state.passwordConfirmed}
-                      onChange={this.onChangePasswordConfirmed}
+                      value={passwordConfirmed}
+                      onChange={onChangePasswordConfirmed}
                     />
                     <Button
                       variant="contained"
                       className={classes.continue}
-                      onClick={this.handleClick}
-                      color = "primary"
+                      onClick={handleClick}
+                      color="primary"
                     >
                       CONTINUE
                     </Button>
                     <Snackbar
-                      open={this.state.openSnack}
+                      open={openSnack}
                       autoHideDuration={6000}
-                      onClose={this.handleClose}
+                      onClose={handleClose}
                     >
-                      <Alert
-                        onClose={this.handleClose}
-                        severity={this.state.severity}
-                      >
-                        <div>{this.state.firstNameMessage}</div>
-                        <div>{this.state.lastNameMessage}</div>
-                        <div>{this.state.emailMessage}</div>
-                        <div>{this.state.passwordMessage}</div>
-                        <div>{this.state.passwordConfirmedMessage}</div>
-                        <div>{this.state.successMessage}</div>
+                      <Alert onClose={handleClose} severity={severity}>
+                        <div>{firstNameMessage}</div>
+                        <div>{lastNameMessage}</div>
+                        <div>{emailMessage}</div>
+                        <div>{passwordMessage}</div>
+                        <div>{passwordConfirmedMessage}</div>
+                        <div>{successMessage}</div>
                       </Alert>
                     </Snackbar>
                   </Grid>
-                </Grid>
+                ) : (
+                  <Grid item xs={12} sm={12} md={12} lg={10} xl={9}>
+                    <Typography>Email address</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="john@mail.com"
+                      type="email"
+                      variant="outlined"
+                      value={email}
+                      onChange={onChangeEmail}
+                    />
+                    <Typography>Password</Typography>
+                    <TextField
+                      className={classes.input}
+                      fullWidth
+                      placeholder="Password"
+                      type="password"
+                      variant="outlined"
+                      value={password}
+                      onChange={onChangePassword}
+                    />
+                    <Typography>Forgot password?</Typography>
+                    <Button
+                      variant="contained"
+                      className={classes.continue}
+                      onClick={handleClick}
+                      color="primary"
+                    >
+                      CONTINUE
+                    </Button>
+                    <Snackbar
+                      open={openSnack}
+                      autoHideDuration={6000}
+                      onClose={handleClose}
+                    >
+                      <Alert onClose={handleClose} severity={severity}>
+                        <div>{message}</div>
+                      </Alert>
+                    </Snackbar>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           </Grid>
-        </Paper>
-      </div>
-    );
-  }
+        </Grid>
+      </Paper>
+    </div>
+  );
 }
 
 export default withStyles(signUpStyle)(SignUp);

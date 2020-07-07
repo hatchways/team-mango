@@ -20,8 +20,14 @@ let UserSchema = new Schema({
     },
     createdDate: { 
         type: Date,
-         default: Date.now
-    }
+        default: Date.now
+    },
+    backgroundCompleted: {
+        type: Boolean,
+        default: false
+    },
+    interviews: [{ type: Schema.Types.ObjectId, ref: 'Interview' }],
+    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }]
 });
 
 UserSchema
