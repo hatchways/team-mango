@@ -108,7 +108,6 @@ function SignUp(props) {
   );
   const [successMessage, setSuccessMessage] = useState("");
   const [message, setMessage] = useState("Invalid email or password!");
-  const [user, setUser] = useState([]);
   const { setAuthTokens } = useAuth();
 
   const pathname = props.location.pathname;
@@ -190,8 +189,7 @@ function SignUp(props) {
         .then((response) => response.json())
         .then((responseJson) => {
           if ("token" in responseJson) {
-            setUser(responseJson); //may remove after auth
-            setAuthTokens(responseJson); //remove token to become user
+            setAuthTokens(responseJson); 
             setLoggedIn(true);
             props.history.push({
               pathname: "/background",
@@ -229,8 +227,7 @@ function SignUp(props) {
       .then((responseJson) => {
         console.log(responseJson);
         if ("token" in responseJson) {
-          setUser(responseJson); //may remove after
-          setAuthTokens(responseJson); //remove token to become user
+          setAuthTokens(responseJson); 
           setLoggedIn(true);
           props.history.push({
             pathname: "/background",

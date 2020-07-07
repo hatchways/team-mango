@@ -94,7 +94,7 @@ const selectLists = [
 
 function Background(props) {
   //the function component for the background page is declared here
-  const { authTokens } = useAuth();
+  const { authTokens, setAuthTokens} = useAuth();
   console.log(authTokens);
   const [openSnack, setOpenSnack] = useState(false); //openSnack is one of the states. setOpenSnack is its method to change it. False is default value.
   const [severity, setSeverity] = useState("error");
@@ -105,7 +105,44 @@ function Background(props) {
 
   const handleClick = () => {
     //the method to handle "next step" button being clicked
-    setOpenSnack(experience === "" ? true : false);
+    if (experience === "") {
+      setOpenSnack(true);
+    } else {
+      authTokens.backgroundCompleted = true;
+      setAuthTokens(authTokens);
+      console.log(authTokens);
+          //fetch here
+    const res = fetch("/" + authTokens.id, {
+      method: "put",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(authTokens),
+    })
+      .then((response) => response.json())
+      /*
+      .then((responseJson) => {
+        console.log(responseJson);
+        if ("token" in responseJson) {
+          setAuthTokens(responseJson); 
+          setLoggedIn(true);
+          props.history.push({
+            pathname: "/background",
+            state: {},
+          });
+        } else if ("message" in responseJson) {
+          setMessage(responseJson.message);
+          setSeverity("error");
+        } else if ("errors" in responseJson) {
+          setMessage(
+            responseJson.errors[0].param + ": " + responseJson.errors[0].msg
+          );
+          setSeverity("error");
+        }
+      })
+      */
+      .catch((error) => {
+        console.error(error);
+      });
+    }
   };
   const handleClose = (event, reason) => {
     //the method to handle Snack "x" button being clicked
