@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -11,7 +11,7 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 import { Redirect, Link } from "react-router-dom";
-import { useAuth } from "../context/auth";
+import { UserContext } from "../contexts/UserContext";
 import pic1 from "../assets/pic1.png";
 
 function Alert(props) {
@@ -85,7 +85,6 @@ const signUpStyle = (theme) => ({
 });
 
 function SignUp(props) {
-  const [isLoggedIn, setLoggedIn] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -108,8 +107,7 @@ function SignUp(props) {
   );
   const [successMessage, setSuccessMessage] = useState("");
   const [message, setMessage] = useState("Invalid email or password!");
-  const [user, setUser] = useState([]);
-  const { setAuthTokens } = useAuth();
+  const { user, setUser } = useContext(UserContext);
 
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
@@ -190,9 +188,7 @@ function SignUp(props) {
         .then((response) => response.json())
         .then((responseJson) => {
           if ("token" in responseJson) {
-            setUser(responseJson); //may remove after auth
-            setAuthTokens(responseJson); //remove token to become user
-            setLoggedIn(true);
+            setUser(responseJson);
             props.history.push({
               pathname: "/background",
               state: {},
@@ -229,9 +225,7 @@ function SignUp(props) {
       .then((responseJson) => {
         console.log(responseJson);
         if ("token" in responseJson) {
-          setUser(responseJson); //may remove after
-          setAuthTokens(responseJson); //remove token to become user
-          setLoggedIn(true);
+          setUser(responseJson);
           props.history.push({
             pathname: "/background",
             state: {},

@@ -1,16 +1,16 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { useAuth } from "./context/auth";
+import { UserContext } from "./contexts/UserContext";
 
 function PrivateRoute({ component: Component, ...rest }) {
-  const { authTokens } = useAuth();
-  console.log(authTokens);
+  const { user } = UserContext();
+  console.log(user);
 
   return (
     <Route
       {...rest}
       render={(props) =>
-        authTokens.token ? <Component {...props} /> : <Redirect to="/signup" />
+        user.token ? <Component {...props} /> : <Redirect to="/signup" />
       }
     />
   );
