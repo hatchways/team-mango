@@ -6,13 +6,11 @@ import Navbar from "./pages/navbar";
 import { theme } from "./themes/theme";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
-import Background from "./pages/Background";
 import Dashboard from "./pages/Dashboard";
 import Faq from "./pages/faq";
 import "./App.css";
 import { UserContext } from "./contexts/UserContext";
 import Blog from "./pages/Blog";
-
 
 function App() {
   const [user, setUser] = useState(null);
@@ -57,7 +55,6 @@ function App() {
             <Route exact path="/" render={() => <Redirect to="/signup" />} />
             <Route path="/signup" component={SignUp} />
             <Route path="/login" component={Login} />
-            <Route path="/background" component={Background} />
             <Route path="/">
               <Navbar />
               <Switch>
@@ -70,7 +67,8 @@ function App() {
         </BrowserRouter>
       </MuiThemeProvider>
     </UserContext.Provider>
-
+  );
+}
 
 export default App;
 
