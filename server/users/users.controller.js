@@ -8,7 +8,7 @@ router.post(
   "/signup",
   [
     body("firstName").isLength({ min: 3, max: 30 }).exists(),
-    body("email").isEmail().exists(),
+    body("email").isEmail().normalizeEmail().exists(),
     body("lastName").isLength({ min: 3, max: 30 }).exists(),
     body("password")
       .isLength({ min: 6, max: 30 })
@@ -31,10 +31,8 @@ router.post(
 
     userService
       .create({ firstName, lastName, email, password })
-      .then(() => res.status(201).redirect(307, '/signin'))
+      .then(() => res.status(201).redirect(307, "/signin"))
       .catch((err) => next(err));
-
-
   }
 );
 
@@ -46,8 +44,6 @@ router.post(
   ],
 
   function (req, res, next) {
-
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -59,12 +55,13 @@ router.post(
       .authenticate({ email, password })
       .then((user) =>
         user
-          ? res.cookie("token", user.token,{
-            expires: new Date(Date.now() + 10000000),
-            secure: false,
-            httpOnly: true,
-          }
-          ).json(user)
+          ? res
+              .cookie("token", user.token, {
+                expires: new Date(Date.now() + 10000000),
+                secure: false,
+                httpOnly: true,
+              })
+              .json(user)
           : res
               .status(400)
               .json({ message: "Username or password is incorrect" })
@@ -73,9 +70,12 @@ router.post(
   }
 );
 
-//Testing verification
 router.get("/auth/verify", verifyToken, function (req, res, next) {
-  res.status(200).json("You are logged in");
+  res.status(200).json(req.user);
+});
+
+router.get("/logout", function (req, res, next) {
+  res.cookie("token", { expires: Date.now() }).send("Logged Out");
 });
 
 router.get("/current", getCurrent);

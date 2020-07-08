@@ -14,7 +14,7 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import Rating from "@material-ui/lab/Rating"; //Some components from Material-UI/lab
 import { withStyles } from "@material-ui/core/styles"; //Hook from Material-UI for styles
-import { Route, Link } from "react-router-dom"; //components for routing to other pages
+import { Route, Link, Redirect } from "react-router-dom"; //components for routing to other pages
 import { UserContext } from "../contexts/UserContext";
 
 function Alert(props) {
@@ -103,14 +103,23 @@ function Background(props) {
   const [value, setValue] = useState(2);
   const [hover, setHover] = useState(-1);
 
+  if (user === "failed to fetch" || user === null) {
+    return <Redirect to="/login" />;
+  } else if (user.backgroundCompleted === true) {
+    return <Redirect to="/dashboard" />;
+  }
+
   const handleClick = () => {
     //the method to handle "next step" button being clicked
     if (experience === "") {
       setOpenSnack(true);
     } else {
       user.backgroundCompleted = true;
+      user.background.language = language;
+      user.background.experience = experience;
+      user.background.rating = value;
       setUser(user);
-      console.log(user);
+      console.log(user.background);
       //fetch here
       const res = fetch("/" + user.id, {
         method: "put",
@@ -125,6 +134,7 @@ function Background(props) {
         .catch((error) => {
           console.error(error);
         });
+        props.history.push({pathname: "/dashboard"});
     }
   };
   const handleClose = (event, reason) => {
