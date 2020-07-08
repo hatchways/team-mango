@@ -26,7 +26,7 @@ let InterviewSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  statTime: {
+  startTime: {
     type: Date,
   },
   endTime: {

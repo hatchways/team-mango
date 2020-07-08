@@ -75,7 +75,7 @@ export function PastPracticeTable(props) {
       </TableHead>
       <TableBody>
         {pastInterviewList.map((interview) => (
-          <TableRow key={interview.id}>
+          <TableRow key={interview._id}>
             <TableCell component="th" scope="row">
               <Grid container direction="column">
                 <Grid item>
@@ -129,13 +129,6 @@ export function UpcomingOrOngoingTable(props) {
       .catch((err) => console.error(err));
   }, []);
 
-  const upcomingOrOngoingInterviewList = [
-    { id: "56ft45689hmy6ggbbnk" },
-    { id: "905h456wl0lkhgrtynk" },
-  ];
-
-  useEffect(() => {});
-
   return (
     <Table
       className={classes.root}
@@ -150,10 +143,10 @@ export function UpcomingOrOngoingTable(props) {
         </TableCell>
       </TableHead>
       <TableBody>
-        {upcomingOrOngoingInterviewList.map((interview) => (
-          <TableRow key={interview.id}>
+        {ongoingInterviewList.map((interviewId) => (
+          <TableRow key={interviewId}>
             <TableCell component="th" scope="row">
-              <Typography>{interview.id}</Typography>
+              <Typography>{interviewId}</Typography>
             </TableCell>
             <TableCell align="center">
               <InsideTableButton text="Cancel" />

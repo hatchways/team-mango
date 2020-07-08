@@ -1,7 +1,6 @@
 const db = require("../helpers/db");
 
 const questionService = require("../question/question.service");
-const userService = require("../users/user.service");
 
 const Interview = db.Interview;
 
@@ -74,11 +73,11 @@ async function addParticipantToAnInterview(user, interviewId) {
  *
  */
 async function getAllCompletedInterviewsOfAUser(user) {
-  const interviewsIds = user.interviews;
-  const completedInterviewsIds = await filterCompleteInterviewsOnly(
-    interviewsIds
+  const interviewIds = user.interviews;
+  const completedInterviewsIds = await filterCompleteInterviewIdsOnly(
+    interviewIds
   );
-  const relevantInterviewInformation = await getRelevantInterviewInformation(
+  const relevantInterviewInformation = await retrieveRelevantInterviewInformation(
     user._id,
     completedInterviewsIds
   );
@@ -91,51 +90,50 @@ async function getAllCompletedInterviewsOfAUser(user) {
  *
  */
 async function getAllOngoingOrUpcomingInterviewsOfAUser(user) {
-  const interviewsIds = user.interviews;
-  const completedInterviews = await filterCompleteInterviewsOnly(interviewsIds);
-  const ongoingOrUpcomingInterviewIds = interviewsIds.filter(
-    (interview) => !completedInterviews.includes(interview)
+  const interviewIds = user.interviews;
+  const completedInterviewIds = await filterCompleteInterviewIdsOnly(
+    interviewIds
   );
-  const relevantInterviewInformation = await getRelevantInterviewInformation(
-    user._id,
-    completedInterviewsIds
+  const ongoingOrUpcomingInterviewIds = interviewIds.filter(
+    (interviewId) => !completedInterviewIds.includes(interviewId)
   );
 
-  return relevantInterviewInformation;
+  return ongoingOrUpcomingInterviewIds;
 }
 
 /**
  * Returns only the completed interviews from a list of interviews.
  *
  */
-async function filterCompleteInterviewsOnly(interviews) {
-  let filteredInterviews = [];
-  for (let i = 0, len = interviews.length; i < len; i++) {
+async function filterCompleteInterviewIdsOnly(interviewIds) {
+  let filteredInterviewIds = [];
+  for (let i = 0, len = interviewIds.length; i < len; i++) {
     const count = await Interview.countDocuments({
-      _id: interviews[i],
+      _id: interviewIds[i],
       endTime: { $exists: true },
     });
-    if (count == 1) filteredInterviews.push(interviews[i]);
+    if (count == 1) filteredInterviewIds.push(interviewIds[i]);
   }
-  return filteredInterviews;
+  return filteredInterviewIds;
 }
 
 /**
  * Returns the relevant interview details for a user like  interview id, owner, difficulty,
  * question, coding rating, communication rating and feedback from a list of interviews.
  */
-async function getRelevantInterviewInformation(userId, interviewsIds) {
+async function retrieveRelevantInterviewInformation(userId, interviewIds) {
   let relevantDetails = [];
-
-  for (let i = 0, len = interviewsIds.length; i < len; i++) {
-    const interview = await Interview.findById(interviewsIds[i]);
-
+  for (let i = 0, len = interviewIds.length; i < len; i++) {
+    const interviewId = interviewIds[i];
+    let interview = await Interview.findById(interviewId);
     const participants = interview.participants;
 
     let details = {
       _id: interview._id,
       owner: interview.owner,
       difficulty: interview.difficulty,
+      startTime: interview.startTime,
+      endTime: interview.endTime,
     };
     for (
       let j = 0, participantsLen = participants.length;
@@ -143,7 +141,7 @@ async function getRelevantInterviewInformation(userId, interviewsIds) {
       j++
     ) {
       const participant = participants[j];
-      if (participant.user == userId) {
+      if (participant.user.toString() == userId.toString()) {
         details.question = participant.question;
         details.codingRating = participant.codingRating;
         details.communicationRating = participant.communicationRating;
