@@ -38,14 +38,16 @@ function App(props) {
         .then((data) => {
           let user = data;
           setUser(user);
+          console.log(data);
           if (!user.backgroundCompleted) {
-            props.history.push({pathname: "/background"});
+            return <Redirect to="/background" />;
           } else {
-            props.history.push({pathname: "/dashboard"});
+            return <Redirect to="/dashboard" />;
           }
         })
         .catch(function (error) {
           let user = "failed to fetch";
+          console.log(error);
           setUser(user);
         });
     }
@@ -77,5 +79,3 @@ function App(props) {
 }
 
 export default App;
-
-

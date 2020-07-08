@@ -187,7 +187,7 @@ function SignUp(props) {
       })
         .then((response) => response.json())
         .then((responseJson) => {
-          if ("token" in responseJson) {
+          if ("email" in responseJson) {
             setUser(responseJson);
             props.history.push({
               pathname: "/background",
@@ -224,7 +224,7 @@ function SignUp(props) {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
-        if ("token" in responseJson) {
+        if ("email" in responseJson) {
           setUser(responseJson);
           props.history.push({
             pathname: "/background",

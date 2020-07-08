@@ -102,11 +102,17 @@ function Background(props) {
   const [experience, setExperience] = useState("");
   const [value, setValue] = useState(2);
   const [hover, setHover] = useState(-1);
-
+/*
   if (user === "failed to fetch" || user === null) {
     return <Redirect to="/login" />;
   } else if (user.backgroundCompleted === true) {
     return <Redirect to="/dashboard" />;
+  }*/
+
+  if (user === null) {
+    return <p>Loading profile...</p>;
+  } else if (user.backgroundCompleted) {
+    props.history.push({pathname: "/dashboard"});
   }
 
   const handleClick = () => {
