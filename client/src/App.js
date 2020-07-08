@@ -39,11 +39,6 @@ function App(props) {
           let user = data;
           setUser(user);
           console.log(data);
-          if (!user.backgroundCompleted) {
-            return <Redirect to="/background" />;
-          } else {
-            return <Redirect to="/dashboard" />;
-          }
         })
         .catch(function (error) {
           let user = "failed to fetch";

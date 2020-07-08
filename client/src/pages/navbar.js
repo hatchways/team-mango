@@ -13,7 +13,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { UserContext } from "../contexts/UserContext";
-import { Redirect } from "react-router-dom";
+import { Redirect, Switch } from "react-router-dom";
 
 const styles = (theme) => ({
   root: {
@@ -47,7 +47,10 @@ function Navbar(props) {
     return <p>Loading profile...</p>;
   } else if (user === "failed to fetch") {
     return <Redirect to="/login" />;
+  } else if (!user.backgroundCompleted) {
+    return <Redirect to="/background" />;
   }
+
   return (
     <AppBar position="static" color="white" width="100%">
       <Toolbar>

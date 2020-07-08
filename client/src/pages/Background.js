@@ -96,12 +96,14 @@ function Background(props) {
   //the function component for the background page is declared here
   const { user, setUser } = useContext(UserContext);
   console.log(user);
+  const userTmp = user;
   const [openSnack, setOpenSnack] = useState(false); //openSnack is one of the states. setOpenSnack is its method to change it. False is default value.
   const [severity, setSeverity] = useState("error");
   const [language, setLanguage] = useState("React");
   const [experience, setExperience] = useState("");
   const [value, setValue] = useState(2);
   const [hover, setHover] = useState(-1);
+  const [message, setMessage] = useState("Please select your experience!");
 /*
   if (user === "failed to fetch" || user === null) {
     return <Redirect to="/login" />;
@@ -120,27 +122,35 @@ function Background(props) {
     if (experience === "") {
       setOpenSnack(true);
     } else {
-      user.backgroundCompleted = true;
-      user.background.language = language;
-      user.background.experience = experience;
-      user.background.rating = value;
-      setUser(user);
-      console.log(user.background);
+      userTmp.backgroundCompleted = true;
+      userTmp.background.language = language;
+      userTmp.background.experience = experience;
+      userTmp.background.rating = value;
+      console.log(userTmp.background);
       //fetch here
       const res = fetch("/" + user.id, {
         method: "put",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(userTmp),
       })
         .then((response) => response.json())
         .then((responseJson) => {
           console.log(responseJson);
+          if (responseJson.msg === "updated") {
+            setUser(userTmp);
+            props.history.push({pathname: "/dashboard"});
+          } else {
+            setMessage("Database connection problem!");
+            setOpenSnack(true);
+          }
           return responseJson;
         })
+        /*
         .catch((error) => {
           console.error(error);
-        });
-        props.history.push({pathname: "/dashboard"});
+          setMessage("Database connection problem!");
+          setOpenSnack(true);
+        });*/
     }
   };
   const handleClose = (event, reason) => {
@@ -269,7 +279,7 @@ function Background(props) {
                       onClose={handleClose}
                     >
                       <Alert onClose={handleClose} severity={severity}>
-                        <div>Please select your experience!</div>
+                        <div>{message}</div>
                       </Alert>
                     </Snackbar>
                   </Box>
