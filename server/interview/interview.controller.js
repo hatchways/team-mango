@@ -33,13 +33,24 @@ router.put('/*', async function(req, res) {
         .catch(err => res.status(500).json({ Error: err.message}));
 });
 
-//Get all interviews
+//Get all completed interviews
 router.get('/completed', async function(req, res) {
     const postBody = req.body;
     //const user = postBody.user;
     const userId = '5efe16473390ba5f29baae87';
 
     const interviews = await interviewService.getAllCompletedInterviewsForAUser(userId);
+
+    res.json(interviews);
+});
+
+//Get all ongoing or upcoming interviews
+router.get('/ongoing', async function(req, res) {
+    const postBody = req.body;
+    //const user = postBody.user;
+    const userId = '5efe16473390ba5f29baae87';
+
+    const interviews = await interviewService.getAllOngoingOrUpcomingInterviewsOfAUser(userId);
 
     res.json(interviews);
 });

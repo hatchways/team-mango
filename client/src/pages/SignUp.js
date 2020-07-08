@@ -174,17 +174,6 @@ function SignUp(props) {
     if (success === true) {
       //fetch here
 
-<<<<<<< HEAD
-      const res = fetch("/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json"},
-        body: JSON.stringify({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          email: this.state.email,
-          password: this.state.password,
-          confirmPassword: this.state.passwordConfirmed
-=======
       const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,7 +183,6 @@ function SignUp(props) {
           email: email,
           password: password,
           confirmPassword: passwordConfirmed,
->>>>>>> 994a8233b29f2ede956a3935c1bad4d9f36d98fc
         }),
       })
         .then((response) => response.json())

@@ -8,7 +8,8 @@ const Interview = db.Interview;
 module.exports = {
     createInterview,
     addParticipantToAnInterview,
-    getAllCompletedInterviewsForAUser
+    getAllCompletedInterviewsOfAUser,
+    getAllOngoingOrUpcomingInterviewsOfAUser
 }
 
 /**
@@ -39,9 +40,6 @@ async function createInterview(user, difficulty) {
 /**
  * Returns the interview added with the new participant and a new question.
  *
- * @param {User} user The user object from the database.
- * @param {String} interviewId The id of interview to add details to.
- * @return {Interview} interview Created interview object.
  */
 async function addParticipantToAnInterview(user, interviewId) {
     let interview = await Interview.findById(interviewId);
@@ -66,30 +64,33 @@ async function addParticipantToAnInterview(user, interviewId) {
 }
 
 /**
- * Returns all the completed interviews of a user.
+ * Returns all the relevant details of completed interviews of a user.
  *
- * @param {String} userId Id of the user.
- * @return {Array<Interview>} Array of interviews of the user.
  */
-async function getAllCompletedInterviewsForAUser(userId) {
+async function getAllCompletedInterviewsOfAUser(userId) {
     const user = await userService.getById(userId);
-    let interviewsIds = user.interviews;
-    //Only retaining completed interviews in the interviewIds array
-    interviewsIds = await filterCompletedInterviews(interviewsIds);
-    //Getting the relevant interview details of this user
-    const relevantInterviewInformation = await getRelevantInterviewInformation(userId, interviewsIds);
+    const interviewsIds = user.interviews;
+    const completedInterviewsIds = await filterCompleteInterviewsOnly(interviewsIds);
+    const relevantInterviewInformation = await getRelevantInterviewInformation(userId, completedInterviewsIds);
     
     return relevantInterviewInformation;
+}
+
+async function getAllOngoingOrUpcomingInterviewsOfAUser(userId) {
+    const user = await userService.getById(userId);
+    const interviewsIds = user.interviews;
+    const completedInterviews = await filterCompleteInterviewsOnly(interviewsIds);
+    const ongoingOrUpcomingInterviews = interviewsIds.filter(interview => !completedInterviews.includes(interview));
+
+    return ongoingOrUpcomingInterviews;
 }
 
 
 /**
  * Returns only the completed interviews from a list of interviews.
  *
- * @param {Array<Interview>} interviews Array of interviews.
- * @return {Array<Interview>} Array of only the completed interviews or interviews with endTime defined.
  */
-async function filterCompletedInterviews(interviews) {
+async function filterCompleteInterviewsOnly(interviews) {
     let filteredInterviews = [];
     for (let i = 0, len = interviews.length; i < len; i++) {
         const count =await Interview.countDocuments({_id: interviews[i], endTime: {$exists: true}});
@@ -98,6 +99,10 @@ async function filterCompletedInterviews(interviews) {
     return filteredInterviews;
 }
 
+/**
+ * Returns the relevant interview details for a user like  interview id, owner, difficulty, 
+ * question, coding rating, communication rating and feedback from a list of interviews.
+ */
 async function getRelevantInterviewInformation(userId, interviewsIds) {
     let relevantDetails = [];
 
