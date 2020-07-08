@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -24,6 +24,18 @@ const pastPracticeTableStyles = makeStyles({
 
 export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
+  const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
+
+  useEffect(() => {
+    fetch("interviews/completed")
+      .then((result) => result.json())
+      .then((data) => {
+        data.forEach((element) => {
+          setCompletedInterviewsList((prevArray) => [...prevArray, element]);
+        });
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const pastInterviewList = [
     {
@@ -104,11 +116,25 @@ const upcomingOrOngoingTableStyles = makeStyles({
 
 export function UpcomingOrOngoingTable(props) {
   const classes = upcomingOrOngoingTableStyles();
+  const [ongoingInterviewList, setOngoingInterviewList] = useState([]);
+
+  useEffect(() => {
+    fetch("interviews/ongoing")
+      .then((result) => result.json())
+      .then((data) => {
+        data.forEach((element) => {
+          setOngoingInterviewList((prevArray) => [...prevArray, element]);
+        });
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const upcomingOrOngoingInterviewList = [
     { id: "56ft45689hmy6ggbbnk" },
     { id: "905h456wl0lkhgrtynk" },
   ];
+
+  useEffect(() => {});
 
   return (
     <Table

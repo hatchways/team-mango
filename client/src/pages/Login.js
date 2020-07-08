@@ -119,8 +119,8 @@ class Login extends Component {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email : this.state.email,
-        password : this.state.password,
+        email: this.state.email,
+        password: this.state.password,
       }),
     })
       .then((response) => response.json())

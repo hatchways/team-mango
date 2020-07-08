@@ -12,11 +12,10 @@ const verifyToken = async (req, res, next) => {
     const decrypt = await jwt.verify(token, process.env.secret);
 
     userService
-      .getById(decrypt.id)
+      .findById(decrypt.sub)
       .then((user) => (user ? (req.user = user) : res.status(404)))
+      .then(() => next())
       .catch(res.status(401));
-
-    next();
   } catch (err) {
     console.log(err);
     return res.status(500).json(err.toString());

@@ -1,58 +1,57 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const verifyToken = require('../helpers/verifyToken');
-const interviewService = require('./interview.service');
-const userService = require('../users/user.service');
+const verifyToken = require("../helpers/verifyToken");
+const interviewService = require("./interview.service");
+const userService = require("../users/user.service");
 
 //Create interview
-router.post('/', async function(req, res) {
-    const postBody = req.body;
-    //const user = postBody.user;
-    const user = await userService.getById('5efe16473390ba5f29baae87');
-    // const difficulty = postBody.difficulty;
-    const difficulty = 'Intermediate';
-
-    await interviewService.createInterview(user, difficulty)
-        .then(interview => {
-            res.json(interview);
-        })
-        .catch(err => res.status(500).json({ Error: err.message}));
+router.post("/", verifyToken, async function (req, res) {
+  const postBody = req.body;
+  const user = postBody.user;
+  const difficulty = postBody.difficulty;
+  await interviewService
+    .createInterview(user, difficulty)
+    .then((interview) => {
+      res.json(interview);
+    })
+    .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
 //Update interview
-router.put('/*', async function(req, res) {
-    const postBody = req.body;
-    // const user = postBody.user;
-    const userId = '5efe16473390ba5f29baae87';
-    const user = await userService.getById(userId);
-    let interviewId = req.path.replace(/\//g, '');
+router.put("/*", verifyToken, async function (req, res) {
+  const postBody = req.body;
+  const user = postBody.user;
+  let interviewId = req.path.replace(/\//g, "");
 
-    await interviewService.addParticipantToAnInterview(user, interviewId)
-        .then(interview => res.json(interview))
-        .catch(err => res.status(500).json({ Error: err.message}));
+  await interviewService
+    .addParticipantToAnInterview(user, interviewId)
+    .then((interview) => res.json(interview))
+    .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
 //Get all completed interviews
-router.get('/completed', async function(req, res) {
-    const postBody = req.body;
-    //const user = postBody.user;
-    const userId = '5efe16473390ba5f29baae87';
+router.get("/completed", verifyToken, async function (req, res) {
+  const postBody = req.body;
+  const user = postBody.user;
 
-    const interviews = await interviewService.getAllCompletedInterviewsForAUser(userId);
+  const interviews = await interviewService.getAllCompletedInterviewsOfAUser(
+    user
+  );
 
-    res.json(interviews);
+  res.json(interviews);
 });
 
 //Get all ongoing or upcoming interviews
-router.get('/ongoing', async function(req, res) {
-    const postBody = req.body;
-    //const user = postBody.user;
-    const userId = '5efe16473390ba5f29baae87';
+router.get("/ongoing", verifyToken, async function (req, res) {
+  const postBody = req.body;
+  const user = postBody.user;
 
-    const interviews = await interviewService.getAllOngoingOrUpcomingInterviewsOfAUser(userId);
+  const interviews = await interviewService.getAllOngoingOrUpcomingInterviewsOfAUser(
+    user
+  );
 
-    res.json(interviews);
+  res.json(interviews);
 });
 
 module.exports = router;
