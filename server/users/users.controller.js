@@ -80,7 +80,7 @@ router.get("/logout", function (req, res, next) {
 
 router.get("/current", getCurrent);
 router.get("/:id", getById);
-router.put("/:id", update);
+router.put("/:id", verifyToken, update);
 router.delete("/:id", _delete);
 
 function getCurrent(req, res, next) {
@@ -98,10 +98,12 @@ function getById(req, res, next) {
 }
 
 function update(req, res, next) {
-  userService
-    .update(req.params.id, req.body)
-    .then(() => res.json({}))
-    .catch((err) => next(err));
+  if (req.user.id === req.params.id){
+    userService
+      .update(req.params.id, req.body)
+      .then(() => res.json({msg: "updated"}))
+      .catch((err) => next(err));
+    }
 }
 
 function _delete(req, res, next) {

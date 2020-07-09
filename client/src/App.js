@@ -5,14 +5,14 @@ import { Redirect } from "react-router";
 import Navbar from "./pages/navbar";
 import { theme } from "./themes/theme";
 import SignUp from "./pages/SignUp";
-import Login from "./pages/Login";
+import Background from "./pages/Background";
 import Dashboard from "./pages/Dashboard";
 import Faq from "./pages/faq";
 import "./App.css";
 import { UserContext } from "./contexts/UserContext";
 import Blog from "./pages/Blog";
 
-function App() {
+function App(props) {
   const [user, setUser] = useState(null);
 
   const value = useMemo(
@@ -38,9 +38,11 @@ function App() {
         .then((data) => {
           let user = data;
           setUser(user);
+          console.log(data);
         })
         .catch(function (error) {
           let user = "failed to fetch";
+          console.log(error);
           setUser(user);
         });
     }
@@ -54,7 +56,8 @@ function App() {
           <Switch>
             <Route exact path="/" render={() => <Redirect to="/signup" />} />
             <Route path="/signup" component={SignUp} />
-            <Route path="/login" component={Login} />
+            <Route path="/login" component={SignUp} />
+            <Route path="/background" component={Background} />
             <Route path="/">
               <Navbar />
               <Switch>

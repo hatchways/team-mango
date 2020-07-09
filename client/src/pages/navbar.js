@@ -47,7 +47,10 @@ function Navbar(props) {
     return <p>Loading profile...</p>;
   } else if (user === "failed to fetch") {
     return <Redirect to="/login" />;
+  } else if (!user.backgroundCompleted) {
+    return <Redirect to="/background" />;
   }
+
   return (
     <AppBar position="static" color="white" width="100%">
       <Toolbar>
