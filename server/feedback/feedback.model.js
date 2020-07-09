@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const Question2AnswerSchema = new Schema({
+const ReviewAnswerSchema = new Schema({
   type: String,
   enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
 });
@@ -15,33 +15,33 @@ const FeedbackSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Interview",
   },
-  question1: {
+  overallScore: {
     //Overall, how well did this person do in the interview
     type: Number,
     min: 0,
     max: 10,
   },
-  question2: {
+  review: {
     //Submit a review of the candidate in the following catergories
-    communicationSkills: Question2AnswerSchema,
-    codeEfficiency: Question2AnswerSchema,
-    speed: Question2AnswerSchema,
-    debuggingSkills: Question2AnswerSchema,
-    problemSolvingSkills: Question2AnswerSchema,
+    communicationSkills: ReviewAnswerSchema,
+    codeEfficiency: ReviewAnswerSchema,
+    speed: ReviewAnswerSchema,
+    debuggingSkills: ReviewAnswerSchema,
+    problemSolvingSkills: ReviewAnswerSchema,
   },
-  question3: {
+  strengths: {
     //What  are some things this candidate did well (the more specific the better)
     type: String,
   },
-  question4: {
+  weaknesses: {
     //What are some things this candidate can improve on (the more specific the better)
     type: String,
   },
-  question5: {
+  recommendations: {
     //Any recommendations on resources that can help this candidate improve?
     type: String,
   },
-  question6: {
+  anythingElse: {
     //Anything else?
     type: String,
   },
