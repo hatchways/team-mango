@@ -37,28 +37,6 @@ export function PastPracticeTable(props) {
       .catch((err) => console.error(err));
   }, []);
 
-  const pastInterviewList = [
-    {
-      id: 1,
-      heldOnDate: "Thursday, April 30, 2020",
-      heldOnTime: "10:00 AM - 11:00 AM",
-      codingRating: 5,
-      communicationRating: 4,
-    },
-    {
-      id: 2,
-      heldOnDate: "Wednesday, March 18, 2020",
-      heldOnTime: "2:00 PM - 3:30 PM",
-      codingRating: 3,
-      communicationRating: 5,
-    },
-    {
-      id: 3,
-      heldOnDate: "MOnday, March 16, 2020",
-      heldOnTime: "12:00 PM - 1:30 PM",
-    },
-  ];
-
   function RatingComponent(props) {
     const isRatingProvided = props.isRatingProvided;
     const value = props.value;
@@ -90,7 +68,7 @@ export function PastPracticeTable(props) {
         </TableCell>
       </TableHead>
       <TableBody>
-        {pastInterviewList.map((interview) => (
+        {completedInterviewsList.map((interview) => (
           <TableRow key={interview._id}>
             <TableCell component="th" scope="row">
               <Grid container direction="column">

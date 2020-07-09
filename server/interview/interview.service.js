@@ -74,12 +74,10 @@ async function addParticipantToAnInterview(user, interviewId) {
  */
 async function getAllCompletedInterviewsOfAUser(user) {
   const interviewIds = user.interviews;
-  const completedInterviewsIds = await filterCompleteInterviewIdsOnly(
-    interviewIds
-  );
+
   let relevantInterviewInformation = await retrieveRelevantInterviewInformation(
     user._id,
-    completedInterviewsIds
+    interviewIds
   );
   //Sorting latest first, based on interview end time
   relevantInterviewInformation.sort((e1, e2) =>
@@ -129,14 +127,17 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
   for (let i = 0, len = interviewIds.length; i < len; i++) {
     const interviewId = interviewIds[i];
     let interview = await Interview.findById(interviewId);
+
+    if (interview.endTime == undefined) break; 
+
     const participants = interview.participants;
 
     let details = {
       _id: interview._id,
       owner: interview.owner,
       difficulty: interview.difficulty,
-      startTime: interview.startTime,
-      endTime: interview.endTime,
+      heldOnDate: interview.endTime,
+      heldOnTime: interview.startTime,
     };
     for (
       let j = 0, participantsLen = participants.length;
@@ -146,9 +147,18 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
       const participant = participants[j];
       if (participant.user.toString() == userId.toString()) {
         details.question = participant.question;
-        details.codingRating = participant.codingRating;
-        details.communicationRating = participant.communicationRating;
-        details.feedback = participant.feedback;
+        let feedback = participant.feedback;
+
+        if (feedback.codeEfficiency) {
+          let score = convertReviewPointsToAScore(feedback.codeEfficiency);
+          if (score) details.codingRating = score; 
+        }
+        if (feedback.communicationSkills) {
+          let score = convertReviewPointsToAScore(feedback.communicationSkills);
+          if (score) details.communicationRating = score; 
+        }
+        
+        details.feedback = feedback;
         break;
       }
     }
@@ -157,4 +167,29 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
   }
 
   return relevantDetails;
+}
+
+/**
+ * Returns a numerical score for review points
+ */
+function convertReviewPointsToAScore(reviewPoint) {
+  let score;
+  switch (reviewPoint) {
+    case 'needs improvement': 
+    score = 1;
+    break;
+    case 'satisfactory': 
+    score = 2;
+    break;
+    case 'good': 
+    score = 3;
+    break;
+    case 'great': 
+    score = 4;
+    break;
+    case 'excellent': 
+    score = 5;
+    break;
+  }
+  return score;
 }

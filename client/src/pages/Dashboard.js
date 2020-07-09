@@ -1,9 +1,9 @@
 import React from "react";
 import { Grid, TableContainer, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { StartButton, JoinButton } from "./CustomButtons";
-import { TableHeading } from "./CustomHeadings";
-import { PastPracticeTable, UpcomingOrOngoingTable } from "./CustomTables";
+import { StartButton, JoinButton } from "../components/CustomButtons";
+import { TableHeading } from "../components/CustomHeadings";
+import { PastPracticeTable, UpcomingOrOngoingTable } from "../components/CustomTables";
 
 const useStyles = makeStyles((theme) => ({
   root: {

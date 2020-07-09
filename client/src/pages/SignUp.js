@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -11,6 +11,7 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 import { Redirect, Link } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 import pic1 from "../assets/pic1.png";
 
 function Alert(props) {
@@ -71,14 +72,11 @@ const signUpStyle = (theme) => ({
   },
   start: {
     paddingBottom: "1.5rem",
-    fontFamily: "Open Sans",
   },
   input: {
     margin: ".5rem 0rem 1rem 0rem",
   },
   continue: {
-
-    backgroundColor: "#0000ff",
     borderRadius: 35,
     margin: "1rem 0rem 0rem 0rem",
     padding: ".5rem 1.5rem .5rem 1.5rem",
@@ -108,6 +106,8 @@ function SignUp(props) {
   );
   const [successMessage, setSuccessMessage] = useState("");
   const [message, setMessage] = useState("Invalid email or password!");
+  const { user, setUser } = useContext(UserContext);
+
 
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
@@ -172,7 +172,6 @@ function SignUp(props) {
     await setSuccessMessage(success ? "Sign up successfully!" : "");
 
     if (success === true) {
-      //fetch here
       const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,7 +185,8 @@ function SignUp(props) {
       })
         .then((response) => response.json())
         .then((responseJson) => {
-          if ("token" in responseJson) {
+          if ("email" in responseJson) {
+            setUser(responseJson);
             props.history.push({
               pathname: "/background",
               state: {},
@@ -209,9 +209,7 @@ function SignUp(props) {
     }
   }
 
-
   async function validation2() {
-    //fetch here
     const res = await fetch("/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
@@ -223,11 +221,11 @@ function SignUp(props) {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
-        if ("token" in responseJson) {
+        if ("email" in responseJson) {
+          setUser(responseJson);
           props.history.push({
             pathname: "/background",
             state: {},
-
           });
         } else if ("message" in responseJson) {
           setMessage(responseJson.message);
@@ -250,7 +248,6 @@ function SignUp(props) {
     }
     setOpenSnack(false);
   };
-
 
   const { classes } = props;
   const question =
