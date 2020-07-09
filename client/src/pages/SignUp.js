@@ -171,8 +171,6 @@ function SignUp(props) {
     await setSuccessMessage(success ? "Sign up successfully!" : "");
 
     if (success === true) {
-      //fetch here
-
       const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -211,7 +209,6 @@ function SignUp(props) {
   }
 
   async function validation2() {
-    //fetch here
     const res = await fetch("/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },

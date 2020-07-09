@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"; //useState: one of Hooks in React to store states
+import React, { useState, useContext } from "react";
 
 import {
   Typography,
@@ -10,24 +10,22 @@ import {
   FormControl,
   Select,
   MenuItem,
-} from "@material-ui/core"; //Styled components from Material-UI/core
+} from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import MuiAlert from "@material-ui/lab/Alert";
-import Rating from "@material-ui/lab/Rating"; //Some components from Material-UI/lab
-import { withStyles } from "@material-ui/core/styles"; //Hook from Material-UI for styles
-import { Route, Link, Redirect } from "react-router-dom"; //components for routing to other pages
+import Rating from "@material-ui/lab/Rating";
+import { withStyles } from "@material-ui/core/styles";
+import { Route, Link, Redirect } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 import { useTheme } from "@material-ui/core/styles";
 
 function Alert(props) {
-  //MuiAlert is a standard original component from Material-UI. Alert is a styled one with following properties
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const backgroundStyle = (theme) => ({
-  //styling for this page. It will be used with withStyles at the end of the file
   root: {
     backgroundColor: "#495074",
     height: "100vh",
@@ -41,7 +39,6 @@ const backgroundStyle = (theme) => ({
     color: "#4545F5",
     marginTop: "3rem",
     paddingBottom: "1rem",
-    //    width: "863px",
   },
   nextStep: {
     borderRadius: 35,
@@ -53,7 +50,6 @@ const backgroundStyle = (theme) => ({
   },
 });
 const labels = {
-  //array for Rating component
   1: "JUNIOR",
   2: "ADVANCED JUNIOR",
   3: "INTERMEDIATE",
@@ -61,7 +57,6 @@ const labels = {
   5: "ADVANCED SENIOR",
 };
 const details = {
-  //array for Rating component
   1: "Do not have any experience on interviews",
   2: "Had one or two interviews before",
   3: "Had a few job interviews, but need more practice",
@@ -80,11 +75,10 @@ const selectLists = [
 ];
 
 function Background(props) {
-  //the function component for the background page is declared here
   const { user, setUser } = useContext(UserContext);
   console.log(user);
   const userTmp = user;
-  const [openSnack, setOpenSnack] = useState(false); //openSnack is one of the states. setOpenSnack is its method to change it. False is default value.
+  const [openSnack, setOpenSnack] = useState(false);
   const [severity, setSeverity] = useState("error");
   const [language, setLanguage] = useState("React");
   const [experience, setExperience] = useState("");
@@ -101,7 +95,6 @@ function Background(props) {
   }
 
   const handleClick = () => {
-    //the method to handle "next step" button being clicked
     if (experience === "") {
       setOpenSnack(true);
     } else {
@@ -110,7 +103,6 @@ function Background(props) {
       userTmp.background.experience = experience;
       userTmp.background.rating = value;
       console.log(userTmp.background);
-      //fetch here
       const res = fetch("/" + user.id, {
         method: "put",
         headers: { "Content-Type": "application/json" },
@@ -128,27 +120,18 @@ function Background(props) {
           }
           return responseJson;
         });
-      /*
-        .catch((error) => {
-          console.error(error);
-          setMessage("Database connection problem!");
-          setOpenSnack(true);
-        });*/
     }
   };
   const handleClose = (event, reason) => {
-    //the method to handle Snack "x" button being clicked
     if (reason === "clickaway") {
       return;
     }
     setOpenSnack(false);
   };
   const languageChange = (e) => {
-    //change the value(state) of language when it is selected
     setLanguage(e.target.value);
   };
   const experienceChange = (e) => {
-    //change the value(state) of experience when it is selected
     setExperience(e.target.value);
   };
 
@@ -161,7 +144,7 @@ function Background(props) {
       );
     });
   };
-  const { classes } = props; //classes property for styling is passed at the last line of this file
+  const { classes } = props;
   return (
     <div className={classes.root}>
       <Dialog
@@ -173,7 +156,6 @@ function Background(props) {
       >
         <DialogContent className={classes.dialog}>
           <Typography className={classes.title} align="center" variant="h3">
-            {/*styled component for text*/}
             Tell about your background
           </Typography>
           <Grid>
@@ -186,7 +168,6 @@ function Background(props) {
                 onChange={languageChange}
               >
                 {" "}
-                {/*Select component with five options. I will use "map" and array instead of following five lines*/}
                 {ItemList(0)}
               </Select>
             </FormControl>
@@ -222,7 +203,7 @@ function Background(props) {
                   setHover(newHover);
                 }}
               />
-              {value !== null && ( //conditional render: only display this div when value !== null
+              {value !== null && (
                 <div>
                   <Box ml={0} style={{ color: "#0000ff" }}>
                     {labels[hover !== -1 ? hover : value]}
@@ -241,7 +222,6 @@ function Background(props) {
                 color="primary"
               >
                 {" "}
-                {/*use {} for state and method instead of ""*/}
                 NEXT STEP
               </Button>
               <Snackbar
