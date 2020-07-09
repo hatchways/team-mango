@@ -108,6 +108,7 @@ function SignUp(props) {
   const [message, setMessage] = useState("Invalid email or password!");
   const { user, setUser } = useContext(UserContext);
 
+
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
     setFirstName(e.target.value);
