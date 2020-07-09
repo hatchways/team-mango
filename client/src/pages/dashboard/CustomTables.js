@@ -52,7 +52,23 @@ export function PastPracticeTable(props) {
       codingRating: 3,
       communicationRating: 5,
     },
+    {
+      id: 3,
+      heldOnDate: "MOnday, March 16, 2020",
+      heldOnTime: "12:00 PM - 1:30 PM",
+    },
   ];
+
+  function RatingComponent(props) {
+    const isRatingProvided = props.isRatingProvided;
+    const value = props.value;
+
+    if (isRatingProvided) {
+      return <Rating value={value} readOnly />;
+    } else {
+      return <Typography>N/A</Typography>;
+    }
+  }
 
   return (
     <Table className={classes.root} aria-label="Past practice interviews table">
@@ -87,10 +103,21 @@ export function PastPracticeTable(props) {
               </Grid>
             </TableCell>
             <TableCell align="center">
-              <Rating value={interview.codingRating} readOnly />
+              <RatingComponent
+                value={interview.codingRating}
+                isRatingProvided={
+                  interview.codingRating && interview.codingRating >= 0
+                }
+              />
             </TableCell>
             <TableCell align="center">
-              <Rating value={interview.communicationRating} readOnly />
+              <RatingComponent
+                value={interview.communicationRating}
+                isRatingProvided={
+                  interview.communicationRating &&
+                  interview.communicationRating >= 0
+                }
+              />
             </TableCell>
             <TableCell align="center">
               <InsideTableButton text="view" />

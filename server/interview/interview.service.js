@@ -77,11 +77,14 @@ async function getAllCompletedInterviewsOfAUser(user) {
   const completedInterviewsIds = await filterCompleteInterviewIdsOnly(
     interviewIds
   );
-  const relevantInterviewInformation = await retrieveRelevantInterviewInformation(
+  let relevantInterviewInformation = await retrieveRelevantInterviewInformation(
     user._id,
     completedInterviewsIds
   );
-
+  //Sorting latest first, based on interview end time
+  relevantInterviewInformation.sort((e1, e2) =>
+    e1.endTime < e2.endTime ? 1 : e2.endTime < e1.endTime ? -1 : 0
+  );
   return relevantInterviewInformation;
 }
 
