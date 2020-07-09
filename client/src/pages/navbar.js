@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { withStyles } from "@material-ui/styles";
 import {
   AppBar,
@@ -27,10 +27,6 @@ const styles = (theme) => ({
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
-  },
-  tabs: {
-    indicatorColor: theme.primary,
-    textColor: theme.primary,
   },
 });
 
