@@ -31,6 +31,10 @@ const codeUIStyle = (theme) => ({
   itemGrid: {
     marginTop: theme.spacing(-0.5),
   },
+  question: {
+    padding: "5px 30px 0px",
+    fontFamily: '"Open Sans", "Roboto"',
+  },
 });
 const qtitle = "Diagonal Difference";
 const qdesc =
@@ -80,13 +84,10 @@ function CodeUI(props) {
             <Typography className={classes.title} color="primary" variant="h4">
               {question.title}
             </Typography>
-            <p
+            <div
               dangerouslySetInnerHTML={{ __html: question.description }}
-              style={{
-                padding: "5px 30px 0px",
-                fontFamily: '"Open Sans", "Roboto"',
-              }}
-            ></p>
+              className={classes.question}
+            ></div>
           </Paper>
         </Grid>
 
