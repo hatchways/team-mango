@@ -11,7 +11,7 @@ import Faq from "./pages/faq";
 import "./App.css";
 import { UserContext } from "./contexts/UserContext";
 import Blog from "./pages/Blog";
-
+import CodeUI from "./pages/CodeUI";
 function App() {
   const [user, setUser] = useState(null);
 
@@ -55,8 +55,10 @@ function App() {
             <Route exact path="/" render={() => <Redirect to="/signup" />} />
             <Route path="/signup" component={SignUp} />
             <Route path="/login" component={Login} />
+
             <Route path="/">
               <Navbar />
+              <Route path="/code" component={CodeUI} />
               <Switch>
                 <Route path="/dashboard" component={Dashboard} />
                 <Route path="/faq" component={Faq} />

@@ -14,6 +14,7 @@ import { Link as RouterLink } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { UserContext } from "../contexts/UserContext";
 import { Redirect } from "react-router-dom";
+import { theme } from "../themes/theme";
 
 const styles = (theme) => ({
   root: {
@@ -26,6 +27,10 @@ const styles = (theme) => ({
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
+  },
+  tabs: {
+    indicatorColor: theme.primary,
+    textColor: theme.primary,
   },
 });
 
@@ -60,7 +65,7 @@ function Navbar(props) {
           Logo
         </Typography>
         <div>
-          <Tabs value={value}>
+          <Tabs value={value} indicatorColor="primary" textColor="primary">
             <Tab
               label="Dashboard"
               to="/dashboard"
