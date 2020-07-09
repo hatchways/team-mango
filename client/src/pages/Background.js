@@ -11,11 +11,15 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core"; //Styled components from Material-UI/core
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import MuiAlert from "@material-ui/lab/Alert";
 import Rating from "@material-ui/lab/Rating"; //Some components from Material-UI/lab
 import { withStyles } from "@material-ui/core/styles"; //Hook from Material-UI for styles
 import { Route, Link, Redirect } from "react-router-dom"; //components for routing to other pages
 import { UserContext } from "../contexts/UserContext";
+import { useTheme } from '@material-ui/core/styles';
 
 function Alert(props) {
   //MuiAlert is a standard original component from Material-UI. Alert is a styled one with following properties
@@ -25,36 +29,19 @@ function Alert(props) {
 const backgroundStyle = (theme) => ({
   //styling for this page. It will be used with withStyles at the end of the file
   root: {
-    flexGrow: 1,
+    backgroundColor: "#495074",
     height: "100vh",
   },
-  paper: {
-    padding: theme.spacing(0),
-    margin: "auto",
-    width: "Full",
-    height: "100%",
-    border: 0,
-  },
-  image: {
-    height: "100vh",
-  },
-  img: {
-    margin: "auto",
-    display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%",
-  },
-  text: {
-    padding: ".5rem 20% .5rem 20%",
-  },
-  account: {
-    paddingTop: "0.5rem",
+  dialog: {
+    [theme.breakpoints.up("sm")]: {
+      padding: ".5rem 16% .5rem 16%",
+    },
   },
   title: {
-    color: "#0000ff",
-    fontFamily: "Open Sans",
+    color: "#4545F5",
     marginTop: "3rem",
     paddingBottom: "1rem",
+//    width: "863px",
   },
   nextStep: {
     borderRadius: 35,
@@ -104,12 +91,8 @@ function Background(props) {
   const [value, setValue] = useState(2);
   const [hover, setHover] = useState(-1);
   const [message, setMessage] = useState("Please select your experience!");
-/*
-  if (user === "failed to fetch" || user === null) {
-    return <Redirect to="/login" />;
-  } else if (user.backgroundCompleted === true) {
-    return <Redirect to="/dashboard" />;
-  }*/
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
   if (user === null) {
     return <p>Loading profile...</p>;
@@ -181,114 +164,106 @@ function Background(props) {
   const { classes } = props; //classes property for styling is passed at the last line of this file
   return (
     <div className={classes.root}>
-      {" "}
-      {/*use classNmae instead of class in React. div is a HTML tag */}
-      <Paper className={classes.paper} elevation={0}>
-        {" "}
-        {/*Paper and Grid are Material-UI components*/}
-        <Grid container spacing={0}>
-          <Grid item>
-            <Grid className={classes.image}></Grid>{" "}
-            {/*root, paper, image, ... are styled above*/}
-          </Grid>{" "}
-          {/*Grid is usually used for the format of the layout*/}
-          <Grid className={classes.text} item xs={12} sm container>
-            <Grid item xs container direction="column" spacing={0}>
-              <Grid item xs>
-                <Typography
-                  className={classes.title}
-                  align="center"
-                  variant="h2"
-                >
-                  {/*styled component for text*/}
-                  Tell about your background
-                </Typography>
-                <Grid>
-                  <Typography className={classes.question}>
-                    Your language:
-                  </Typography>
-                  <FormControl variant="outlined" fullWidth>
-                    <Select
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
-                      value={language}
-                      onChange={languageChange}
-                    >
-                      {" "}
-                      {/*Select component with five options. I will use "map" and array instead of following five lines*/}
-                      {ItemList(0)}
-                    </Select>
-                  </FormControl>
-                  <Typography className={classes.question}>
-                    Years of professional experience:
-                  </Typography>
-                  <FormControl variant="outlined" fullWidth>
-                    <Select
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
-                      displayEmpty
-                      value={experience}
-                      onChange={experienceChange}
-                    >
-                      <MenuItem disabled value="">
-                        Select your experience
-                      </MenuItem>
-                      {ItemList(1)}
-                    </Select>
-                  </FormControl>
-                  <Typography className={classes.question}>
-                    What is your level at job interviews?
-                  </Typography>
-                  <div>
-                    <Rating
-                      name="hover-feedback"
-                      value={value}
-                      precision={1}
-                      onChange={(event, newValue) => {
-                        setValue(newValue);
-                      }}
-                      onChangeActive={(event, newHover) => {
-                        setHover(newHover);
-                      }}
-                    />
-                    {value !== null && ( //conditional render: only display this div when value !== null
-                      <div>
-                        <Box ml={0} style={{ color: "#0000ff" }}>
-                          {labels[hover !== -1 ? hover : value]}
-                        </Box>
-                        <Box ml={0} style={{ color: "#888888" }}>
-                          {details[hover !== -1 ? hover : value]}
-                        </Box>
-                      </div>
-                    )}
-                  </div>
-                  <Box display="flex" justifyContent="center" m={1} p={1}>
-                    <Button
-                      variant="contained"
-                      className={classes.nextStep}
-                      onClick={handleClick}
-                      color="primary"
-                    >
-                      {" "}
-                      {/*use {} for state and method instead of ""*/}
-                      NEXT STEP
-                    </Button>
-                    <Snackbar
-                      open={openSnack}
-                      autoHideDuration={6000}
-                      onClose={handleClose}
-                    >
-                      <Alert onClose={handleClose} severity={severity}>
-                        <div>{message}</div>
-                      </Alert>
-                    </Snackbar>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Paper>
+    <Dialog
+      fullScreen={fullScreen}
+      fullWidth={'true'}
+      maxWidth={'md'}
+      open={'true'}
+      aria-labelledby="max-width-dialog-title"
+    >
+      <DialogContent className={classes.dialog}>
+      <Typography
+        className={classes.title}
+        align="center"
+        variant="h3"
+      >
+        {/*styled component for text*/}
+        Tell about your background
+      </Typography>
+      <Grid>
+        <Typography className={classes.question}>
+          Your language:
+        </Typography>
+        <FormControl variant="outlined" fullWidth>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            value={language}
+            onChange={languageChange}
+          >
+            {" "}
+            {/*Select component with five options. I will use "map" and array instead of following five lines*/}
+            {ItemList(0)}
+          </Select>
+        </FormControl>
+        <Typography className={classes.question}>
+          Years of professional experience:
+        </Typography>
+        <FormControl variant="outlined" fullWidth>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            displayEmpty
+            value={experience}
+            onChange={experienceChange}
+          >
+            <MenuItem disabled value="">
+              Select your experience
+            </MenuItem>
+            {ItemList(1)}
+          </Select>
+        </FormControl>
+        <Typography className={classes.question}>
+          What is your level at job interviews?
+        </Typography>
+        <div>
+          <Rating
+            name="hover-feedback"
+            value={value}
+            precision={1}
+            onChange={(event, newValue) => {
+              setValue(newValue);
+            }}
+            onChangeActive={(event, newHover) => {
+              setHover(newHover);
+            }}
+          />
+          {value !== null && ( //conditional render: only display this div when value !== null
+            <div>
+              <Box ml={0} style={{ color: "#0000ff" }}>
+                {labels[hover !== -1 ? hover : value]}
+              </Box>
+              <Box ml={0} style={{ color: "#888888" }}>
+                {details[hover !== -1 ? hover : value]}
+              </Box>
+            </div>
+          )}
+        </div>
+        <Box display="flex" justifyContent="center" m={1} p={1}>
+          <Button
+            variant="contained"
+            className={classes.nextStep}
+            onClick={handleClick}
+            color="primary"
+          >
+            {" "}
+            {/*use {} for state and method instead of ""*/}
+            NEXT STEP
+          </Button>
+          <Snackbar
+            open={openSnack}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert onClose={handleClose} severity={severity}>
+              <div>{message}</div>
+            </Alert>
+          </Snackbar>
+        </Box>
+      </Grid>
+      </DialogContent>
+
+    </Dialog>
     </div>
   );
 }

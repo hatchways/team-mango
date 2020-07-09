@@ -72,7 +72,6 @@ const signUpStyle = (theme) => ({
   },
   start: {
     paddingBottom: "1.5rem",
-    fontFamily: "Open Sans",
   },
   input: {
     margin: ".5rem 0rem 1rem 0rem",
