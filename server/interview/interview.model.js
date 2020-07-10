@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const ReviewAnswerSchema = new Schema({
-    type: String,
-    enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
-  });
-
 let InterviewSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
@@ -16,7 +11,7 @@ let InterviewSchema = new Schema({
     {
       user: { type: Schema.Types.ObjectId, ref: "User" },
       question: { type: Schema.Types.ObjectId, ref: "Question" },
-      feedback: { 
+      feedbackReceived: { 
         overallScore: {
             //Overall, how well did this person do in the interview
             type: Number,
@@ -25,11 +20,26 @@ let InterviewSchema = new Schema({
           },
           review: {
             //Submit a review of the candidate in the following catergories
-            communicationSkills: ReviewAnswerSchema,
-            codeEfficiency: ReviewAnswerSchema,
-            speed: ReviewAnswerSchema,
-            debuggingSkills: ReviewAnswerSchema,
-            problemSolvingSkills: ReviewAnswerSchema,
+            communicationSkills: {
+              type: String,
+              enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+            },
+            codeEfficiency: {
+              type: String,
+              enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+            },
+            speed: {
+              type: String,
+              enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+            },
+            debuggingSkills: {
+              type: String,
+              enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+            },
+            problemSolvingSkills: {
+              type: String,
+              enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+            },
           },
           strengths: {
             //What  are some things this candidate did well (the more specific the better)
@@ -40,11 +50,10 @@ let InterviewSchema = new Schema({
             type: String,
           },
           recommendations: {
-            //Any recommendations on resources that can help this candidate improve?
+  //Any recommendations on resources that can help this candidate improve?
             type: String,
           },
           anythingElse: {
-            //Anything else?
             type: String,
           },
       },
