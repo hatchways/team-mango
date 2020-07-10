@@ -15,7 +15,6 @@ module.exports = {
 
 async function createInterview(user, difficulty) {
   let interview = new Interview();
-  console.log(JSON.stringify(user));
   interview.owner = user._id;
   interview.difficulty = difficulty;
 

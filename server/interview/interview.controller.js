@@ -30,7 +30,7 @@ router.put("/*", verifyToken, async function (req, res) {
 });
 
 //Get feedback
-router.get("/:interviewId/feedback", async function (req, res) {
+router.get("/:interviewId/feedback", verifyToken, async function (req, res) {
   const postBody = req.body;
   const user = req.user;
   const interviewId = req.params.interviewId;
@@ -42,7 +42,7 @@ router.get("/:interviewId/feedback", async function (req, res) {
 });
 
 //Create feedback
-router.post("/feedback/:interviewId", async function (req, res) {
+router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
   const postBody = req.body;
   const user = req.user;
   const userId = user._id;

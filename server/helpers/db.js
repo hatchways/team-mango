@@ -11,5 +11,4 @@ module.exports = {
   User: require("../users/user.model"),
   Question: require("../question/question.model"),
   Interview: require("../interview/interview.model"),
-  Feedback: require("../feedback/feedback.model"),
 };
