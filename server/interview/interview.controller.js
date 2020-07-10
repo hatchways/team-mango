@@ -13,7 +13,7 @@ router.post("/", verifyToken, async function (req, res) {
   await interviewService
     .createInterview(user, difficulty)
     .then((interview) => {
-      res.json(interview);
+      res.status(200).json(interview);
     })
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
@@ -26,7 +26,7 @@ router.put("/*", verifyToken, async function (req, res) {
 
   await interviewService
     .addParticipantToAnInterview(user, interviewId)
-    .then((interview) => res.json(interview))
+    .then((interview) => res.status(200).json(interview))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
@@ -35,7 +35,7 @@ router.get("/completed", verifyToken, async function (req, res) {
   const user = req.user;
   await interviewService
     .getAllCompletedInterviewsOfAUser(user)
-    .then((interviews) => res.json(interviews))
+    .then((interviews) => res.status(200).json(interviews))
     .catch((err) => res.status(500).json(err.message));
 });
 
@@ -44,7 +44,7 @@ router.get("/ongoing", verifyToken, async function (req, res) {
   const user = req.user;
   const interviews = await interviewService
     .getAllOngoingOrUpcomingInterviewsOfAUser(user)
-    .then((interviews) => res.json(interviews))
+    .then((interviews) => res.status(200).json(interviews))
     .catch((err) => res.status(500).json(err.message));
 });
 

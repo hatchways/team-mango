@@ -75,8 +75,13 @@ const joinButtonStyles = makeStyles({
 export function JoinButton(props) {
   const classes = joinButtonStyles();
 
+  function handleEvent(e) {
+    e.preventDefault();
+    props.clickEvent(e);
+  }
+
   return (
-    <Button variant="outlined" className={classes.button}>
+    <Button variant="outlined" className={classes.button} onClick={handleEvent}>
       <Typography className={classes.text}>{props.text}</Typography>
     </Button>
   );

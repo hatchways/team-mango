@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
+import {useHistory} from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 import { Grid, TableContainer, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { StartButton, JoinButton } from "../components/CustomButtons";
 import { TableHeading } from "../components/CustomHeadings";
 import { PastPracticeTable, UpcomingOrOngoingTable } from "../components/CustomTables";
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,7 +29,20 @@ const useStyles = makeStyles((theme) => ({
 
 function Dashboard(props) {
   const classes = useStyles();
+  const history = useHistory();
+  const { user } = useContext(UserContext);
 
+  function goToCodeUI(e) {
+    e.preventDefault();
+    history.push('/code');
+  }
+
+  if (user === null) {
+    return <></>;
+  } else if (user === "failed to fetch") {
+    return <Redirect to="/login" />;
+  } else 
+{
   return (
     <Grid
       className={classes.root}
@@ -54,7 +70,7 @@ function Dashboard(props) {
           alignItems="center"
         >
           <StartButton text="Start" marginRight="1rem" />
-          <JoinButton text="Join" />
+          <JoinButton text="Join" clickEvent={goToCodeUI} />
         </Grid>
         <Grid
           item
@@ -86,6 +102,7 @@ function Dashboard(props) {
       <Grid item xs={0} sm={2} />
     </Grid>
   );
+}
 }
 
 export default Dashboard;

@@ -128,7 +128,7 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
 
   for (let i = 0, len = interviewIds.length; i < len; i++) {
     const interviewId = interviewIds[i];
-    let interview = await Interview.findById(interviewId);
+    let interview = await Interview.findOne({_id: interviewId, });
 
     //Checking if this interview is completed
     if (interview.endTime == undefined) break;
@@ -140,6 +140,8 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
       difficulty: interview.difficulty,
       heldOnDate: interview.endTime,
       heldOnTime: interview.startTime,
+      startTime: interview.startTime,
+      endTime: interview.endTime,
     };
 
     const participants = interview.participants;

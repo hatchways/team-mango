@@ -22,6 +22,52 @@ const pastPracticeTableStyles = makeStyles({
   },
 });
 
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var amPm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  minutes = minutes < 10 ? '0'+ minutes : minutes;
+  var time = hours + ':' + minutes + ' ' + amPm;
+  return time;
+}
+
+function formatDate(unformattedDate) {
+  //Thursday , April 30, 2020
+  const year = unformattedDate.getFullYear();
+  const date = unformattedDate.getDate();
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  const monthIndex = unformattedDate.getMonth();
+  const monthName = months[monthIndex];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+  const dayIndex = unformattedDate.getDay();
+  const dayName = days[dayIndex];
+//Thursday , April 30, 2020
+  return dayName + " , " + monthName + " " + date + ", " + year;
+}
+
 export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
@@ -31,6 +77,11 @@ export function PastPracticeTable(props) {
       .then((result) => result.json())
       .then((data) => {
         data.forEach((element) => {
+          let startDate = new Date(element.startTime);
+          let endDate = new Date(element.endTime);
+          console.log('date formatted' + formatDate(startDate)); 
+          element.heldOnDate = formatDate(startDate);
+          element.heldOnTime = formatAMPM(startDate) + " - " + formatAMPM(endDate);
           setCompletedInterviewsList((prevArray) => [...prevArray, element]);
         });
       })
