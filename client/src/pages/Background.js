@@ -90,6 +90,8 @@ function Background(props) {
 
   if (user === null) {
     return <p>Loading profile...</p>;
+  } else if (user === "failed to fetch") {
+    return <Redirect to="/login" />;
   } else if (user.backgroundCompleted) {
     props.history.push({ pathname: "/dashboard" });
   }

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Typography,
   Grid,
@@ -90,7 +90,16 @@ function SignUp(props) {
   const [password, setPassword] = useState("");
   const [passwordConfirmed, setPasswordConfirmed] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
-  const [severity, setSeverity] = useState("error");
+  const [severity, setSeverity] = useState("success");
+
+  useEffect(() => {
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setPassword('');
+    setPasswordConfirmed('');
+  }, [props.location.pathname]);
+
   const [firstNameMessage, setFirstNameMessage] = useState(
     "First name requires at least 3 characters!"
   );
@@ -105,7 +114,7 @@ function SignUp(props) {
     "Both passwords are needed to be the same!"
   );
   const [successMessage, setSuccessMessage] = useState("");
-  const [message, setMessage] = useState("Invalid email or password!");
+  const [message, setMessage] = useState("Succesfully logged");
   const { user, setUser } = useContext(UserContext);
 
 
@@ -234,7 +243,6 @@ function SignUp(props) {
           setMessage(
             responseJson.errors[0].param + ": " + responseJson.errors[0].msg
           );
-          setSeverity("error");
         }
       })
       .catch((error) => {

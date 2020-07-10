@@ -11,6 +11,7 @@ module.exports = {
   create,
   update,
   delete: _delete,
+  findById,
 };
 
 async function authenticate({ email, password }) {
@@ -79,4 +80,12 @@ async function update(id, userParam) {
 
 async function _delete(id) {
   await User.findByIdAndRemove(id);
+}
+/**
+ * Returns mongoose document object of a user
+ *  
+ */
+async function findById(id) {
+  const user = await User.findById(id).catch(err => {throw err;});
+  return user;
 }
