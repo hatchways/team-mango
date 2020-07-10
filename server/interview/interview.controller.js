@@ -7,7 +7,7 @@ const interviewService = require("./interview.service");
 //Create interview
 router.post("/", verifyToken, async function (req, res) {
   const postBody = req.body;
-  const user = postBody.user;
+  const user = req.user;
   const difficulty = postBody.difficulty;
 
   await interviewService
@@ -21,7 +21,7 @@ router.post("/", verifyToken, async function (req, res) {
 //Update interview
 router.put("/*", verifyToken, async function (req, res) {
   const postBody = req.body;
-  const user = postBody.user;
+  const user = req.user;
   let interviewId = req.path.replace(/\//g, "");
 
   await interviewService
@@ -32,24 +32,20 @@ router.put("/*", verifyToken, async function (req, res) {
 
 //Get all completed interviews
 router.get("/completed", verifyToken, async function (req, res) {
-  const postBody = req.body;
-  const user = postBody.user;
-  const interviews = await interviewService.getAllCompletedInterviewsOfAUser(
-    user
-  );
-
-  res.json(interviews);
+  const user = req.user;
+  await interviewService
+    .getAllCompletedInterviewsOfAUser(user)
+    .then((interviews) => res.json(interviews))
+    .catch((err) => res.status(500).json(err.message));
 });
 
 //Get all ongoing or upcoming interviews
 router.get("/ongoing", verifyToken, async function (req, res) {
-  const postBody = req.body;
-  const user = postBody.user;
-  const interviews = await interviewService.getAllOngoingOrUpcomingInterviewsOfAUser(
-    user
-  );
-
-  res.json(interviews);
+  const user = req.user;
+  const interviews = await interviewService
+    .getAllOngoingOrUpcomingInterviewsOfAUser(user)
+    .then((interviews) => res.json(interviews))
+    .catch((err) => res.status(500).json(err.message));
 });
 
 module.exports = router;

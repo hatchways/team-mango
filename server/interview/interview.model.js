@@ -11,9 +11,6 @@ let InterviewSchema = new Schema({
     {
       user: { type: Schema.Types.ObjectId, ref: "User" },
       question: { type: Schema.Types.ObjectId, ref: "Question" },
-      codingRating: { type: Number, min: 0, max: 5 },
-      communicationRating: { type: Number, min: 0, max: 5 },
-      feedback: String,
     },
   ],
   difficulty: {

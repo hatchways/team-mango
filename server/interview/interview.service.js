@@ -79,6 +79,7 @@ async function getAllCompletedInterviewsOfAUser(user) {
     user._id,
     interviewIds
   );
+
   //Sorting latest first, based on interview end time
   relevantInterviewInformation.sort((e1, e2) =>
     e1.endTime < e2.endTime ? 1 : e2.endTime < e1.endTime ? -1 : 0
@@ -87,7 +88,7 @@ async function getAllCompletedInterviewsOfAUser(user) {
 }
 
 /**
- * Returns all the relevant details of ongoing interviews of a user.
+ * Returns an array of interview ids of ongoing interviews of a user.
  *
  */
 async function getAllOngoingOrUpcomingInterviewsOfAUser(user) {
@@ -124,14 +125,15 @@ async function filterCompleteInterviewIdsOnly(interviewIds) {
  */
 async function retrieveRelevantInterviewInformation(userId, interviewIds) {
   let relevantDetails = [];
+
   for (let i = 0, len = interviewIds.length; i < len; i++) {
     const interviewId = interviewIds[i];
     let interview = await Interview.findById(interviewId);
 
-    if (interview.endTime == undefined) break; 
+    //Checking if this interview is completed
+    if (interview.endTime == undefined) break;
 
-    const participants = interview.participants;
-
+    //Adding details except feedbackReceived
     let details = {
       _id: interview._id,
       owner: interview.owner,
@@ -139,26 +141,37 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
       heldOnDate: interview.endTime,
       heldOnTime: interview.startTime,
     };
+
+    const participants = interview.participants;
+    //Adding feedback if it exists. Looping participants to find the users participant array position to retrieve feedback
     for (
       let j = 0, participantsLen = participants.length;
       j < participantsLen;
       j++
     ) {
       const participant = participants[j];
+      //Checking whether it is users correct array position in participants
       if (participant.user.toString() == userId.toString()) {
+        //Adding question
         details.question = participant.question;
-        let feedback = participant.feedback;
-
-        if (feedback.codeEfficiency) {
-          let score = convertReviewPointsToAScore(feedback.codeEfficiency);
-          if (score) details.codingRating = score; 
+        let feedbackReceived = participant.feedbackReceived;
+        //Adding feedback if it exists
+        if (feedbackReceived) {
+          if (feedbackReceived.review) {
+            let review = feedbackReceived.review;
+            if (review.communicationSkills) {
+              let score = convertReviewPointsToAScore(
+                feedback.communicationSkills
+              );
+              if (score) details.communicationRating = score;
+            }
+            if (review.codeEfficiency) {
+              let score = convertReviewPointsToAScore(feedback.codeEfficiency);
+              if (score) details.codeEfficiency = score;
+            }
+          }
+          details.feedbackReceived = feedbackReceived;
         }
-        if (feedback.communicationSkills) {
-          let score = convertReviewPointsToAScore(feedback.communicationSkills);
-          if (score) details.communicationRating = score; 
-        }
-        
-        details.feedback = feedback;
         break;
       }
     }
@@ -175,21 +188,21 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
 function convertReviewPointsToAScore(reviewPoint) {
   let score;
   switch (reviewPoint) {
-    case 'needs improvement': 
-    score = 1;
-    break;
-    case 'satisfactory': 
-    score = 2;
-    break;
-    case 'good': 
-    score = 3;
-    break;
-    case 'great': 
-    score = 4;
-    break;
-    case 'excellent': 
-    score = 5;
-    break;
+    case "needs improvement":
+      score = 1;
+      break;
+    case "satisfactory":
+      score = 2;
+      break;
+    case "good":
+      score = 3;
+      break;
+    case "great":
+      score = 4;
+      break;
+    case "excellent":
+      score = 5;
+      break;
   }
   return score;
 }
