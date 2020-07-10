@@ -38,6 +38,7 @@ const createDialogStyle = (theme) => ({
   },
   title: {
     color: "#4545F5",
+    fontWeight: "800",
     marginTop: "3rem",
     paddingBottom: "1rem",
   },
@@ -61,7 +62,7 @@ function CreateDialog(props) {
   console.log(difficulty);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const {open, setOpen} = props;
+  const { open, setOpen } = props;
   const handleClick = () => {
     const res = fetch("/", {
       method: "put",
@@ -71,8 +72,9 @@ function CreateDialog(props) {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
-        if (true) { //check responseJson in the future
-          props.history.push({pathname: "/login"}); //route to interview page in the future
+        if (true) {
+          //check responseJson in the future
+          props.history.push({ pathname: "/login" }); //route to interview page in the future
         } else {
           console.log("Database connection problem!");
         }
