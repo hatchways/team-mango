@@ -65,8 +65,9 @@ async function addParticipantToAnInterview(user, interviewId) {
  */
 async function createFeedback(userId, interviewId, feedbackBody) {
   let feedbackReceived = {};
-  
-  if (feedbackBody.overallScore !== undefined) feedbackReceived.overallScore = feedbackBody.overallScore;
+
+  if (feedbackBody.overallScore !== undefined)
+    feedbackReceived.overallScore = feedbackBody.overallScore;
   //Adding review to interview feedback
   if (feedbackBody.review) {
     let review = {};
@@ -81,28 +82,37 @@ async function createFeedback(userId, interviewId, feedbackBody) {
     if (codeEfficiency) review.codeEfficiency = codeEfficiency;
     if (speed) review.speed = speed;
     if (debuggingSkills) review.debuggingSkills = debuggingSkills;
-    if (problemSolvingSkills) review.problemSolvingSkills = problemSolvingSkills;
+    if (problemSolvingSkills)
+      review.problemSolvingSkills = problemSolvingSkills;
 
     feedbackReceived.review = review;
   }
-  if (feedbackBody.strengths) feedbackReceived.strengths = feedbackBody.strengths;
-  if (feedbackBody.weaknesses) feedbackReceived.weaknesses = feedbackBody.weaknesses;
-  if (feedbackBody.recommendations) feedbackReceived.recommendations = feedbackBody.recommendations;
-  if (feedbackBody.anythingElse) feedbackReceived.anythingElse = feedbackBody.anythingElse;
+  if (feedbackBody.strengths)
+    feedbackReceived.strengths = feedbackBody.strengths;
+  if (feedbackBody.weaknesses)
+    feedbackReceived.weaknesses = feedbackBody.weaknesses;
+  if (feedbackBody.recommendations)
+    feedbackReceived.recommendations = feedbackBody.recommendations;
+  if (feedbackBody.anythingElse)
+    feedbackReceived.anythingElse = feedbackBody.anythingElse;
 
-  let interview = await findById(interviewId).catch(err => {throw Error('Could not find interview')});
+  let interview = await findById(interviewId).catch((err) => {
+    throw Error("Could not find interview");
+  });
   const participants = interview.participants;
   for (let i = 0, len = participants.length; i < len; i++) {
-      const participant = participants[i];
-      const user = participant.user;
-      //Current user giving to other interview participant
-      if (user.toString() !== userId.toString()) {
-          participant.feedbackReceived = feedbackReceived;
-          break;
-      }
+    const participant = participants[i];
+    const user = participant.user;
+    //Current user giving to other interview participant
+    if (user.toString() !== userId.toString()) {
+      participant.feedbackReceived = feedbackReceived;
+      break;
+    }
   }
 
-  interview = await interview.save().catch(err => {throw Error('Could not save interview')});
+  interview = await interview.save().catch((err) => {
+    throw Error("Could not save interview");
+  });
   return interview;
 }
 
@@ -111,19 +121,21 @@ async function createFeedback(userId, interviewId, feedbackBody) {
  */
 async function getFeedback(userId, interviewId) {
   let feedbackReceived = {};
-const interview = await findById(interviewId).catch((err) => {throw Error("Could not find interview");});
+  const interview = await findById(interviewId).catch((err) => {
+    throw Error("Could not find interview");
+  });
 
   const participants = interview.participants;
-  
+
   for (let i = 0, len = participants.length; i < len; i++) {
-      const participant = participants[i];
-      const user = participant.user;
-      if (user.toString() == userId.toString()) {
-        feedbackReceived = participant.feedbackReceived;
-          break;
-      }
+    const participant = participants[i];
+    const user = participant.user;
+    if (user.toString() == userId.toString()) {
+      feedbackReceived = participant.feedbackReceived;
+      break;
+    }
   }
-return feedbackReceived;
+  return feedbackReceived;
 }
 
 /**
