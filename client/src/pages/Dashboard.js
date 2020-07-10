@@ -1,7 +1,14 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { Button } from "@material-ui/core"; //for testing;
+import { Button, Grid } from "@material-ui/core"; //for testing;
 import CreateDialog from "./CreateDialog";
+import { withStyles } from "@material-ui/core/styles";
+
+const dashboardStyle = (theme) => ({
+  dashboard: {
+    height: "100vh",
+  }
+});
 
 function Dashboard(props) {
   const { user } = useContext(UserContext);
@@ -9,8 +16,10 @@ function Dashboard(props) {
   if (user === null) {
     return <p>Loading profile...</p>;
   }
+  const { classes } = props;
   return (
     <div>
+      <Grid className={classes.dashboard}>
       <h1> Dashboard Now</h1>
       <pre>Here is firstName: {user.firstName + " " + user.lastName}</pre>
       <Button
@@ -23,9 +32,10 @@ function Dashboard(props) {
         {" "}
         CREATE
       </Button>
-      <CreateDialog open={open} />
+      </Grid>
+      <CreateDialog open={open} setOpen={setOpen} history={props.history}/>
     </div>
   );
 }
 
-export default Dashboard;
+export default withStyles(dashboardStyle)(Dashboard);

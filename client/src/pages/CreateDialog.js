@@ -57,14 +57,11 @@ const difficultyEnum = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
 function CreateDialog(props) {
   const { user, setUser } = useContext(UserContext);
-  const [close, setClose] = useState(false);
   const [difficulty, setDifficulty] = useState("Intermediate");
   console.log(difficulty);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  if (close === false) {
-    var open = props.open;
-  }
+  const {open, setOpen} = props;
   const handleClick = () => {
     const res = fetch("/", {
       method: "put",
@@ -74,8 +71,8 @@ function CreateDialog(props) {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
-        if (true) {
-          return <Redirect to="/dashboard" />;
+        if (true) { //check responseJson in the future
+          props.history.push({pathname: "/login"}); //route to interview page in the future
         } else {
           console.log("Database connection problem!");
         }
@@ -88,8 +85,7 @@ function CreateDialog(props) {
   };
 
   const handleClose = () => {
-    open = false;
-    setClose(true);
+    setOpen(false);
   };
 
   const ItemList = () => {
