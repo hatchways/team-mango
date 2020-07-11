@@ -6,7 +6,10 @@ const logger = require("morgan");
 
 const interviewRouter = require("./interview/interview.controller");
 const accountRouter = require("./users/users.controller");
+<<<<<<< HEAD
 const questionRouter = require("./question/question.controller");
+=======
+>>>>>>> 1a6cd513ab0ee4271999fb1be57d783d5ea007da
 const codeRouter = require("./sockets/code");
 
 const { json, urlencoded } = express;
@@ -22,7 +25,10 @@ app.use(express.static(join(__dirname, "public")));
 app.use("/", accountRouter);
 app.use("/users", require("./users/users.controller"));
 app.use("/interviews", interviewRouter);
+<<<<<<< HEAD
 app.use("/questions", questionRouter);
+=======
+>>>>>>> 1a6cd513ab0ee4271999fb1be57d783d5ea007da
 app.use("/code", codeRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
