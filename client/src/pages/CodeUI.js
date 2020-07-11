@@ -9,6 +9,7 @@ import {
   Typography,
   Toolbar,
 } from "@material-ui/core/";
+import socketIOClient from "socket.io-client";
 import { withStyles } from "@material-ui/core/styles";
 import { sizing } from "@material-ui/system";
 import "codemirror/lib/codemirror.css";
@@ -17,6 +18,8 @@ import { theme } from "../themes/theme";
 
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/javascript/javascript");
+
+const ENDPOINT = "localhost:3001";
 
 const codeUIStyle = (theme) => ({
   root: {
@@ -51,15 +54,27 @@ function CodeUI(props) {
   const [question, setQuestion] = useState(" ");
   const [interview, setInterview] = useState(interviewTitle);
   const [runResult, setrunResult] = useState(null);
+  const [socket, setSocket] = useState();
+
   useEffect(() => {
     setQuestion(premadeq);
-  });
+    let socket = socketIOClient(ENDPOINT);
+    setSocket(socket);
+  }, []);
   const updateCode = (newCode) => {
     setCode(newCode);
+    socket.emit("new_code", newCode);
+    console.log("sending" + newCode);
   };
+
   const runCode = () => {
     setrunResult(eval(code));
   };
+  if (socket)
+    socket.on("update_code", (data) => {
+      console.log("updating code");
+      setCode(data);
+    });
 
   const { classes } = props;
   return (
@@ -102,9 +117,7 @@ function CodeUI(props) {
             onBeforeChange={(editor, data, value) => {
               updateCode(value);
             }}
-            onChange={(editor, data, value) => {
-              updateCode(value);
-            }}
+            onChange={(editor, data, value) => {}}
           />
           <Box bgcolor="#263238" height="200px">
             <AppBar position="static" color="primary">
