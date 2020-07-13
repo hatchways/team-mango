@@ -13,6 +13,7 @@ import Faq from "./pages/faq";
 import Navbar from "./pages/navbar";
 import Blog from "./pages/Blog";
 import CodeUI from "./pages/CodeUI";
+import DialogTest from "./pages/DialogTest";
 
 function App(props) {
   const [user, setUser] = useState(null);
@@ -67,6 +68,7 @@ function App(props) {
                 <Route path="/dashboard" component={Dashboard} />
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
+                <Route path="/test" component={DialogTest} />
               </Switch>
             </Route>
           </Switch>
