@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { withStyles } from "@material-ui/styles";
 import {
   AppBar,
@@ -14,6 +14,7 @@ import { Link as RouterLink } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { UserContext } from "../contexts/UserContext";
 import { Redirect } from "react-router-dom";
+import { theme } from "../themes/theme";
 
 const styles = (theme) => ({
   root: {
@@ -47,7 +48,10 @@ function Navbar(props) {
     return <p>Loading profile...</p>;
   } else if (user === "failed to fetch") {
     return <Redirect to="/login" />;
+  } else if (!user.backgroundCompleted) {
+    return <Redirect to="/background" />;
   }
+
   return (
     <AppBar position="static" color="white" width="100%">
       <Toolbar>
@@ -60,7 +64,7 @@ function Navbar(props) {
           Logo
         </Typography>
         <div>
-          <Tabs value={value}>
+          <Tabs value={value} indicatorColor="primary" textColor="primary">
             <Tab
               label="Dashboard"
               to="/dashboard"

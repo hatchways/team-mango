@@ -13,23 +13,42 @@ router.post("/", verifyToken, async function (req, res) {
   await interviewService
     .createInterview(user, difficulty)
     .then((interview) => {
-      res.json(interview);
+      res.status(200).json(interview);
     })
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
 //Update interview
 router.put("/*", verifyToken, async function (req, res) {
+  const postBody = req.body;
   const user = req.user;
   let interviewId = req.path.replace(/\//g, "");
 
   await interviewService
     .addParticipantToAnInterview(user, interviewId)
-    .then((interview) => res.json(interview))
+    .then((interview) => res.status(200).json(interview))
     .catch((err) => res.status(500).json({ Error: err }));
 });
 
-//Get feedback
+//Get all completed interviews
+router.get("/completed", verifyToken, async function (req, res) {
+  const user = req.user;
+  await interviewService
+    .getAllCompletedInterviewsOfAUser(user)
+    .then((interviews) => res.status(200).json(interviews))
+    .catch((err) => res.status(500).json(err.message));
+});
+
+//Get all ongoing or upcoming interviews
+router.get("/ongoing", verifyToken, async function (req, res) {
+  const user = req.user;
+  const interviews = await interviewService
+    .getAllOngoingOrUpcomingInterviewsOfAUser(user)
+    .then((interviews) => res.status(200).json(interviews))
+    .catch((err) => res.status(500).json(err.message));
+});
+
+//Get feedback of a user
 router.get("/:interviewId/feedback", verifyToken, async function (req, res) {
   const postBody = req.body;
   const user = req.user;
@@ -41,7 +60,7 @@ router.get("/:interviewId/feedback", verifyToken, async function (req, res) {
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
-//Create feedback
+//Create feedback for the other user
 router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
   const postBody = req.body;
   const user = req.user;
