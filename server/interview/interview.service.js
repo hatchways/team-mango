@@ -280,3 +280,28 @@ async function findById(id) {
   });
   return interview;
 }
+
+/**
+ * Returns a numerical score for review points
+ */
+function convertReviewPointsToAScore(reviewPoint) {
+  let score;
+  switch (reviewPoint) {
+    case "needs improvement":
+      score = 1;
+      break;
+    case "satisfactory":
+      score = 2;
+      break;
+    case "good":
+      score = 3;
+      break;
+    case "great":
+      score = 4;
+      break;
+    case "excellent":
+      score = 5;
+      break;
+  }
+  return score;
+}
