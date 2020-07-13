@@ -37,7 +37,7 @@ router.get("/:interviewId/feedback", verifyToken, async function (req, res) {
 
   await interviewService
     .getFeedback(user._id, interviewId)
-    .then((feedback) => res.json(feedback))
+    .then((feedback) => res.status(200).json(feedback))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
@@ -50,7 +50,7 @@ router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
 
   await interviewService
     .createFeedback(userId, interviewId, postBody)
-    .then((feedback) => res.json(feedback))
+    .then((feedback) => res.status(200).json(feedback))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
