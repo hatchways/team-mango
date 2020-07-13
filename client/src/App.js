@@ -14,6 +14,7 @@ import Navbar from "./pages/navbar";
 import Blog from "./pages/Blog";
 import CodeUI from "./pages/CodeUI";
 import DialogTest from "./pages/DialogTest";
+import OverallDialog from "./dialogs/feedback/OverallDialog";
 
 function App(props) {
   const [user, setUser] = useState(null);
@@ -69,6 +70,7 @@ function App(props) {
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/test" component={DialogTest} />
+                <Route path="test/1" component={OverallDialog} />
               </Switch>
             </Route>
           </Switch>
