@@ -117,7 +117,6 @@ function SignUp(props) {
   const [message, setMessage] = useState("Succesfully logged");
   const { user, setUser } = useContext(UserContext);
 
-
   const pathname = props.location.pathname;
   const onChangeFirstName = (e) => {
     setFirstName(e.target.value);
