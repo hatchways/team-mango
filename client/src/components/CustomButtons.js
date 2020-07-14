@@ -41,9 +41,13 @@ const startButtonStyles = makeStyles({
   },
 });
 
-export function StartButton(props) {
+export function StartButton({ text, marginRight, clickEvent }) {
   const classes = startButtonStyles();
-  const { marginRight } = props;
+
+  function handleEvent(e) {
+    e.preventDefault();
+    clickEvent(e);
+  }
 
   return (
     <Button
@@ -51,8 +55,9 @@ export function StartButton(props) {
       disableElevation
       className={classes.button}
       style={{ "margin-right": `${marginRight}` }}
+      onClick={handleEvent}
     >
-      <Typography className={classes.text}>{props.text}</Typography>
+      <Typography className={classes.text}>{text}</Typography>
     </Button>
   );
 }
