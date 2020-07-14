@@ -57,9 +57,15 @@ function CodeUI(props) {
   const updateCode = (newCode) => {
     setCode(newCode);
   };
-  const runCode = () => {
-    setrunResult(eval(code));
-  };
+  async function runCode() {
+    const res = await fetch("/code/runcode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    }).then((result) => result.json());
+
+    setrunResult(res);
+  }
 
   const { classes } = props;
   return (
