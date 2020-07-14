@@ -13,6 +13,7 @@ import Faq from "./pages/faq";
 import Navbar from "./pages/navbar";
 import Blog from "./pages/Blog";
 import CodeUI from "./pages/CodeUI";
+import WaitingRoom from "./pages/WaitingRoom";
 
 function App(props) {
   const [user, setUser] = useState(null);
@@ -64,9 +65,15 @@ function App(props) {
               <Navbar />
               <Switch>
                 <Route path="/code" component={CodeUI} />
-                <Route path="/dashboard" component={Dashboard} />
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
+                <Route path="/">
+                  <Route path="/dashboard" component={Dashboard} />
+                  <Route
+                    path="/dashboard/waitingroom/:id"
+                    component={WaitingRoom}
+                  />
+                </Route>
               </Switch>
             </Route>
           </Switch>
