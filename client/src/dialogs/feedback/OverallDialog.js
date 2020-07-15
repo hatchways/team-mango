@@ -1,122 +1,78 @@
-import React from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Radio,
   RadioGroup,
   FormControl,
   FormControlLabel,
 } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 
-import { useHistory, useLocation } from "react-router-dom";
-
-const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-    justifyContent: "flex-end",
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-});
-
-const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle className={classes.root} {...other}>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles((theme) => ({
-  root: {
-    paddingLeft: theme.spacing(8),
-    paddingRight: theme.spacing(8),
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
+import { useLocation } from "react-router-dom";
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  QuestionTextAndNo,
+  FeedbackBlueButton,
+} from "../../components/DialogCommonComponents";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  heading: {
-    fontSize: 30,
-    fontWeight: 400,
-    color: "#516bf6",
-    marginBottom: theme.spacing(2),
-  },
-  subHeading: {
-    fontSize: 16,
-    fontWeight: 400,
-    color: "#5e6676",
-    fontStyle: "italic",
-    marginBottom: theme.spacing(4),
-  },
-  questionNoStart: {
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#516bf6",
-  },
-  questionNoEnd: {
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#5e6676",
-  },
-  question: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: "#5e6676",
-    marginBottom: theme.spacing(4),
-    marginTop: theme.spacing(2),
-  },
   radioLine: {
     display: "flex",
+    flexGrow: 1,
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  perfectTerrible: {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#516bf6",
+    marginTop: "auto",
+    paddingBottom: 7,
+  },
+  formControlLabel: {
+    padding: 0,
+    margin: 0,
+  },
+  radioButton: {
+    padding: 7,
+    margin: 0,
+  },
+  dialogActions: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(8),
   },
 }));
 
-function OverallDialog(props) {
+const OverallDialog = ({ onClose, onNextQuestionClick }) => {
   const classes = useStyles();
-  let location = useLocation();
-  let history = useHistory();
+  const location = useLocation();
+  const [
+    currentRadioButtonSelection,
+    setCurrentRadioButtonSelection,
+  ] = useState("");
 
   let openDialog = false;
   const { pathname } = location;
-
-  if (pathname === "/test/1" || pathname === "/test/1/") openDialog = true;
+  if (
+    pathname === "/dashboard/feedback/1" ||
+    pathname === "/dashboard/feedback/1/"
+  )
+    openDialog = true;
 
   const handleClose = () => {
-    props.onOverallClose();
+    onClose();
+  };
+
+  const handleRadioButtonClick = (e) => {
+    console.log(e.target.value);
+    setCurrentRadioButtonSelection(e.target.value.toString());
+  };
+
+  const handleNextQuestionClick = () => {
+    onNextQuestionClick();
   };
 
   return (
@@ -132,104 +88,133 @@ function OverallDialog(props) {
         onClose={handleClose}
       ></DialogTitle>
       <DialogContent>
-        <Typography className={classes.heading} align="center">
-          Give us your Feedback
-        </Typography>
-        <Typography gutterBottom className={classes.subHeading} align="center">
-          Please leave your comments here:
-        </Typography>
-        <Typography
-          gutterBottom
-          display="inline"
-          className={classes.questionNoStart}
-        >
-          Question 1
-        </Typography>
-        <Typography
-          gutterBottom
-          display="inline"
-          className={classes.questionNoEnd}
-        >
-          &#160;/&#160;6
-        </Typography>
-        <Typography gutterBottom className={classes.question}>
-          Overall, how well did this person do in the interview?
-        </Typography>
+        <QuestionTextAndNo
+          questionNo="1"
+          questionText="Overall, how well did this person do in the interview?"
+        />
         <div display="inline" className={classes.radioLine}>
-          <Typography>Terrible</Typography>
+          <Typography className={classes.perfectTerrible}>Terrible</Typography>
           <FormControl component="fieldset">
             <RadioGroup
               row
-              aria-label="position"
-              name="position"
-              defaultValue="top"
+              aria-label="score"
+              name="question-1-score"
+              value={currentRadioButtonSelection.toString()}
+              className={classes.radioGroup}
             >
               <FormControlLabel
-                value="top"
-                control={<Radio />}
+                value="1"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
                 label="1"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
+                value="2"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
                 label="2"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
+                value="3"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
                 label="3"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="1"
+                value="4"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="4"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="2"
+                value="5"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="5"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="3"
+                value="6"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="6"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="1"
+                value="7"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="7"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="2"
+                value="8"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="8"
                 labelPlacement="top"
               />
               <FormControlLabel
-                value="top"
-                control={<Radio />}
-                label="3"
+                value="9"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="9"
+                labelPlacement="top"
+              />
+              <FormControlLabel
+                value="10"
+                className={classes.formControlLabel}
+                onClick={handleRadioButtonClick}
+                control={
+                  <Radio className={classes.radioButton} color="primary" />
+                }
+                label="10"
                 labelPlacement="top"
               />
             </RadioGroup>
           </FormControl>
-          <Typography>Perfect</Typography>
+          <Typography className={classes.perfectTerrible}>Perfect</Typography>
         </div>
       </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
-          Save changes
-        </Button>
+      <DialogActions className={classes.dialogActions}>
+        <FeedbackBlueButton
+          text="Next Question"
+          clickEvent={handleNextQuestionClick}
+        />
       </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default OverallDialog;
