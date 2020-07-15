@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -8,6 +8,8 @@ import {
   TextField,
   Avatar,
 } from "@material-ui/core";
+import { UserContext } from "../contexts/UserContext";
+
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
@@ -16,7 +18,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { withStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import copy from "copy-to-clipboard";
-
+import socket from "../socket/socket";
 const waitingRoomStyle = (theme) => ({
   root: {
     backgroundColor: "#495074",
@@ -89,12 +91,61 @@ function WaitingRoom(props) {
   const [openRoom, setOpenRoom] = useState(true);
   const [fullUrlPath, setFullUrlPath] = useState("");
   const history = useHistory();
-
+  const { user } = useContext(UserContext);
+  const [participants, setParticipants] = useState([]);
+  const [inRoom, setInRoom] = useState(false);
+  const [startEnabled, setstartEnabled] = useState(false);
   useEffect(() => {
+    handleInRoom();
+    if (inRoom) {
+      console.log("joiningRoom");
+      socket.emit(
+        "joinInterviewLobby",
+        {
+          id: props.match.params.id,
+          name: user.firstName + " " + user.lastName,
+          userId: user.id,
+        },
+        function (confimation) {
+          console.log(confimation);
+          if (!confimation) history.push("/dashboard");
+        }
+      );
+    }
     setFullUrlPath(window.location.href);
-  }, []);
+    return () => {
+      if (inRoom) {
+        console.log("leaving room");
+        socket.emit("leaveRoom", {
+          id: props.match.params.id,
+          name: user.firstName + " " + user.lastName,
+          userId: user.id,
+        });
+      }
+    };
+  }, [user]);
 
   function handleStartButtonClick() {}
+
+  useEffect(() => {
+    socket.on("joinedRoom", (data) => {
+      let part = [];
+      part.firstName = data;
+      setParticipants(data);
+      fetch(`/interviews/isowner/${props.match.params.id}`)
+        .then((result) => result.json())
+        .then((res) => {
+          var isTrueSet = res === "true";
+          if (data.length === 2 && isTrueSet) {
+            setstartEnabled(true);
+          } else setstartEnabled(false);
+        });
+    });
+  }, []);
+
+  const handleInRoom = () => {
+    inRoom ? setInRoom(false) : setInRoom(true);
+  };
 
   const handleClose = () => {
     history.push("/dashboard");
@@ -106,32 +157,20 @@ function WaitingRoom(props) {
   };
 
   const ItemList = () => {
-    const participantsList = [
-      {
-        avatar:
-          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-        firstName: "Peter",
-      },
-      {
-        avatar:
-          "https://cdn.shopify.com/s/files/1/0045/5104/9304/t/27/assets/AC_ECOM_SITE_2020_REFRESH_1_INDEX_M2_THUMBS-V2-1.jpg?v=8913815134086573859",
-        firstName: "Matthew",
-      },
-    ];
-    return participantsList.map((item, i) => {
+    return participants.map((item, i) => {
       return (
         <Box key={i} display="flex" direction="row">
           <Avatar className={classes.avatar} src={item.avatar} />
-          <Typography className={classes.firstName}>
-            {item.firstName}
-          </Typography>
+          <Typography className={classes.firstName}>{item}</Typography>
         </Box>
       );
     });
   };
 
   const { classes } = props;
-
+  if (user === null) {
+    return <></>;
+  }
   return (
     <div className={classes.root}>
       <Dialog
@@ -179,15 +218,17 @@ function WaitingRoom(props) {
             <Box borderColor="grey.500" {...defaultProps}>
               {ItemList()}
             </Box>
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={handleStartButtonClick}
-              color="primary"
-            >
-              {" "}
-              START
-            </Button>
+            {startEnabled ? (
+              <Button
+                variant="contained"
+                className={classes.button}
+                onClick={handleStartButtonClick}
+                color="primary"
+              >
+                {" "}
+                START
+              </Button>
+            ) : null}
           </Grid>
         </DialogContent>
       </Dialog>

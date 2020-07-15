@@ -9,6 +9,7 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import { ColumnHeading } from "./CustomHeadings";
 import { InsideTableButton } from "./CustomButtons";
@@ -173,6 +174,28 @@ const upcomingOrOngoingTableStyles = makeStyles({
 export function UpcomingOrOngoingTable(props) {
   const classes = upcomingOrOngoingTableStyles();
   const [ongoingInterviewList, setOngoingInterviewList] = useState([]);
+  const [newongoingInterviewList, setnewongoingInterviewList] = useState([]);
+  function cancelInterview(id) {
+    console.log(id);
+    fetch("interviews/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id }),
+    })
+      .then((res) => console.log(res))
+      .then(() => {
+        let arr = ongoingInterviewList;
+        let index = arr.indexOf(id);
+        console.log(index);
+        if (index !== -1) {
+          console.log(ongoingInterviewList);
+          arr.splice(index, 1);
+          setOngoingInterviewList(arr);
+          console.log(ongoingInterviewList);
+        }
+      })
+      .catch((err) => console.log(err));
+  }
 
   useEffect(() => {
     fetch("interviews/ongoing")
@@ -205,7 +228,13 @@ export function UpcomingOrOngoingTable(props) {
               <Typography>{interviewId}</Typography>
             </TableCell>
             <TableCell align="center">
-              <InsideTableButton text="Cancel" />
+              <Button
+                variant="outlined"
+                onClick={() => cancelInterview(interviewId)}
+              >
+                {" "}
+                Cancel{" "}
+              </Button>
             </TableCell>
           </TableRow>
         ))}

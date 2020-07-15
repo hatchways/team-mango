@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../contexts/UserContext";
@@ -10,6 +10,7 @@ import {
   UpcomingOrOngoingTable,
 } from "../components/CustomTables";
 import CreateDialog from "../dialogs/CreateDialog";
+import socket from "../socket/socket";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,7 +52,24 @@ function Dashboard(props) {
 
   function handleDialogCreateInterviewButtonClick(value) {
     setOpenCreateDialog(false);
-    history.push("/dashboard/waitingroom/1");
+    fetch("/interviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ difficulty: value }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        const id = res._id;
+        const info = {};
+        info.id = id;
+        info.name = user.firstName + " " + user.lastName;
+        info.userId = user.id;
+        console.log("displaying" + info.id);
+        socket.emit("joinInterviewLobby", info, function (confimation) {});
+
+        history.push(`/dashboard/waitingroom/${id}`);
+      })
+      .catch((err) => console.log(err));
   }
 
   if (user === null) {

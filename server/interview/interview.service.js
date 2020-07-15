@@ -1,6 +1,7 @@
 const db = require("../helpers/db");
-
+const mongoose = require("mongoose");
 const questionService = require("../question/question.service");
+const { User } = require("../helpers/db");
 
 const Interview = db.Interview;
 
@@ -9,13 +10,56 @@ module.exports = {
   addParticipantToAnInterview,
   getAllCompletedInterviewsOfAUser,
   getAllOngoingOrUpcomingInterviewsOfAUser,
+  removeInterview,
+  getInterview,
 };
+/**
+ * returns interview by id
+ *
+ */
+async function getInterview(interViewid) {
+  const interview = await Interview.findById(interViewid);
+  return interview;
+}
+
+/**
+ *
+ * Removes Interview
+ */
+async function removeInterview(userId, interViewid) {
+  let interview = await Interview.findById(interViewid);
+  let questionToRemove = interview.participants[0].question;
+  await Interview.findByIdAndRemove(interViewid).catch((err) => {
+    return `Failed to remove with error ${err}`;
+  });
+
+  await User.updateOne(
+    { _id: userId },
+
+    {
+      $pull: {
+        interviews: { $in: [interViewid] },
+        questions: { $in: [questionToRemove] },
+      },
+    },
+
+    { safe: true, multi: true },
+    function (err, data) {
+      if (err) {
+        console.log(`Failed to remove with error ${err}`);
+        return `Failed to remove with error ${err}`;
+      }
+      console.log(data);
+    }
+  );
+}
 
 /**
  * Returns a newly created interview adding the creator as the owner and as a participant,
  * adding a question for the user. The user will be added with information about the interview and question
  *
  */
+
 async function createInterview(user, difficulty) {
   let interview = new Interview();
   interview.owner = user._id;
@@ -27,8 +71,8 @@ async function createInterview(user, difficulty) {
     excludedQuestionIDs
   );
   interview.participants.push({ user: user._id, question: question._id });
-  user.interviews.push(interview._id);
-  user.questions.push(question._id);
+  user.interviews.push({ _id: interview._id });
+  user.questions.push(question);
 
   [interview, user] = await Promise.all([interview.save(), user.save()]);
 
@@ -128,7 +172,7 @@ async function retrieveRelevantInterviewInformation(userId, interviewIds) {
 
   for (let i = 0, len = interviewIds.length; i < len; i++) {
     const interviewId = interviewIds[i];
-    let interview = await Interview.findOne({_id: interviewId, });
+    let interview = await Interview.findOne({ _id: interviewId });
 
     //Checking if this interview is completed
     if (interview.endTime == undefined) break;
