@@ -81,7 +81,6 @@ export function PastPracticeTable(props) {
         data.forEach((element) => {
           let startDate = new Date(element.startTime);
           let endDate = new Date(element.endTime);
-          console.log("date formatted" + formatDate(startDate));
           element.heldOnDate = formatDate(startDate);
           element.heldOnTime =
             formatAMPM(startDate) + " - " + formatAMPM(endDate);

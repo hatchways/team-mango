@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { Redirect } from "react-router-dom";
-import { Grid, TableContainer, Paper } from "@material-ui/core";
+import React, { useState, useContext } from "react";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { Grid, TableContainer, Paper } from "@material-ui/core";
 import { StartButton, JoinButton } from "../components/CustomButtons";
 import { TableHeading } from "../components/CustomHeadings";
 import {
@@ -16,10 +15,12 @@ import StrengthsDialog from "../dialogs/feedback/StrengthsDialog";
 import WeaknessesDialog from "../dialogs/feedback/WeaknessesDialog";
 import RecommendationsDialog from "../dialogs/feedback/RecommendationsDialog";
 import AnythingElseDialog from "../dialogs/feedback/AnythingElseDialog";
+import CreateDialog from "../dialogs/CreateDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    marginTop: 0,
   },
   mainChildContainer: {
     paddingTop: "4rem",
@@ -41,10 +42,23 @@ function Dashboard(props) {
   const history = useHistory();
   const location = useLocation();
   const { user } = useContext(UserContext);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
-  function goToCodeUI(e) {
-    e.preventDefault();
+  function goToCodeUI() {
     history.push("/code");
+  }
+
+  function handleStartButtonClick() {
+    setOpenCreateDialog(true);
+  }
+
+  function handleCreateDialogClose() {
+    setOpenCreateDialog(false);
+  }
+
+  function handleDialogCreateInterviewButtonClick(value) {
+    setOpenCreateDialog(false);
+    history.push("/dashboard/waitingroom/1");
   }
 
   const handleFeedbackDialogsClose = (value) => {
@@ -105,6 +119,12 @@ function Dashboard(props) {
         justify="center"
         alignItems="center"
       >
+        <CreateDialog
+          open={openCreateDialog}
+          setOpen={setOpenCreateDialog}
+          onClose={handleCreateDialogClose}
+          onCreateClick={handleDialogCreateInterviewButtonClick}
+        />
         <OverallDialog
           onClose={handleFeedbackDialogsClose}
           onNextQuestionClick={handleOvearllNextQuestionClick}
@@ -151,7 +171,11 @@ function Dashboard(props) {
             justify="center"
             alignItems="center"
           >
-            <StartButton text="Start" marginRight="1rem" />
+            <StartButton
+              text="Start"
+              marginRight="1rem"
+              clickEvent={handleStartButtonClick}
+            />
             <JoinButton text="Join" clickEvent={goToCodeUI} />
           </Grid>
           <Grid
