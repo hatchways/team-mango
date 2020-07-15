@@ -191,7 +191,7 @@ export function UpcomingOrOngoingTable(props) {
           console.log(ongoingInterviewList);
           arr.splice(index, 1);
           setOngoingInterviewList(arr);
-          console.log(ongoingInterviewList);
+          window.location.reload();
         }
       })
       .catch((err) => console.log(err));
