@@ -126,7 +126,8 @@ function WaitingRoom(props) {
   }, [user]);
 
   function handleStartButtonClick() {
-    history.push(`/dashboard/code/${props.match.params.id}`);
+    socket.emit("startInterview", { id: props.match.params.id });
+    history.push(`/code/${props.match.params.id}`);
   }
 
   useEffect(() => {
@@ -142,6 +143,12 @@ function WaitingRoom(props) {
             setstartEnabled(true);
           } else setstartEnabled(false);
         });
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("movetoCode", () => {
+      history.push(`/code/${props.match.params.id}`);
     });
   }, []);
 
