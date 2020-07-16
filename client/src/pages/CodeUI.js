@@ -17,7 +17,7 @@ import "codemirror/theme/material.css";
 import { theme } from "../themes/theme";
 import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
-require("codemirror/mode/javascript/javascript");
+require("codemirror/mode/python/python");
 
 const codeUIStyle = (theme) => ({
   root: {
@@ -129,7 +129,7 @@ function CodeUI(props) {
           <CodeMirror
             value={code}
             options={{
-              mode: "javascript",
+              mode: "python",
               theme: "material",
               lineNumbers: true,
             }}

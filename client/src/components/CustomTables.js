@@ -223,13 +223,10 @@ export function UpcomingOrOngoingTable(props) {
               <Typography>{interviewId}</Typography>
             </TableCell>
             <TableCell align="center">
-              <Button
-                variant="outlined"
-                onClick={() => cancelInterview(interviewId)}
-              >
+              <InsideTableButton onClick={() => cancelInterview(interviewId)}>
                 {" "}
                 Cancel{" "}
-              </Button>
+              </InsideTableButton>
             </TableCell>
           </TableRow>
         ))}
