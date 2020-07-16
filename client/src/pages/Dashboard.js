@@ -64,7 +64,6 @@ function Dashboard(props) {
         info.id = id;
         info.name = user.firstName + " " + user.lastName;
         info.userId = user.id;
-        console.log("displaying" + info.id);
         socket.emit("joinInterviewLobby", info, function (confimation) {});
 
         history.push(`/dashboard/waitingroom/${id}`);

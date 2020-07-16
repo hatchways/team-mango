@@ -125,7 +125,10 @@ function WaitingRoom(props) {
     };
   }, [user]);
 
-  function handleStartButtonClick() {}
+  function handleStartButtonClick() {
+    socket.emit("startInterview", { id: props.match.params.id });
+    history.push(`/code/${props.match.params.id}`);
+  }
 
   useEffect(() => {
     socket.on("joinedRoom", (data) => {
@@ -140,6 +143,12 @@ function WaitingRoom(props) {
             setstartEnabled(true);
           } else setstartEnabled(false);
         });
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("movetoCode", () => {
+      history.push(`/code/${props.match.params.id}`);
     });
   }, []);
 

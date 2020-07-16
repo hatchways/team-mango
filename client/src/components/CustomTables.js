@@ -186,7 +186,6 @@ export function UpcomingOrOngoingTable(props) {
       .then(() => {
         let arr = ongoingInterviewList;
         let index = arr.indexOf(id);
-        console.log(index);
         if (index !== -1) {
           arr.splice(index, 1);
           setOngoingInterviewList([...arr]);

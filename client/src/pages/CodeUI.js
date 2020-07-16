@@ -9,17 +9,15 @@ import {
   Typography,
   Toolbar,
 } from "@material-ui/core/";
-import socketIOClient from "socket.io-client";
+import { UserContext } from "../contexts/UserContext";
 import { withStyles } from "@material-ui/core/styles";
 import { sizing } from "@material-ui/system";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import { theme } from "../themes/theme";
-
+import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/javascript/javascript");
-
-const ENDPOINT = "localhost:3001";
 
 const codeUIStyle = (theme) => ({
   root: {
@@ -50,31 +48,54 @@ const premadeq = { title: qtitle, description: qdesc };
 const interviewTitle = "Interview with John D";
 
 function CodeUI(props) {
+  const { user } = useContext(UserContext);
   const [code, setCode] = useState(null);
   const [question, setQuestion] = useState(" ");
   const [interview, setInterview] = useState(interviewTitle);
   const [runResult, setrunResult] = useState(null);
-  const [socket, setSocket] = useState();
-
+  const [inRoom, setInRoom] = useState(false);
   useEffect(() => {
     setQuestion(premadeq);
-    let socket = socketIOClient(ENDPOINT);
-    setSocket(socket);
+    handleInRoom();
+    if (inRoom) {
+      console.log("joiningRoom");
+      socket.emit("joinCodeRoom", {
+        id: props.match.params.id,
+        name: user.firstName + " " + user.lastName,
+        userId: user.id,
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    socket.on("update_code", (code) => {
+      setCode(code);
+    });
   }, []);
-  const updateCode = (newCode) => {
-    setCode(newCode);
-    socket.emit("new_code", newCode);
-    console.log("sending" + newCode);
+
+  const handleInRoom = () => {
+    inRoom ? setInRoom(false) : setInRoom(true);
   };
 
-  const runCode = () => {
-    setrunResult(eval(code));
-  };
-  if (socket)
-    socket.on("update_code", (data) => {
-      console.log("updating code");
-      setCode(data);
+  const updateCode = (newCode) => {
+    setCode(newCode);
+    socket.emit("new_code", {
+      id: props.match.params.id,
+      name: user.firstName + " " + user.lastName,
+      userId: user.id,
+      code: newCode,
     });
+    console.log("sending" + newCode);
+  };
+  async function runCode() {
+    const res = await fetch("/code/runcode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    }).then((result) => result.json());
+
+    setrunResult(res);
+  }
 
   const { classes } = props;
   return (

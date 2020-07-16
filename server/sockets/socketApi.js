@@ -3,8 +3,9 @@ var io = socket_io();
 var socketApi = {};
 
 const roomMap = new Map();
+const codeMap = new Map();
 socketApi.io = io;
-let curcode;
+
 io.on("connection", (socket) => {
   console.log("connected");
   socket.on("joinInterviewLobby", function (info, fn) {
@@ -22,7 +23,10 @@ io.on("connection", (socket) => {
     socket.join(info.id);
     io.to(info.id).emit("joinedRoom", tempUser);
   });
-
+  socket.on("startInterview", function (info) {
+    console.log(`starting interview ${info.id}`);
+    io.to(info.id).emit("movetoCode");
+  });
   socket.on("leaveRoom", function (info) {
     console.log("leaving room");
     let tempUser = roomMap.get(info.id);
@@ -36,10 +40,16 @@ io.on("connection", (socket) => {
     io.to(info.id).emit("joinedRoom", tempUser);
   });
 
-  socket.emit("update_code", curcode);
-  socket.on("new_code", (newCode) => {
-    curcode = newCode;
-    socket.broadcast.emit("update_code", newCode);
+  socket.on("joinCodeRoom", function (info) {
+    let code = codeMap.get(info.id);
+    if (code) socket.broadcast.emit("update_code", code);
+    console.log(`joied room ${info.id}`);
+    socket.join(info.id);
+  });
+
+  socket.on("new_code", (info) => {
+    codeMap.set(info.id, info.code);
+    io.to(info.id).emit("update_code", info.code);
   });
   socket.on("disconnect", (evt) => {
     console.log("some people left");
