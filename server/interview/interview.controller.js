@@ -3,6 +3,7 @@ const router = express.Router();
 
 const verifyToken = require("../helpers/verifyToken");
 const interviewService = require("./interview.service");
+const userService = require("../users/user.service");
 
 //Create interview
 router.post("/", verifyToken, async function (req, res) {
@@ -20,9 +21,8 @@ router.post("/", verifyToken, async function (req, res) {
 
 //Update interview
 router.put("/*", verifyToken, async function (req, res) {
-  const postBody = req.body;
   const user = req.user;
-  let interviewId = req.path.replace(/\//g, "");
+  const interviewId = req.path.replace(/\//g, "");
 
   await interviewService
     .addParticipantToAnInterview(user, interviewId)
@@ -49,8 +49,7 @@ router.get("/ongoing", verifyToken, async function (req, res) {
 });
 
 //Get feedback of a user
-router.get("/:interviewId/feedback", verifyToken, async function (req, res) {
-  const postBody = req.body;
+router.get("/feedback/:interviewId", verifyToken, async function (req, res) {
   const user = req.user;
   const interviewId = req.params.interviewId;
 
