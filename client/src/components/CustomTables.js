@@ -176,13 +176,11 @@ export function UpcomingOrOngoingTable(props) {
   const [ongoingInterviewList, setOngoingInterviewList] = useState([]);
   const [newongoingInterviewList, setnewongoingInterviewList] = useState([]);
   function cancelInterview(id) {
-    console.log(id);
     fetch("interviews/remove", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: id }),
     })
-      .then((res) => console.log(res))
       .then(() => {
         let arr = ongoingInterviewList;
         let index = arr.indexOf(id);

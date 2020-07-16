@@ -58,7 +58,6 @@ function CodeUI(props) {
     setQuestion(premadeq);
     handleInRoom();
     if (inRoom) {
-      console.log("joiningRoom");
       socket.emit("joinCodeRoom", {
         id: props.match.params.id,
         name: user.firstName + " " + user.lastName,
@@ -85,7 +84,6 @@ function CodeUI(props) {
       userId: user.id,
       code: newCode,
     });
-    console.log("sending" + newCode);
   };
   async function runCode() {
     const res = await fetch("/code/runcode", {

@@ -43,7 +43,6 @@ io.on("connection", (socket) => {
   socket.on("joinCodeRoom", function (info) {
     let code = codeMap.get(info.id);
     if (code) socket.broadcast.emit("update_code", code);
-    console.log(`joied room ${info.id}`);
     socket.join(info.id);
   });
 

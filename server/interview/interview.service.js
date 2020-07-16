@@ -49,7 +49,6 @@ async function removeInterview(userId, interviewid) {
         console.log(`Failed to remove with error ${err}`);
         return `Failed to remove with error ${err}`;
       }
-      console.log(data);
     }
   );
 }

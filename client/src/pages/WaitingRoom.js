@@ -98,7 +98,6 @@ function WaitingRoom(props) {
   useEffect(() => {
     handleInRoom();
     if (inRoom) {
-      console.log("joiningRoom");
       socket.emit(
         "joinInterviewLobby",
         {
@@ -107,7 +106,6 @@ function WaitingRoom(props) {
           userId: user.id,
         },
         function (confimation) {
-          console.log(confimation);
           if (!confimation) history.push("/dashboard");
         }
       );
@@ -115,7 +113,6 @@ function WaitingRoom(props) {
     setFullUrlPath(window.location.href);
     return () => {
       if (inRoom) {
-        console.log("leaving room");
         socket.emit("leaveRoom", {
           id: props.match.params.id,
           name: user.firstName + " " + user.lastName,
