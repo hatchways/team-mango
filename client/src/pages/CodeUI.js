@@ -19,8 +19,6 @@ import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/javascript/javascript");
 
-const ENDPOINT = "localhost:3001";
-
 const codeUIStyle = (theme) => ({
   root: {
     flexGrow: 1,

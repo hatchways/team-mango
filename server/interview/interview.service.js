@@ -26,10 +26,10 @@ async function getInterview(interViewid) {
  *
  * Removes Interview
  */
-async function removeInterview(userId, interViewid) {
-  let interview = await Interview.findById(interViewid);
+async function removeInterview(userId, interviewid) {
+  let interview = await Interview.findById(interviewid);
   let questionToRemove = interview.participants[0].question;
-  await Interview.findByIdAndRemove(interViewid).catch((err) => {
+  await Interview.findByIdAndRemove(interviewid).catch((err) => {
     return `Failed to remove with error ${err}`;
   });
 
@@ -38,7 +38,7 @@ async function removeInterview(userId, interViewid) {
 
     {
       $pull: {
-        interviews: { $in: [interViewid] },
+        interviews: { $in: [interviewid] },
         questions: { $in: [questionToRemove] },
       },
     },

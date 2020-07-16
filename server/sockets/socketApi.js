@@ -5,7 +5,7 @@ var socketApi = {};
 const roomMap = new Map();
 const codeMap = new Map();
 socketApi.io = io;
-let curcode;
+
 io.on("connection", (socket) => {
   console.log("connected");
   socket.on("joinInterviewLobby", function (info, fn) {
