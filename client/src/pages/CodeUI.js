@@ -66,15 +66,15 @@ function CodeUI(props) {
     socket.emit("new_code", newCode);
     console.log("sending" + newCode);
   };
+  async function runCode() {
+    const res = await fetch("/code/runcode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    }).then((result) => result.json());
 
-  const runCode = () => {
-    setrunResult(eval(code));
-  };
-  if (socket)
-    socket.on("update_code", (data) => {
-      console.log("updating code");
-      setCode(data);
-    });
+    setrunResult(res);
+  }
 
   const { classes } = props;
   return (
