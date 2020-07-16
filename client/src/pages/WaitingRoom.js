@@ -125,7 +125,9 @@ function WaitingRoom(props) {
     };
   }, [user]);
 
-  function handleStartButtonClick() {}
+  function handleStartButtonClick() {
+    history.push(`/dashboard/code/${props.match.params.id}`);
+  }
 
   useEffect(() => {
     socket.on("joinedRoom", (data) => {
