@@ -188,10 +188,8 @@ export function UpcomingOrOngoingTable(props) {
         let index = arr.indexOf(id);
         console.log(index);
         if (index !== -1) {
-          console.log(ongoingInterviewList);
           arr.splice(index, 1);
-          setOngoingInterviewList(arr);
-          window.location.reload();
+          setOngoingInterviewList([...arr]);
         }
       })
       .catch((err) => console.log(err));
