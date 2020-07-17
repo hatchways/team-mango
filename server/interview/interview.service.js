@@ -12,16 +12,24 @@ module.exports = {
   getAllOngoingOrUpcomingInterviewsOfAUser,
   removeInterview,
   getInterview,
+  endInterview,
 };
 /**
  * returns interview by id
  *
  */
-async function getInterview(interViewid) {
-  const interview = await Interview.findById(interViewid);
+async function getInterview(interViewId) {
+  const interview = await Interview.findById(interViewId);
   return interview;
 }
 
+async function endInterview(interViewId) {
+  let interview = await Interview.findById(interViewId);
+  let now = new Date();
+  interview.endTime = now;
+  [interview] = await Promise.all([interview.save()]);
+  return interview;
+}
 /**
  *
  * Removes Interview
@@ -82,8 +90,9 @@ async function createInterview(user, difficulty) {
  * Returns the interview added with the new participant and a new question.
  *
  */
-async function addParticipantToAnInterview(user, interviewId) {
+async function addParticipantToAnInterview(userId, interviewId) {
   let interview = await Interview.findById(interviewId);
+  let user = await User.findById(userId);
   const participants = interview.participants;
   if (participants.length >= 2)
     throw Error("There is already two participants for this interview");
@@ -101,7 +110,8 @@ async function addParticipantToAnInterview(user, interviewId) {
     .catch((err) => {
       throw err;
     });
-
+  let now = new Date();
+  interview.startTime = now;
   interview.participants.push({ user: user._id, question: question._id });
   user.interviews.push(interview._id);
   user.questions.push(question._id);

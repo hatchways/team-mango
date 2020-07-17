@@ -49,7 +49,11 @@ function Dashboard(props) {
   function handleCreateDialogClose() {
     setOpenCreateDialog(false);
   }
-
+  useEffect(() => {
+    socket.on("movetoCode", (id) => {
+      history.push(`/code/${id}`);
+    });
+  }, []);
   function handleDialogCreateInterviewButtonClick(value) {
     setOpenCreateDialog(false);
     fetch("/interviews", {
@@ -113,7 +117,6 @@ function Dashboard(props) {
               marginRight="1rem"
               clickEvent={handleStartButtonClick}
             />
-            <JoinButton text="Join" clickEvent={goToCodeUI} />
           </Grid>
           <Grid
             item

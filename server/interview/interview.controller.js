@@ -39,9 +39,10 @@ router.get("/isowner/:id", verifyToken, async function (req, res) {
   await interviewService
     .getInterview(interviewID)
     .then((interview) => {
-      if (userID.toString() === interview.owner.toString())
-        res.status(200).json("true");
-      else res.status(200).json("false");
+      if (interview) {
+        if (userID.toString() === interview.owner.toString())
+          res.status(200).json("true");
+      } else res.status(200).json("false");
     })
     .catch((err) => {
       console.log(err);
@@ -50,13 +51,13 @@ router.get("/isowner/:id", verifyToken, async function (req, res) {
 });
 
 //Update interview
-router.put("/*", verifyToken, async function (req, res) {
+router.put("/:id", verifyToken, async function (req, res) {
   const postBody = req.body;
-  const user = req.user;
-  let interviewId = req.path.replace(/\//g, "");
+  const userId = postBody.participantID;
+  let interviewId = req.params.id;
 
   await interviewService
-    .addParticipantToAnInterview(user, interviewId)
+    .addParticipantToAnInterview(userId, interviewId)
     .then((interview) => res.status(200).json(interview))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
@@ -77,6 +78,28 @@ router.get("/ongoing", verifyToken, async function (req, res) {
     .getAllOngoingOrUpcomingInterviewsOfAUser(user)
     .then((interviews) => res.status(200).json(interviews))
     .catch((err) => res.status(500).json(err.message));
+});
+//Check if the interview exists
+router.get("/exists/:id", verifyToken, async function (req, res) {
+  const userID = req.user._id;
+  const interviewId = req.params.id;
+
+  await interviewService.getInterview(interviewId).then((interview) => {
+    if (interview) {
+      res.status(200).json("true");
+    } else res.status(200).json("false");
+  });
+});
+//End Interview
+router.get("/endInterview/:id", verifyToken, async function (req, res) {
+  const userID = req.user._id;
+  const interviewId = req.params.id;
+
+  await interviewService.endInterview(interviewId).then((interview) => {
+    if (interview) {
+      res.status(200).json("true");
+    } else res.status(200).json("false");
+  });
 });
 
 module.exports = router;

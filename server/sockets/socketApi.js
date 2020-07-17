@@ -1,4 +1,5 @@
 var socket_io = require("socket.io");
+const verifyToken = require("../helpers/verifyToken");
 var io = socket_io();
 var socketApi = {};
 
@@ -9,46 +10,80 @@ socketApi.io = io;
 io.on("connection", (socket) => {
   console.log("connected");
   socket.on("joinInterviewLobby", function (info, fn) {
-    let tempUser = roomMap.get(info.id);
-    if (tempUser) {
-      if (tempUser.indexOf(info.name) != -1) {
+    let tempUsers = roomMap.get(info.id);
+    let createdUser = {};
+    if (tempUsers) {
+      if (tempUsers.userNames.indexOf(info.name) != -1) {
         //user is not added since they are already in the room list
-      } else if (tempUser.length > 1) {
+      } else if (tempUsers.userNames.length > 1) {
         fn(false);
         return "too many users";
-      } else tempUser.push(info.name);
-    } else tempUser = [info.name];
-    roomMap.set(info.id, tempUser);
+      } else {
+        createdUser.userNames = [...tempUsers.userNames, info.name];
+        createdUser.userIds = [...tempUsers.userIds, info.userId];
+        tempUsers = createdUser;
+      }
+    } else {
+      createdUser.userNames = [info.name];
+      createdUser.userIds = [info.userId];
+      tempUsers = createdUser;
+    }
+    roomMap.set(info.id, tempUsers);
     fn(true);
     socket.join(info.id);
-    io.to(info.id).emit("joinedRoom", tempUser);
+    io.to(info.id).emit("joinedRoom", tempUsers);
   });
   socket.on("startInterview", function (info) {
-    console.log(`starting interview ${info.id}`);
-    io.to(info.id).emit("movetoCode");
+    tempCode = { userIds: info.participants.userIds };
+    codeMap.set(info.id, tempCode);
+    io.to(info.id).emit("movetoCode", info.id);
   });
   socket.on("leaveRoom", function (info) {
     console.log("leaving room");
-    let tempUser = roomMap.get(info.id);
-    if (tempUser) {
-      const index = tempUser.indexOf(info.name);
-      if (index > -1) {
-        tempUser.splice(index, 1);
+    let tempUsers = roomMap.get(info.id);
+    if (tempUsers) {
+      const nameIndex = tempUsers.userNames.indexOf(info.name);
+      const idIndex = tempUsers.userIds.indexOf(info.userId);
+      if (nameIndex > -1) {
+        tempUsers.userNames.splice(nameIndex, 1);
+      }
+      if (idIndex > -1) {
+        tempUsers.userIds.splice(idIndex, 1);
       }
     }
-    roomMap.set(info.id, tempUser);
-    io.to(info.id).emit("joinedRoom", tempUser);
+    roomMap.set(info.id, tempUsers);
+    io.to(info.id).emit("joinedRoom", tempUsers);
   });
 
-  socket.on("joinCodeRoom", function (info) {
-    let code = codeMap.get(info.id);
-    if (code) socket.broadcast.emit("update_code", code);
-    socket.join(info.id);
+  socket.on("joinCodeRoom", function (info, fn) {
+    let codeObj = codeMap.get(info.id);
+    if (codeObj) {
+      if (codeObj.userIds.indexOf(info.userId) == -1) {
+        fn(false);
+      }
+      socket.join(info.id);
+      io.to(info.id).emit("update_code", codeObj);
+    } else {
+      fn(false);
+    }
   });
-
+  socket.on("checkInCodeRoom", (info, fn) => {
+    let res = [];
+    info.forEach((id) => {
+      let obj = codeMap.get(id);
+      if (obj) res.push(id);
+    });
+    fn(res);
+  });
   socket.on("new_code", (info) => {
-    codeMap.set(info.id, info.code);
-    io.to(info.id).emit("update_code", info.code);
+    let oldCode = codeMap.get(info.id);
+    oldCode.code = info.code;
+    codeMap.set(info.id, oldCode);
+    io.to(info.id).emit("update_code", info);
+  });
+  socket.on("endInterview", (info) => {
+    io.to(info.id).emit("toReview", info);
+    codeMap.set(info.id, {});
   });
   socket.on("disconnect", (evt) => {
     console.log("some people left");

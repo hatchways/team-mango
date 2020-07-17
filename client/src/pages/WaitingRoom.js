@@ -96,7 +96,17 @@ function WaitingRoom(props) {
   const [inRoom, setInRoom] = useState(false);
   const [startEnabled, setstartEnabled] = useState(false);
   useEffect(() => {
-    handleInRoom();
+    fetch(`/interviews/exists/${props.match.params.id}`)
+      .then((result) => result.json())
+      .then((res) => {
+        let isTrueSet = res === "true";
+        if (!isTrueSet) {
+          history.push("/dashboard");
+        }
+      });
+  }, []);
+
+  useEffect(() => {
     if (inRoom) {
       socket.emit(
         "joinInterviewLobby",
@@ -112,31 +122,45 @@ function WaitingRoom(props) {
     }
     setFullUrlPath(window.location.href);
     return () => {
-      if (inRoom) {
+      if (user)
         socket.emit("leaveRoom", {
           id: props.match.params.id,
           name: user.firstName + " " + user.lastName,
           userId: user.id,
         });
-      }
     };
   }, [user]);
 
   function handleStartButtonClick() {
-    socket.emit("startInterview", { id: props.match.params.id });
+    let otherUserSpot;
+    if (participants.userIds.indexOf(user.id) === 1) {
+      otherUserSpot = 0;
+    } else {
+      otherUserSpot = 1;
+    }
+    fetch(`/interviews/${props.match.params.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        participantID: participants.userIds[otherUserSpot],
+      }),
+    });
+    socket.emit("startInterview", {
+      id: props.match.params.id,
+      participants: participants,
+    });
     history.push(`/code/${props.match.params.id}`);
   }
 
   useEffect(() => {
+    handleInRoom();
     socket.on("joinedRoom", (data) => {
-      let part = [];
-      part.firstName = data;
       setParticipants(data);
       fetch(`/interviews/isowner/${props.match.params.id}`)
         .then((result) => result.json())
         .then((res) => {
-          var isTrueSet = res === "true";
-          if (data.length === 2 && isTrueSet) {
+          let isTrueSet = res === "true";
+          if (data.userIds.length === 2 && isTrueSet) {
             setstartEnabled(true);
           } else setstartEnabled(false);
         });
@@ -144,8 +168,8 @@ function WaitingRoom(props) {
   }, []);
 
   useEffect(() => {
-    socket.on("movetoCode", () => {
-      history.push(`/code/${props.match.params.id}`);
+    socket.on("movetoCode", (id) => {
+      history.push(`/code/${id}`);
     });
   }, []);
 
@@ -163,14 +187,15 @@ function WaitingRoom(props) {
   };
 
   const ItemList = () => {
-    return participants.map((item, i) => {
-      return (
-        <Box key={i} display="flex" direction="row">
-          <Avatar className={classes.avatar} src={item.avatar} />
-          <Typography className={classes.firstName}>{item}</Typography>
-        </Box>
-      );
-    });
+    if (participants.userNames)
+      return participants.userNames.map((item, i) => {
+        return (
+          <Box key={i} display="flex" direction="row">
+            <Avatar className={classes.avatar} src={item.avatar} />
+            <Typography className={classes.firstName}>{item}</Typography>
+          </Box>
+        );
+      });
   };
 
   const { classes } = props;
