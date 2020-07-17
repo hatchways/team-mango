@@ -11,7 +11,6 @@ io.on("connection", (socket) => {
   console.log("connected");
   socket.on("joinInterviewLobby", function (info, fn) {
     let tempUsers = roomMap.get(info.id);
-    let createdUser = {};
     if (tempUsers) {
       if (tempUsers.userNames.indexOf(info.name) != -1) {
         //user is not added since they are already in the room list
@@ -19,14 +18,13 @@ io.on("connection", (socket) => {
         fn(false);
         return "too many users";
       } else {
-        createdUser.userNames = [...tempUsers.userNames, info.name];
-        createdUser.userIds = [...tempUsers.userIds, info.userId];
-        tempUsers = createdUser;
+        tempUsers.userNames = [...tempUsers.userNames, info.name];
+        tempUsers.userIds = [...tempUsers.userIds, info.userId];
       }
     } else {
-      createdUser.userNames = [info.name];
-      createdUser.userIds = [info.userId];
-      tempUsers = createdUser;
+      tempUsers = {};
+      tempUsers.userNames = [info.name];
+      tempUsers.userIds = [info.userId];
     }
     roomMap.set(info.id, tempUsers);
     fn(true);

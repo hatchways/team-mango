@@ -75,7 +75,7 @@ function formatDate(unformattedDate) {
 export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
-  const [inLobby, setInlobby] = useState(true);
+  const [inLobby, setInLobby] = useState(true);
   useEffect(() => {
     fetch("interviews/completed")
       .then((result) => result.json())
@@ -187,7 +187,7 @@ export function UpcomingOrOngoingTable(props) {
       body: JSON.stringify({ id: id }),
     })
       .then(() => {
-        let arr = ongoingInterviewList;
+        const arr = [...ongoingInterviewList];
         let index = arr.indexOf(id);
         if (index !== -1) {
           arr.splice(index, 1);
@@ -221,6 +221,7 @@ export function UpcomingOrOngoingTable(props) {
       })
       .catch((err) => console.error(err));
   }, []);
+
   useEffect(() => {
     socket.emit("checkInCodeRoom", ongoingInterviewList, function codeList(
       inCode
