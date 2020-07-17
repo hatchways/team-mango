@@ -9,13 +9,13 @@ import {
   UpcomingOrOngoingTable,
 } from "../components/CustomTables";
 import { UserContext } from "../contexts/UserContext";
+import CreateDialog from "../dialogs/CreateDialog";
 import OverallDialog from "../dialogs/feedback/OverallDialog";
 import ReviewDialog from "../dialogs/feedback/ReviewDialog";
 import StrengthsDialog from "../dialogs/feedback/StrengthsDialog";
 import WeaknessesDialog from "../dialogs/feedback/WeaknessesDialog";
 import RecommendationsDialog from "../dialogs/feedback/RecommendationsDialog";
 import AnythingElseDialog from "../dialogs/feedback/AnythingElseDialog";
-import CreateDialog from "../dialogs/CreateDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
