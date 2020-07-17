@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
-
-import { useLocation } from "react-router-dom";
 import {
   DialogTitle,
   DialogContent,
@@ -27,18 +25,10 @@ const RecommendationsDialog = ({
   onNextQuestionClick,
 }) => {
   const classes = useStyles();
-  const location = useLocation();
-
-  let openDialog = false;
-  const { pathname } = location;
-
-  if (
-    pathname === "/dashboard/feedback/5" ||
-    pathname === "/dashboard/feedback/5/"
-  )
-    openDialog = true;
+  const [openDialog, setOpenDialog] = useState(true);
 
   const handleClose = () => {
+    setOpenDialog(false);
     onClose();
   };
 

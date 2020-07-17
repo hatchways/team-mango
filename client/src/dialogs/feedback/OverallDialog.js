@@ -8,8 +8,6 @@ import {
 } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
-
-import { useLocation } from "react-router-dom";
 import {
   DialogTitle,
   DialogContent,
@@ -48,21 +46,14 @@ const useStyles = makeStyles((theme) => ({
 
 const OverallDialog = ({ onClose, onNextQuestionClick }) => {
   const classes = useStyles();
-  const location = useLocation();
+  const [openDialog, setOpenDialog] = useState(true);
   const [
     currentRadioButtonSelection,
     setCurrentRadioButtonSelection,
   ] = useState("");
 
-  let openDialog = true;
-  // const { pathname } = location;
-  // if (
-  //   pathname === "/dashboard/feedback/1" ||
-  //   pathname === "/dashboard/feedback/1/"
-  // )
-  //   openDialog = true;
-
   const handleClose = () => {
+    setOpenDialog(false);
     onClose();
   };
 

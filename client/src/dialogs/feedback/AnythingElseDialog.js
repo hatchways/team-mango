@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
-
-import { useLocation } from "react-router-dom";
 import {
   DialogTitle,
   DialogContent,
@@ -21,22 +19,14 @@ const useStyles = makeStyles((theme) => ({
 
 const AnythingElseDialog = ({ onClose, onSubmitClick }) => {
   const classes = useStyles();
-  const location = useLocation();
-
-  let openDialog = true;
-  const { pathname } = location;
-
-  // if (
-  //   pathname === "/dashboard/feedback/6" ||
-  //   pathname === "/dashboard/feedback/6/"
-  // )
-  //   openDialog = true;
+  const [openDialog, setOpenDialog] = useState(true);
 
   const onTextInputChange = (value) => {
     console.log(value);
   };
 
   const handleClose = () => {
+    setOpenDialog(false);
     onClose();
   };
 

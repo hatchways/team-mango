@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
 import { Redirect } from "react-router";
 import { theme } from "./themes/theme";
 import "./App.css";
@@ -14,7 +14,6 @@ import Navbar from "./pages/navbar";
 import Blog from "./pages/Blog";
 import CodeUI from "./pages/CodeUI";
 import WaitingRoom from "./pages/WaitingRoom";
-import DashboardHome from "./pages/DashboardHome";
 
 function App(props) {
   const [user, setUser] = useState(null);
@@ -69,12 +68,11 @@ function App(props) {
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/">
-                  <Route path="/dashboard" component={DashboardHome} />
+                  <Route path="/dashboard" component={Dashboard} />
                   <Route
                     path="/dashboard/waitingroom/:id"
                     component={WaitingRoom}
                   />
-                  
                 </Route>
               </Switch>
             </Route>

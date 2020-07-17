@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { useLocation } from "react-router-dom";
 import {
   Radio,
   RadioGroup,
@@ -62,7 +61,7 @@ const ReviewDialog = ({
   onNextQuestionClick,
 }) => {
   const classes = useStyles();
-  const location = useLocation();
+  const [openDialog, setOpenDialog] = useState(true);
   const reviewOptions = [
     "needs improvement",
     "satisfactory",
@@ -83,15 +82,8 @@ const ReviewDialog = ({
   const [debuggingSkillsSelection, setDebuggingSkillsSelection] = useState("");
   const [problemSolvingSelection, setProblemSolvingSelection] = useState("");
 
-  const { pathname } = location;
-  let openDialog = false;
-  if (
-    pathname === "/dashboard/feedback/2" ||
-    pathname === "/dashboard/feedback/2/"
-  )
-    openDialog = true;
-
   const handleClose = () => {
+    setOpenDialog(false);
     onClose();
   };
 

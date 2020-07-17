@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Redirect, useHistory, useLocation } from "react-router-dom";
+import { Redirect, useHistory, useLocation, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, TableContainer, Paper } from "@material-ui/core";
 import { StartButton, JoinButton } from "../components/CustomButtons";
@@ -61,6 +61,34 @@ function Dashboard(props) {
     history.push("/dashboard/waitingroom/1");
   }
 
+  const handleFeedbackDialogsClose = (value) => {
+    history.push("/dashboard");
+  };
+
+  const handleFeedbackNextQuestionClick = () => {
+    const pathname = location.pathname;
+    const pathnameSplit = pathname.split("/");
+    const newPath =
+      "/dashboard/" +
+      pathnameSplit[2] +
+      "/feedback/" +
+      (parseInt(pathnameSplit[4]) + 1);
+    history.push(newPath);
+  };
+
+  const handleFeedbackPreviousQuestionClick = () => {
+    const pathname = location.pathname;
+    const pathnameSplit = pathname.split("/");
+    const newPath =
+      "/dashboard/" +
+      pathnameSplit[2] +
+      "/feedback/" +
+      (parseInt(pathnameSplit[4]) - 1);
+    history.push(newPath);
+  };
+
+  const handleFeedbackSubmitClick = () => {};
+
   if (user === null) {
     return <></>;
   } else if (user === "failed to fetch") {
@@ -80,34 +108,46 @@ function Dashboard(props) {
           onClose={handleCreateDialogClose}
           onCreateClick={handleDialogCreateInterviewButtonClick}
         />
-        {/* <OverallDialog
-          onClose={handleFeedbackDialogsClose}
-          onNextQuestionClick={handleOvearllNextQuestionClick}
-        />
-        <ReviewDialog
-          onClose={handleFeedbackDialogsClose}
-          onNextQuestionClick={handleReviewDialogNext}
-          onPreviousQuestionClick={handleReviewDialogPrevious}
-        />
-        <StrengthsDialog
-          onClose={handleFeedbackDialogsClose}
-          onNextQuestionClick={handleStrengthsDialogNext}
-          onPreviousQuestionClick={handleStrengthsDialogPrevious}
-        />
-        <WeaknessesDialog
-          onClose={handleFeedbackDialogsClose}
-          onNextQuestionClick={handleWeaknessesDialogNext}
-          onPreviousQuestionClick={handleWeaknessesDialogPrevious}
-        />
-        <RecommendationsDialog
-          onClose={handleFeedbackDialogsClose}
-          onNextQuestionClick={handleRecommendationDialogNext}
-          onPreviousQuestionClick={handleRecommendationDialogPrevious}
-        />
-        <AnythingElseDialog
-          onClose={handleFeedbackDialogsClose}
-          onSubmitClick={handleAnythingElseSubmitClick}
-        /> */}
+        <Route path="/dashboard/:id/feedback/1">
+          <OverallDialog
+            onClose={handleFeedbackDialogsClose}
+            onNextQuestionClick={handleFeedbackNextQuestionClick}
+          />
+        </Route>
+        <Route path="/dashboard/:id/feedback/2">
+          <ReviewDialog
+            onClose={handleFeedbackDialogsClose}
+            onNextQuestionClick={handleFeedbackNextQuestionClick}
+            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+          />
+        </Route>
+        <Route path="/dashboard/:id/feedback/3">
+          <StrengthsDialog
+            onClose={handleFeedbackDialogsClose}
+            onNextQuestionClick={handleFeedbackNextQuestionClick}
+            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+          />
+        </Route>
+        <Route path="/dashboard/:id/feedback/4">
+          <WeaknessesDialog
+            onClose={handleFeedbackDialogsClose}
+            onNextQuestionClick={handleFeedbackNextQuestionClick}
+            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+          />
+        </Route>
+        <Route path="/dashboard/:id/feedback/5">
+          <RecommendationsDialog
+            onClose={handleFeedbackDialogsClose}
+            onNextQuestionClick={handleFeedbackNextQuestionClick}
+            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+          />
+        </Route>
+        <Route path="/dashboard/:id/feedback/6">
+          <AnythingElseDialog
+            onClose={handleFeedbackDialogsClose}
+            onSubmitClick={handleFeedbackSubmitClick}
+          />
+        </Route>
         <Grid item xs={0} sm={2} />
         <Grid
           item
