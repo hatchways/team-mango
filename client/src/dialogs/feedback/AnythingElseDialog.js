@@ -23,14 +23,14 @@ const AnythingElseDialog = ({ onClose, onSubmitClick }) => {
   const classes = useStyles();
   const location = useLocation();
 
-  let openDialog = false;
+  let openDialog = true;
   const { pathname } = location;
 
-  if (
-    pathname === "/dashboard/feedback/6" ||
-    pathname === "/dashboard/feedback/6/"
-  )
-    openDialog = true;
+  // if (
+  //   pathname === "/dashboard/feedback/6" ||
+  //   pathname === "/dashboard/feedback/6/"
+  // )
+  //   openDialog = true;
 
   const onTextInputChange = (value) => {
     console.log(value);

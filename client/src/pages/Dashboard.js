@@ -61,51 +61,6 @@ function Dashboard(props) {
     history.push("/dashboard/waitingroom/1");
   }
 
-  const handleFeedbackDialogsClose = (value) => {
-    history.push("/dashboard");
-  };
-
-  const handleOvearllNextQuestionClick = () => {
-    history.push("/dashboard/feedback/2?id=345");
-  };
-
-  const handleReviewDialogNext = () => {
-    history.push("/dashboard/feedback/3?id=777");
-  };
-
-  const handleReviewDialogPrevious = () => {
-    history.push("/dashboard/feedback/1");
-  };
-
-  const handleStrengthsDialogNext = () => {
-    history.push("/dashboard/feedback/4");
-  };
-
-  const handleStrengthsDialogPrevious = () => {
-    history.push("/dashboard/feedback/2");
-  };
-
-  const handleWeaknessesDialogNext = () => {
-    history.push("/dashboard/feedback/5");
-  };
-
-  const handleWeaknessesDialogPrevious = () => {
-    history.push("/dashboard/feedback/3");
-  };
-
-  const handleRecommendationDialogNext = () => {
-    history.push("/dashboard/feedback/6");
-  };
-
-  const handleRecommendationDialogPrevious = () => {
-    history.push("/dashboard/feedback/4");
-  };
-
-  const handleAnythingElseSubmitClick = () => {
-    console.log("Submit clicked");
-    history.push("/dashboard");
-  };
-
   if (user === null) {
     return <></>;
   } else if (user === "failed to fetch") {
@@ -125,7 +80,7 @@ function Dashboard(props) {
           onClose={handleCreateDialogClose}
           onCreateClick={handleDialogCreateInterviewButtonClick}
         />
-        <OverallDialog
+        {/* <OverallDialog
           onClose={handleFeedbackDialogsClose}
           onNextQuestionClick={handleOvearllNextQuestionClick}
         />
@@ -152,7 +107,7 @@ function Dashboard(props) {
         <AnythingElseDialog
           onClose={handleFeedbackDialogsClose}
           onSubmitClick={handleAnythingElseSubmitClick}
-        />
+        /> */}
         <Grid item xs={0} sm={2} />
         <Grid
           item

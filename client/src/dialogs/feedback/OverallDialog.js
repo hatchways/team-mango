@@ -54,13 +54,13 @@ const OverallDialog = ({ onClose, onNextQuestionClick }) => {
     setCurrentRadioButtonSelection,
   ] = useState("");
 
-  let openDialog = false;
-  const { pathname } = location;
-  if (
-    pathname === "/dashboard/feedback/1" ||
-    pathname === "/dashboard/feedback/1/"
-  )
-    openDialog = true;
+  let openDialog = true;
+  // const { pathname } = location;
+  // if (
+  //   pathname === "/dashboard/feedback/1" ||
+  //   pathname === "/dashboard/feedback/1/"
+  // )
+  //   openDialog = true;
 
   const handleClose = () => {
     onClose();

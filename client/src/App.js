@@ -14,6 +14,7 @@ import Navbar from "./pages/navbar";
 import Blog from "./pages/Blog";
 import CodeUI from "./pages/CodeUI";
 import WaitingRoom from "./pages/WaitingRoom";
+import DashboardHome from "./pages/DashboardHome";
 
 function App(props) {
   const [user, setUser] = useState(null);
@@ -68,11 +69,12 @@ function App(props) {
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/">
-                  <Route path="/dashboard" component={Dashboard} />
+                  <Route path="/dashboard" component={DashboardHome} />
                   <Route
                     path="/dashboard/waitingroom/:id"
                     component={WaitingRoom}
                   />
+                  
                 </Route>
               </Switch>
             </Route>
