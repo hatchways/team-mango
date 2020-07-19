@@ -62,7 +62,7 @@ router.put("/:id", verifyToken, async function (req, res) {
       res.status(200).json(interview);
     })
     .catch((err) => res.status(500).json({ Error: err.message }));
-});
+
 
 //Get all completed interviews
 router.get("/completed", verifyToken, async function (req, res) {
@@ -108,6 +108,30 @@ router.get("/endInterview/:id", verifyToken, async function (req, res) {
       } else res.status(200).json("false");
     })
     .catch((err) => res.status(500).json(err.message));
+});
+
+//Get feedback of a user
+router.get("/feedback/:interviewId", verifyToken, async function (req, res) {
+  const user = req.user;
+  const interviewId = req.params.interviewId;
+
+  await interviewService
+    .getFeedback(user._id, interviewId)
+    .then((feedback) => res.status(200).json(feedback))
+    .catch((err) => res.status(500).json({ Error: err.message }));
+});
+
+//Create feedback for the other user
+router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
+  const postBody = req.body;
+  const user = req.user;
+  const userId = user._id;
+  const interviewId = req.params.interviewId;
+
+  await interviewService
+    .createFeedback(userId, interviewId, postBody)
+    .then((feedback) => res.status(200).json(feedback))
+    .catch((err) => res.status(500).json({ Error: err.message }));
 });
 
 module.exports = router;
