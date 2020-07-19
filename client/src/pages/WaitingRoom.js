@@ -163,7 +163,8 @@ function WaitingRoom(props) {
           if (data.userIds.length === 2 && isTrueSet) {
             setstartEnabled(true);
           } else setstartEnabled(false);
-        });
+        })
+        .catch(console.log("failed to verify interview ownership"));
     });
   }, []);
 

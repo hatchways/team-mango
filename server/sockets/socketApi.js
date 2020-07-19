@@ -40,12 +40,9 @@ io.on("connection", (socket) => {
     console.log("leaving room");
     let tempUsers = roomMap.get(info.id);
     if (tempUsers) {
-      const nameIndex = tempUsers.userNames.indexOf(info.name);
       const idIndex = tempUsers.userIds.indexOf(info.userId);
-      if (nameIndex > -1) {
-        tempUsers.userNames.splice(nameIndex, 1);
-      }
       if (idIndex > -1) {
+        tempUsers.userNames.splice(idIndex, 1);
         tempUsers.userIds.splice(idIndex, 1);
       }
     }
