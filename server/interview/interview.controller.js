@@ -62,7 +62,7 @@ router.put("/:id", verifyToken, async function (req, res) {
       res.status(200).json(interview);
     })
     .catch((err) => res.status(500).json({ Error: err.message }));
-
+});
 
 //Get all completed interviews
 router.get("/completed", verifyToken, async function (req, res) {
