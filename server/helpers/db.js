@@ -4,6 +4,8 @@ mongoose.connect(process.env.MONGODB_LOCAL_CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  useFindAndModify: false,
+
 });
 mongoose.Promise = global.Promise;
 

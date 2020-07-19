@@ -64,7 +64,7 @@ function App(props) {
             <Route path="/">
               <Navbar />
               <Switch>
-                <Route path="/code" component={CodeUI} />
+                <Route path="/code/:id" component={CodeUI} />
                 <Route path="/faq" component={Faq} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/">

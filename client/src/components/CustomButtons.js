@@ -9,8 +9,6 @@ const insideTableButtonStyles = makeStyles({
     borderRadius: 20,
     backgroundColor: "white",
     border: "1px solid #d4d9e2",
-  },
-  text: {
     fontSize: 13,
     color: "#5e6676",
     fontWeight: 600,
@@ -19,10 +17,10 @@ const insideTableButtonStyles = makeStyles({
 
 export function InsideTableButton(props) {
   const classes = insideTableButtonStyles();
-
+  const { children, ...otherProps } = props;
   return (
-    <Button variant="outlined" className={classes.button}>
-      <Typography className={classes.text}>{props.text}</Typography>
+    <Button variant="outlined" className={classes.button} {...otherProps}>
+      {children}
     </Button>
   );
 }

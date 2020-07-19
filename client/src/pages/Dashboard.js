@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Redirect, useHistory, useLocation, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, TableContainer, Paper } from "@material-ui/core";
-import { StartButton, JoinButton } from "../components/CustomButtons";
+import { StartButton } from "../components/CustomButtons";
 import { TableHeading } from "../components/CustomHeadings";
 import {
   PastPracticeTable,
@@ -16,6 +16,7 @@ import StrengthsDialog from "../dialogs/feedback/StrengthsDialog";
 import WeaknessesDialog from "../dialogs/feedback/WeaknessesDialog";
 import RecommendationsDialog from "../dialogs/feedback/RecommendationsDialog";
 import AnythingElseDialog from "../dialogs/feedback/AnythingElseDialog";
+import socket from "../socket/socket";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,10 +45,6 @@ function Dashboard(props) {
   const { user } = useContext(UserContext);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
-  function goToCodeUI() {
-    history.push("/code");
-  }
-
   function handleStartButtonClick() {
     setOpenCreateDialog(true);
   }
@@ -55,10 +52,30 @@ function Dashboard(props) {
   function handleCreateDialogClose() {
     setOpenCreateDialog(false);
   }
-
+  useEffect(() => {
+    socket.on("movetoCode", (id) => {
+      history.push(`/code/${id}`);
+    });
+  }, []);
   function handleDialogCreateInterviewButtonClick(value) {
     setOpenCreateDialog(false);
-    history.push("/dashboard/waitingroom/1");
+    fetch("/interviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ difficulty: value }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        const id = res._id;
+        const info = {};
+        info.id = id;
+        info.name = user.firstName + " " + user.lastName;
+        info.userId = user.id;
+        socket.emit("joinInterviewLobby", info, function (confimation) {});
+
+        history.push(`/dashboard/waitingroom/${id}`);
+      })
+      .catch((err) => console.log(err));
   }
 
   const handleFeedbackDialogsClose = (value) => {
@@ -171,7 +188,6 @@ function Dashboard(props) {
               marginRight="1rem"
               clickEvent={handleStartButtonClick}
             />
-            <JoinButton text="Join" clickEvent={goToCodeUI} />
           </Grid>
           <Grid
             item

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -8,6 +8,8 @@ import {
   TextField,
   Avatar,
 } from "@material-ui/core";
+import { UserContext } from "../contexts/UserContext";
+
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
@@ -16,7 +18,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { withStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import copy from "copy-to-clipboard";
-
+import socket from "../socket/socket";
 const waitingRoomStyle = (theme) => ({
   root: {
     backgroundColor: "#495074",
@@ -89,12 +91,92 @@ function WaitingRoom(props) {
   const [openRoom, setOpenRoom] = useState(true);
   const [fullUrlPath, setFullUrlPath] = useState("");
   const history = useHistory();
-
+  const { user } = useContext(UserContext);
+  const [participants, setParticipants] = useState([]);
+  const [inRoom, setInRoom] = useState(false);
+  const [startEnabled, setstartEnabled] = useState(false);
   useEffect(() => {
-    setFullUrlPath(window.location.href);
+    fetch(`/interviews/exists/${props.match.params.id}`)
+      .then((result) => result.json())
+      .then((res) => {
+        let isTrueSet = res === "true";
+        if (!isTrueSet) {
+          history.push("/dashboard");
+        }
+      });
   }, []);
 
-  function handleStartButtonClick() {}
+  useEffect(() => {
+    if (inRoom) {
+      socket.emit(
+        "joinInterviewLobby",
+        {
+          id: props.match.params.id,
+          name: user.firstName + " " + user.lastName,
+          userId: user.id,
+        },
+        function (confimation) {
+          if (!confimation) history.push("/dashboard");
+        }
+      );
+    }
+    setFullUrlPath(window.location.href);
+    return () => {
+      if (user)
+        socket.emit("leaveRoom", {
+          id: props.match.params.id,
+          name: user.firstName + " " + user.lastName,
+          userId: user.id,
+        });
+    };
+  }, [user]);
+
+  function handleStartButtonClick() {
+    let otherUserSpot;
+    if (participants.userIds.indexOf(user.id) === 1) {
+      otherUserSpot = 0;
+    } else {
+      otherUserSpot = 1;
+    }
+    fetch(`/interviews/${props.match.params.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        participantID: participants.userIds[otherUserSpot],
+      }),
+    });
+    socket.emit("startInterview", {
+      id: props.match.params.id,
+      participants: participants,
+    });
+    history.push(`/code/${props.match.params.id}`);
+  }
+
+  useEffect(() => {
+    handleInRoom();
+    socket.on("joinedRoom", (data) => {
+      setParticipants(data);
+      fetch(`/interviews/isowner/${props.match.params.id}`)
+        .then((result) => result.json())
+        .then((res) => {
+          let isTrueSet = res === "true";
+          if (data.userIds.length === 2 && isTrueSet) {
+            setstartEnabled(true);
+          } else setstartEnabled(false);
+        })
+        .catch(console.log("failed to verify interview ownership"));
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("movetoCode", (id) => {
+      history.push(`/code/${id}`);
+    });
+  }, []);
+
+  const handleInRoom = () => {
+    inRoom ? setInRoom(false) : setInRoom(true);
+  };
 
   const handleClose = () => {
     history.push("/dashboard");
@@ -105,32 +187,21 @@ function WaitingRoom(props) {
   };
 
   const ItemList = () => {
-    const participantsList = [
-      {
-        avatar:
-          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-        firstName: "Peter",
-      },
-      {
-        avatar:
-          "https://cdn.shopify.com/s/files/1/0045/5104/9304/t/27/assets/AC_ECOM_SITE_2020_REFRESH_1_INDEX_M2_THUMBS-V2-1.jpg?v=8913815134086573859",
-        firstName: "Matthew",
-      },
-    ];
-    return participantsList.map((item, i) => {
-      return (
-        <Box key={i} display="flex" direction="row">
-          <Avatar className={classes.avatar} src={item.avatar} />
-          <Typography className={classes.firstName}>
-            {item.firstName}
-          </Typography>
-        </Box>
-      );
-    });
+    if (participants.userNames)
+      return participants.userNames.map((item, i) => {
+        return (
+          <Box key={i} display="flex" direction="row">
+            <Avatar className={classes.avatar} src={item.avatar} />
+            <Typography className={classes.firstName}>{item}</Typography>
+          </Box>
+        );
+      });
   };
 
   const { classes } = props;
-
+  if (user === null) {
+    return <></>;
+  }
   return (
     <div className={classes.root}>
       <Dialog
@@ -178,15 +249,17 @@ function WaitingRoom(props) {
             <Box borderColor="grey.500" {...defaultProps}>
               {ItemList()}
             </Box>
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={handleStartButtonClick}
-              color="primary"
-            >
-              {" "}
-              START
-            </Button>
+            {startEnabled ? (
+              <Button
+                variant="contained"
+                className={classes.button}
+                onClick={handleStartButtonClick}
+                color="primary"
+              >
+                {" "}
+                START
+              </Button>
+            ) : null}
           </Grid>
         </DialogContent>
       </Dialog>

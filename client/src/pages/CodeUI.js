@@ -9,14 +9,16 @@ import {
   Typography,
   Toolbar,
 } from "@material-ui/core/";
+import { useHistory } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 import { withStyles } from "@material-ui/core/styles";
 import { sizing } from "@material-ui/system";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import { theme } from "../themes/theme";
-
+import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
-require("codemirror/mode/javascript/javascript");
+require("codemirror/mode/python/python");
 
 const codeUIStyle = (theme) => ({
   root: {
@@ -47,19 +49,68 @@ const premadeq = { title: qtitle, description: qdesc };
 const interviewTitle = "Interview with John D";
 
 function CodeUI(props) {
+  const { user } = useContext(UserContext);
   const [code, setCode] = useState(null);
   const [question, setQuestion] = useState(" ");
   const [interview, setInterview] = useState(interviewTitle);
   const [runResult, setrunResult] = useState(null);
+  const [inRoom, setInRoom] = useState(false);
+  const history = useHistory();
   useEffect(() => {
     setQuestion(premadeq);
-  });
+    handleInRoom();
+    if (inRoom) {
+      socket.emit(
+        "joinCodeRoom",
+        {
+          id: props.match.params.id,
+          name: user.firstName + " " + user.lastName,
+          userId: user.id,
+        },
+        function (confimation) {
+          if (!confimation) history.push("/dashboard");
+        }
+      );
+    }
+  }, [user]);
+
+  useEffect(() => {
+    socket.on("update_code", (info) => {
+      setCode(info.code);
+    });
+    socket.on("toReview", (info) => {
+      /*Route to review*/
+      history.push("/dashboard");
+    });
+  }, []);
+
+  const handleInRoom = () => {
+    inRoom ? setInRoom(false) : setInRoom(true);
+  };
+
   const updateCode = (newCode) => {
-    setCode(newCode);
+    setCode(newCode.code);
+    socket.emit("new_code", {
+      id: props.match.params.id,
+      name: user.firstName + " " + user.lastName,
+      userId: user.id,
+      code: newCode,
+    });
   };
-  const runCode = () => {
-    setrunResult(eval(code));
-  };
+  async function runCode() {
+    const res = await fetch("/code/runcode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    }).then((result) => result.json());
+
+    setrunResult(res);
+  }
+  function endInterview() {
+    fetch(`/interviews/endInterview/${props.match.params.id}`)
+      .then((res) => socket.emit("endInterview", { id: props.match.params.id }))
+      .catch((err) => console.log(err));
+  }
 
   const { classes } = props;
   return (
@@ -71,7 +122,7 @@ function CodeUI(props) {
               <Typography color="white" variant="h6" style={{ flex: 1 }}>
                 {interview}
               </Typography>
-              <Button color="inherit" variant="outlined">
+              <Button color="inherit" variant="outlined" onClick={endInterview}>
                 End Interview
               </Button>
             </Toolbar>
@@ -95,16 +146,14 @@ function CodeUI(props) {
           <CodeMirror
             value={code}
             options={{
-              mode: "javascript",
+              mode: "python",
               theme: "material",
               lineNumbers: true,
             }}
             onBeforeChange={(editor, data, value) => {
               updateCode(value);
             }}
-            onChange={(editor, data, value) => {
-              updateCode(value);
-            }}
+            onChange={(editor, data, value) => {}}
           />
           <Box bgcolor="#263238" height="200px">
             <AppBar position="static" color="primary">
