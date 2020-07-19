@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -9,10 +10,13 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { Button } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import { ColumnHeading } from "./CustomHeadings";
 import { InsideTableButton } from "./CustomButtons";
-
+import socket from "../socket/socket";
+import { UserContext } from "../contexts/UserContext";
 const pastPracticeTableStyles = makeStyles({
   root: {
     flexGrow: 1,
@@ -71,7 +75,7 @@ function formatDate(unformattedDate) {
 export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
-
+  const [inLobby, setInLobby] = useState(true);
   useEffect(() => {
     fetch("interviews/completed")
       .then((result) => result.json())
@@ -173,7 +177,40 @@ const upcomingOrOngoingTableStyles = makeStyles({
 export function UpcomingOrOngoingTable(props) {
   const classes = upcomingOrOngoingTableStyles();
   const [ongoingInterviewList, setOngoingInterviewList] = useState([]);
-
+  const { user } = useContext(UserContext);
+  const [inCodeList, setinCodeList] = useState([]);
+  const history = useHistory();
+  function cancelInterview(id) {
+    fetch("interviews/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id }),
+    })
+      .then(() => {
+        const arr = [...ongoingInterviewList];
+        let index = arr.indexOf(id);
+        if (index !== -1) {
+          arr.splice(index, 1);
+          setOngoingInterviewList([...arr]);
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+  function joinInterview(id) {
+    const info = {};
+    info.id = id;
+    info.name = user.firstName + " " + user.lastName;
+    info.userId = user.id;
+    if (inCodeList.indexOf(id) == -1) {
+      socket.emit("joinInterviewLobby", info, function (confimation) {});
+      history.push(`/dashboard/waitingroom/${id}`);
+    } else {
+      history.push(`/code/${id}`);
+      socket.emit("joinCodeRoom", info, function (confimation) {
+        if (!confimation) history.push("/dashboard");
+      });
+    }
+  }
   useEffect(() => {
     fetch("interviews/ongoing")
       .then((result) => result.json())
@@ -185,6 +222,13 @@ export function UpcomingOrOngoingTable(props) {
       .catch((err) => console.error(err));
   }, []);
 
+  useEffect(() => {
+    socket.emit("checkInCodeRoom", ongoingInterviewList, function codeList(
+      inCode
+    ) {
+      setinCodeList(inCode);
+    });
+  }, [ongoingInterviewList]);
   return (
     <Table
       className={classes.root}
@@ -195,7 +239,10 @@ export function UpcomingOrOngoingTable(props) {
           <ColumnHeading text="Interview ID" />
         </TableCell>
         <TableCell align="center">
-          <ColumnHeading text="Action" />
+          <ColumnHeading text="Join" />
+        </TableCell>
+        <TableCell align="center">
+          <ColumnHeading text="Cancel" />
         </TableCell>
       </TableHead>
       <TableBody>
@@ -205,7 +252,18 @@ export function UpcomingOrOngoingTable(props) {
               <Typography>{interviewId}</Typography>
             </TableCell>
             <TableCell align="center">
-              <InsideTableButton text="Cancel" />
+              <InsideTableButton onClick={() => joinInterview(interviewId)}>
+                Join
+              </InsideTableButton>
+            </TableCell>
+            <TableCell align="center">
+              {inCodeList.indexOf(interviewId) == -1 ? (
+                <InsideTableButton onClick={() => cancelInterview(interviewId)}>
+                  Cancel
+                </InsideTableButton>
+              ) : (
+                <></>
+              )}
             </TableCell>
           </TableRow>
         ))}

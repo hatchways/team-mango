@@ -1,6 +1,7 @@
 const db = require("../helpers/db");
-
+const mongoose = require("mongoose");
 const questionService = require("../question/question.service");
+const { User } = require("../helpers/db");
 
 const Interview = db.Interview;
 
@@ -9,16 +10,66 @@ module.exports = {
   addParticipantToAnInterview,
   getAllCompletedInterviewsOfAUser,
   getAllOngoingOrUpcomingInterviewsOfAUser,
+  removeInterview,
+  getInterview,
+  endInterview,
   createFeedback,
   getFeedback,
   findById,
 };
+/**
+ * returns interview by id
+ *
+ */
+async function getInterview(interViewId) {
+  const interview = await Interview.findById(interViewId);
+  return interview;
+}
+
+async function endInterview(interViewId) {
+  let interview = await Interview.findById(interViewId);
+  let now = new Date();
+  interview.endTime = now;
+  [interview] = await Promise.all([interview.save()]);
+  return interview;
+}
+/**
+ *
+ * Removes Interview
+ */
+async function removeInterview(userId, interviewid) {
+  let interview = await Interview.findById(interviewid);
+  let questionToRemove = interview.participants[0].question;
+  await Interview.findByIdAndRemove(interviewid).catch((err) => {
+    return `Failed to remove with error ${err}`;
+  });
+
+  await User.updateOne(
+    { _id: userId },
+
+    {
+      $pull: {
+        interviews: { $in: [interviewid] },
+        questions: { $in: [questionToRemove] },
+      },
+    },
+
+    { safe: true, multi: true },
+    function (err, data) {
+      if (err) {
+        console.log(`Failed to remove with error ${err}`);
+        return `Failed to remove with error ${err}`;
+      }
+    }
+  );
+}
 
 /**
  * Returns a newly created interview adding the creator as the owner and as a participant,
  * adding a question for the user. The user will be added with information about the interview and question
  *
  */
+
 async function createInterview(user, difficulty) {
   let interview = new Interview();
   interview.owner = user._id;
@@ -31,8 +82,8 @@ async function createInterview(user, difficulty) {
   );
 
   interview.participants.push({ user: user._id, question: question._id });
-  user.interviews.push(interview._id);
-  user.questions.push(question._id);
+  user.interviews.push({ _id: interview._id });
+  user.questions.push(question);
 
   [interview, user] = await Promise.all([interview.save(), user.save()]);
 
@@ -43,8 +94,9 @@ async function createInterview(user, difficulty) {
  * Returns the interview added with the new participant and a new question.
  *
  */
-async function addParticipantToAnInterview(user, interviewId) {
+async function addParticipantToAnInterview(userId, interviewId) {
   let interview = await Interview.findById(interviewId);
+  let user = await User.findById(userId);
   const participants = interview.participants;
   if (participants.length >= 2)
     throw Error("There is already two participants for this interview");
@@ -63,7 +115,8 @@ async function addParticipantToAnInterview(user, interviewId) {
     .catch((err) => {
       throw err;
     });
-
+  let now = new Date();
+  interview.startTime = now;
   interview.participants.push({ user: user._id, question: question._id });
   user.interviews.push(interview._id);
   user.questions.push(question._id);
