@@ -40,6 +40,31 @@ const codeUIStyle = (theme) => ({
     padding: "5px 30px 0px",
     fontFamily: '"Open Sans", "Roboto"',
   },
+  select: {
+    marginBottom: "10px",
+    color: "white",
+    [theme.breakpoints.down("xs")]: {
+      color: "black",
+      "&:before": {
+        borderColor: "black",
+      },
+      "&:after": {
+        borderColor: "black",
+      },
+    },
+    "&:before": {
+      borderColor: "white",
+    },
+    "&:after": {
+      borderColor: "white",
+    },
+  },
+  icon: {
+    fill: "white",
+    [theme.breakpoints.down("xs")]: {
+      fill: "black",
+    },
+  },
 });
 const qtitle = "Diagonal Difference";
 const qdesc =
@@ -136,6 +161,7 @@ function CodeUI(props) {
               <Typography color="white" variant="h6" style={{ flex: 1 }}>
                 {interview}
               </Typography>
+
               <Button color="inherit" variant="outlined" onClick={endInterview}>
                 End Interview
               </Button>
@@ -156,7 +182,29 @@ function CodeUI(props) {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} sm={7} className={classes.itemGrid}>
+        <Grid
+          item
+          xs={12}
+          sm={7}
+          className={classes.itemGrid}
+          style={{ marginTop: "-43px" }}
+        >
+          <Select
+            value={language}
+            onChange={changeLanguage}
+            className={classes.select}
+            inputProps={{
+              classes: {
+                icon: classes.icon,
+              },
+            }}
+          >
+            <MenuItem value={"text/x-python"}>Python</MenuItem>
+            <MenuItem value={"text/x-java"}>Java</MenuItem>
+            <MenuItem value={"text/javascript"}>Javascript</MenuItem>
+            <MenuItem value={"text/x-csrc"}>C</MenuItem>
+            <MenuItem value={"text/x-c++src"}>C++</MenuItem>
+          </Select>
           <CodeMirror
             value={code}
             options={{
@@ -178,13 +226,6 @@ function CodeUI(props) {
                 <Typography color="white" style={{ flex: 1 }}>
                   Console
                 </Typography>
-                <Select value={language} onChange={changeLanguage}>
-                  <MenuItem value={"text/x-python"}>Python</MenuItem>
-                  <MenuItem value={"text/x-java"}>Java</MenuItem>
-                  <MenuItem value={"text/javascript"}>Javascript</MenuItem>
-                  <MenuItem value={"text/x-csrc"}>C</MenuItem>
-                  <MenuItem value={"text/x-c++src"}>C++</MenuItem>
-                </Select>
                 <Button color="inherit" variant="outlined" onClick={runCode}>
                   Run Code
                 </Button>
