@@ -8,6 +8,8 @@ import {
   Box,
   Typography,
   Toolbar,
+  Select,
+  MenuItem,
 } from "@material-ui/core/";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
@@ -19,7 +21,8 @@ import { theme } from "../themes/theme";
 import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/python/python");
-
+require("codemirror/mode/clike/clike");
+require("codemirror/mode/javascript/javascript");
 const codeUIStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -56,6 +59,8 @@ function CodeUI(props) {
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
   const history = useHistory();
+  const [cursor, setCursor] = useState({ line: 0, ch: 0 });
+  const [language, setLanguage] = useState("text/x-python");
   useEffect(() => {
     setQuestion(premadeq);
     handleInRoom();
@@ -82,6 +87,10 @@ function CodeUI(props) {
       /*Route to review*/
       history.push("/dashboard");
     });
+    socket.on("runResults", (res) => {
+      console.log(res);
+      setrunResult(res);
+    });
   }, []);
 
   const handleInRoom = () => {
@@ -89,7 +98,6 @@ function CodeUI(props) {
   };
 
   const updateCode = (newCode) => {
-    setCode(newCode.code);
     socket.emit("new_code", {
       id: props.match.params.id,
       name: user.firstName + " " + user.lastName,
@@ -98,19 +106,25 @@ function CodeUI(props) {
     });
   };
   async function runCode() {
-    const res = await fetch("/code/runcode", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code }),
-    }).then((result) => result.json());
-
-    setrunResult(res);
+    let runingCode = {
+      code: code,
+      language: language,
+      id: props.match.params.id,
+    };
+    socket.emit("runCode", runingCode);
   }
   function endInterview() {
     fetch(`/interviews/endInterview/${props.match.params.id}`)
       .then((res) => socket.emit("endInterview", { id: props.match.params.id }))
       .catch((err) => console.log(err));
   }
+  function saveCursor(pos) {
+    setCursor(pos.to);
+  }
+  const changeLanguage = (lang) => {
+    console.log(lang.target.value);
+    setLanguage(lang.target.value);
+  };
 
   const { classes } = props;
   return (
@@ -146,14 +160,17 @@ function CodeUI(props) {
           <CodeMirror
             value={code}
             options={{
-              mode: "python",
+              mode: language,
               theme: "material",
               lineNumbers: true,
             }}
+            cursor={cursor}
             onBeforeChange={(editor, data, value) => {
               updateCode(value);
+              setCode(value);
             }}
             onChange={(editor, data, value) => {}}
+            onCursor={(editor, data) => {}}
           />
           <Box bgcolor="#263238" height="200px">
             <AppBar position="static" color="primary">
@@ -161,6 +178,13 @@ function CodeUI(props) {
                 <Typography color="white" style={{ flex: 1 }}>
                   Console
                 </Typography>
+                <Select value={language} onChange={changeLanguage}>
+                  <MenuItem value={"text/x-python"}>Python</MenuItem>
+                  <MenuItem value={"text/x-java"}>Java</MenuItem>
+                  <MenuItem value={"text/javascript"}>Javascript</MenuItem>
+                  <MenuItem value={"text/x-csrc"}>C</MenuItem>
+                  <MenuItem value={"text/x-c++src"}>C++</MenuItem>
+                </Select>
                 <Button color="inherit" variant="outlined" onClick={runCode}>
                   Run Code
                 </Button>

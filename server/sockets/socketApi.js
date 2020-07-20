@@ -2,6 +2,7 @@ var socket_io = require("socket.io");
 const verifyToken = require("../helpers/verifyToken");
 var io = socket_io();
 var socketApi = {};
+const { runCode } = require("../helpers/runcode");
 
 const roomMap = new Map();
 const codeMap = new Map();
@@ -9,6 +10,7 @@ socketApi.io = io;
 
 io.on("connection", (socket) => {
   console.log("connected");
+
   socket.on("joinInterviewLobby", function (info, fn) {
     let tempUsers = roomMap.get(info.id);
     if (tempUsers) {
@@ -31,11 +33,13 @@ io.on("connection", (socket) => {
     socket.join(info.id);
     io.to(info.id).emit("joinedRoom", tempUsers);
   });
+
   socket.on("startInterview", function (info) {
     tempCode = { userIds: info.participants.userIds };
     codeMap.set(info.id, tempCode);
     io.to(info.id).emit("movetoCode", info.id);
   });
+
   socket.on("leaveRoom", function (info) {
     console.log("leaving room");
     let tempUsers = roomMap.get(info.id);
@@ -62,6 +66,7 @@ io.on("connection", (socket) => {
       fn(false);
     }
   });
+
   socket.on("checkInCodeRoom", (info, fn) => {
     let res = [];
     info.forEach((id) => {
@@ -70,18 +75,29 @@ io.on("connection", (socket) => {
     });
     fn(res);
   });
+
   socket.on("new_code", (info) => {
     let oldCode = codeMap.get(info.id);
-    oldCode.code = info.code;
-    codeMap.set(info.id, oldCode);
-    io.to(info.id).emit("update_code", info);
+    if (oldCode) {
+      oldCode.code = info.code;
+      codeMap.set(info.id, oldCode);
+    } else codeMap.set(info.id, info.code);
+    socket.broadcast.to(info.id).emit("update_code", info);
   });
+
   socket.on("endInterview", (info) => {
     io.to(info.id).emit("toReview", info);
     codeMap.set(info.id, {});
   });
+
   socket.on("disconnect", (evt) => {
     console.log("some people left");
+  });
+  socket.on("runCode", async (info) => {
+    console.log("running" + info.code + info.language);
+    let result = await runCode(info.code, info.language);
+    console.log(result);
+    io.to(info.id).emit("runResults", result);
   });
 });
 

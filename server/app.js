@@ -23,8 +23,6 @@ app.use("/", accountRouter);
 app.use("/users", require("./users/users.controller"));
 app.use("/interviews", interviewRouter);
 app.use("/questions", questionRouter);
-app.use("/code", runCode);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
