@@ -20,13 +20,13 @@ io.on("connection", (socket) => {
         fn(false);
         return "too many users";
       } else {
-        tempUsers.userNames = [...tempUsers.userNames, info.name];
-        tempUsers.userIds = [...tempUsers.userIds, info.userId];
+        tempUsers = {
+          userNames: [...tempUsers.userNames, info.name],
+          userIds: [...tempUsers.userIds, info.userId],
+        };
       }
     } else {
-      tempUsers = {};
-      tempUsers.userNames = [info.name];
-      tempUsers.userIds = [info.userId];
+      tempUsers = { userNames: [info.name], userIds: [info.userId] };
     }
     roomMap.set(info.id, tempUsers);
     fn(true);
@@ -94,9 +94,7 @@ io.on("connection", (socket) => {
     console.log("some people left");
   });
   socket.on("runCode", async (info) => {
-    console.log("running" + info.code + info.language);
     let result = await runCode(info.code, info.language);
-    console.log(result);
     io.to(info.id).emit("runResults", result);
   });
 });
