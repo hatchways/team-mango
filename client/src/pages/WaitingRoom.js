@@ -180,7 +180,6 @@ function WaitingRoom(props) {
 
   const handleClose = () => {
     history.push("/dashboard");
-    window.location.reload(false);
   };
 
   const shareClick = () => {

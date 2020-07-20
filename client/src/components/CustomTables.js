@@ -10,8 +10,8 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import { Button } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import { ColumnHeading } from "./CustomHeadings";
 import { InsideTableButton } from "./CustomButtons";
@@ -27,13 +27,14 @@ const pastPracticeTableStyles = makeStyles({
 });
 
 function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var amPm = hours >= 12 ? "PM" : "AM";
+  console.log("date: " + date);
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  const amPm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12;
   minutes = minutes < 10 ? "0" + minutes : minutes;
-  var time = hours + ":" + minutes + " " + amPm;
+  const time = hours + ":" + minutes + " " + amPm;
   return time;
 }
 
@@ -74,6 +75,7 @@ function formatDate(unformattedDate) {
 
 export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
+  const location = useLocation();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
   const [inLobby, setInLobby] = useState(true);
   useEffect(() => {
@@ -90,7 +92,7 @@ export function PastPracticeTable(props) {
         });
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [location.pathname]);
 
   function RatingComponent(props) {
     const isRatingProvided = props.isRatingProvided;
@@ -153,10 +155,10 @@ export function PastPracticeTable(props) {
               />
             </TableCell>
             <TableCell align="center">
-              <InsideTableButton text="view" />
+              <InsideTableButton>View</InsideTableButton>
             </TableCell>
             <TableCell align="center">
-              <InsideTableButton text="view" />
+              <InsideTableButton>View</InsideTableButton>
             </TableCell>
           </TableRow>
         ))}
@@ -176,6 +178,7 @@ const upcomingOrOngoingTableStyles = makeStyles({
 
 export function UpcomingOrOngoingTable(props) {
   const classes = upcomingOrOngoingTableStyles();
+  const location = useLocation();
   const [ongoingInterviewList, setOngoingInterviewList] = useState([]);
   const { user } = useContext(UserContext);
   const [inCodeList, setinCodeList] = useState([]);
@@ -220,7 +223,7 @@ export function UpcomingOrOngoingTable(props) {
         });
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     socket.emit("checkInCodeRoom", ongoingInterviewList, function codeList(
