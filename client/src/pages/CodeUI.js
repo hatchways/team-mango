@@ -80,7 +80,7 @@ function CodeUI(props) {
     });
     socket.on("toReview", (info) => {
       /*Route to review*/
-      history.push("/dashboard");
+      history.push(`/dashboard/${props.match.params.id}/feedback/1`);
     });
   }, []);
 
