@@ -14,7 +14,8 @@ module.exports = {
   getInterview,
   endInterview,
   createFeedback,
-  getFeedback,
+  getFeedbackReceived,
+  getFeedbackGiven,
   findById,
 };
 /**
@@ -171,7 +172,14 @@ async function createFeedback(userId, interviewId, feedbackBody) {
     const user = participant.user;
     //Current user giving to other interview participant
     if (user.toString() !== userId.toString()) {
-      participant.feedbackReceived = feedbackBody;
+      if (feedbackBody) {
+        if (feedbackBody.overallScore) participant.feedbackReceived.overallScore = feedbackBody.overallScore;
+        if (feedbackBody.review) participant.feedbackReceived.review = feedbackBody.review;
+        if (feedbackBody.strengths) participant.feedbackReceived.strengths = feedbackBody.strengths;
+        if (feedbackBody.weaknesses) participant.feedbackReceived.weaknesses = feedbackBody.weaknesses;
+        if (feedbackBody.recommendations) participant.feedbackReceived.recommendations = feedbackBody.recommendations;
+        if (feedbackBody.anythingElse) participant.feedbackReceived.anythingElse = feedbackBody.anythingElse;
+      }
       break;
     }
   }
@@ -186,7 +194,7 @@ async function createFeedback(userId, interviewId, feedbackBody) {
 /**
  * Returns the fedback received by this user from the other participant
  */
-async function getFeedback(userId, interviewId) {
+async function getFeedbackReceived(userId, interviewId) {
   let feedbackReceived = {};
   const interview = await findById(interviewId).catch((err) => {
     throw Error("Could not find interview");
@@ -202,6 +210,28 @@ async function getFeedback(userId, interviewId) {
       break;
     }
   }
+  return feedbackReceived;
+}
+
+/**
+ * Returns the fedback given by this user to the other participant
+ */
+async function getFeedbackGiven(userId, interviewId) {
+  const interview = await findById(interviewId).catch((err) => {
+    throw Error("Could not find interview");
+  });
+
+  const participants = interview.participants;
+
+  for (let i = 0, len = participants.length; i < len; i++) {
+    const participant = participants[i];
+    const user = participant.user;
+    if (user.toString() != userId.toString()) {
+      feedbackReceived = participant.feedbackReceived;
+      break;
+    }
+  }
+
   return feedbackReceived;
 }
 

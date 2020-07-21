@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Radio,
   RadioGroup,
   FormControl,
   FormControlLabel,
+  Snackbar,
+  Dialog,
+  Typography,
 } from "@material-ui/core";
-import Dialog from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
+import MuiAlert from "@material-ui/lab/Alert";
 import {
   DialogTitle,
   DialogContent,
@@ -15,6 +17,10 @@ import {
   QuestionTextAndNo,
   FeedbackBlueButton,
 } from "../../components/DialogCommonComponents";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   radioLine: {
@@ -44,13 +50,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OverallDialog = ({ onClose, onNextQuestionClick }) => {
+const OverallDialog = ({ onClose, onNextQuestionClick, match }) => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(true);
+  const [openSaveErrorSnackbar, setOpenSaveErrorSnackbar] = useState(false);
+  const [openPleaseFillSnackbar, setOpenPleaseFillSnackbar] = useState(false);
   const [
     currentRadioButtonSelection,
     setCurrentRadioButtonSelection,
   ] = useState("");
+
+  useEffect(() => {
+    fetch(`/interviews/feedback/${match.params.id}/given`)
+      .then((result) => result.json())
+      .then((result) => {
+        if (result.overallScore) {
+          setCurrentRadioButtonSelection(result.overallScore);
+        }
+      });
+  }, [match.params.id]);
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -58,12 +76,29 @@ const OverallDialog = ({ onClose, onNextQuestionClick }) => {
   };
 
   const handleRadioButtonClick = (e) => {
-    console.log(e.target.value);
     setCurrentRadioButtonSelection(e.target.value.toString());
   };
 
-  const handleNextQuestionClick = () => {
-    onNextQuestionClick();
+  const nextButtonClick = () => {
+    if (currentRadioButtonSelection) {
+      fetch(`/interviews/feedback/${match.params.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ overallScore: currentRadioButtonSelection }),
+      })
+        .then((result) => onNextQuestionClick())
+        .catch((err) => setOpenSaveErrorSnackbar(true));
+    } else {
+      setOpenPleaseFillSnackbar(true);
+    }
+  };
+
+  const handlePleaseFillSnackbarClose = () => {
+    setOpenPleaseFillSnackbar(false);
+  };
+
+  const handleSaveErrorSnackbarClose = () => {
+    setOpenSaveErrorSnackbar(false);
   };
 
   return (
@@ -74,6 +109,24 @@ const OverallDialog = ({ onClose, onNextQuestionClick }) => {
       aria-labelledby="customized-dialog-title"
       open={openDialog}
     >
+      <Snackbar
+        open={openPleaseFillSnackbar}
+        autoHideDuration={6000}
+        onClose={handlePleaseFillSnackbarClose}
+      >
+        <Alert onClose={handlePleaseFillSnackbarClose} severity="error">
+          Please select a value
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openSaveErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSaveErrorSnackbarClose}
+      >
+        <Alert onClose={handleSaveErrorSnackbarClose} severity="error">
+          An error occured. Please try again
+        </Alert>
+      </Snackbar>
       <DialogTitle
         id="customized-dialog-title"
         onClose={handleClose}
@@ -199,10 +252,9 @@ const OverallDialog = ({ onClose, onNextQuestionClick }) => {
         </div>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
-        <FeedbackBlueButton
-          text="Next Question"
-          clickEvent={handleNextQuestionClick}
-        />
+        <FeedbackBlueButton onClick={() => nextButtonClick()}>
+          Next Question
+        </FeedbackBlueButton>
       </DialogActions>
     </Dialog>
   );
