@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Radio,
@@ -9,9 +9,9 @@ import {
   TableHead,
   TableBody,
   TableRow,
+  Dialog,
+  Typography,
 } from "@material-ui/core";
-import Dialog from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
 import MuiTableCell from "@material-ui/core/TableCell";
 import {
   DialogTitle,
@@ -20,6 +20,7 @@ import {
   QuestionTextAndNo,
   FeedbackBlueButton,
   FeedbackOutlinedButton,
+  CustomSnackbar,
 } from "../../components/DialogCommonComponents";
 
 const TableCell = withStyles({
@@ -59,6 +60,7 @@ const ReviewDialog = ({
   onClose,
   onPreviousQuestionClick,
   onNextQuestionClick,
+  match,
 }) => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(true);
@@ -81,6 +83,37 @@ const ReviewDialog = ({
   const [speedSelection, setSpeedSelection] = useState("");
   const [debuggingSkillsSelection, setDebuggingSkillsSelection] = useState("");
   const [problemSolvingSelection, setProblemSolvingSelection] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarErrorText, setSnackbarErrorText] = useState("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState("error");
+
+  useEffect(() => {
+    fetch(`/interviews/feedback/${match.params.id}/given`)
+      .then((result) => result.json())
+      .then((result) => {
+        if (result.review) {
+          const review = result.review;
+          if (review.communicationSkills) {
+            setCommunicationSkillsSelection(review.communicationSkills);
+          }
+          if (review.codeEfficiency) {
+            setCodeEfficiencySelection(review.codeEfficiency);
+          }
+          if (review.codeOrganization) {
+            setCodeOrganizationSelection(review.codeEfficiency);
+          }
+          if (review.speed) {
+            setSpeedSelection(review.speed);
+          }
+          if (review.debuggingSkills) {
+            setDebuggingSkillsSelection(review.debuggingSkills);
+          }
+          if (review.problemSolvingSkills) {
+            setProblemSolvingSelection(review.problemSolvingSkills);
+          }
+        }
+      });
+  }, [match.params.id]);
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -92,11 +125,39 @@ const ReviewDialog = ({
   };
 
   const nextButtonClick = () => {
-    onNextQuestionClick();
+    const allFilled =
+      communicationSkillsSelection &&
+      codeEfficiencySelection &&
+      codeOrganizationSelection &&
+      speedSelection &&
+      debuggingSkillsSelection &&
+      problemSolvingSelection;
+    if (allFilled) {
+      const postBody = {
+        review: {
+          communicationSkills: communicationSkillsSelection,
+          codeEfficiency: codeEfficiencySelection,
+          codeOrganization: codeOrganizationSelection,
+          speed: speedSelection,
+          debuggingSkills: debuggingSkillsSelection,
+          problemSolvingSkills: problemSolvingSelection,
+        },
+      };
+      fetch(`/interviews/feedback/${match.params.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postBody),
+      })
+        .then((result) => onNextQuestionClick())
+        .catch((err) =>
+          handleSnackbarOpen("An error occured. Please try again")
+        );
+    } else {
+      handleSnackbarOpen("Please check all the fields");
+    }
   };
 
   const communicationSkillsOnChange = (e) => {
-    console.log(e.target.value);
     setCommunicationSkillsSelection(e.target.value.toString());
   };
 
@@ -120,6 +181,16 @@ const ReviewDialog = ({
     setProblemSolvingSelection(e.target.value.toString());
   };
 
+  const handleSnackbarOpen = (message, severity = "error") => {
+    setSnackbarErrorText(message);
+    setSnackBarSeverity("error");
+    setOpenSnackbar(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -128,6 +199,13 @@ const ReviewDialog = ({
       aria-labelledby="customized-dialog-title"
       open={openDialog}
     >
+      <CustomSnackbar
+        open={openSnackbar}
+        severity={snackBarSeverity}
+        onClose={handleSnackbarClose}
+      >
+        {snackbarErrorText}
+      </CustomSnackbar>
       <DialogTitle
         id="customized-dialog-title"
         onClose={handleClose}
@@ -611,16 +689,14 @@ const ReviewDialog = ({
       <DialogActions className={classes.dialogActions}>
         <Grid container justify="center" spacing={2}>
           <Grid item>
-            <FeedbackOutlinedButton
-              text="Previous Question"
-              clickEvent={previousButtonClick}
-            />
+            <FeedbackOutlinedButton onClick={() => previousButtonClick()}>
+              Previous Question
+            </FeedbackOutlinedButton>
           </Grid>
           <Grid item>
-            <FeedbackBlueButton
-              text="Next Question"
-              clickEvent={nextButtonClick}
-            />
+            <FeedbackBlueButton onClick={() => nextButtonClick()}>
+              Next Question
+            </FeedbackBlueButton>
           </Grid>
         </Grid>
       </DialogActions>

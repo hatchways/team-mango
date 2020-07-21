@@ -104,7 +104,9 @@ function Dashboard(props) {
     history.push(newPath);
   };
 
-  const handleFeedbackSubmitClick = () => {};
+  const handleFeedbackSubmitClick = () => {
+    handleFeedbackDialogsClose();
+  };
 
   if (user === null) {
     return <></>;
@@ -125,46 +127,70 @@ function Dashboard(props) {
           onClose={handleCreateDialogClose}
           onCreateClick={handleDialogCreateInterviewButtonClick}
         />
-        <Route path="/dashboard/:id/feedback/1">
-          <OverallDialog
-            onClose={handleFeedbackDialogsClose}
-            onNextQuestionClick={handleFeedbackNextQuestionClick}
-          />
-        </Route>
-        <Route path="/dashboard/:id/feedback/2">
-          <ReviewDialog
-            onClose={handleFeedbackDialogsClose}
-            onNextQuestionClick={handleFeedbackNextQuestionClick}
-            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
-          />
-        </Route>
-        <Route path="/dashboard/:id/feedback/3">
-          <StrengthsDialog
-            onClose={handleFeedbackDialogsClose}
-            onNextQuestionClick={handleFeedbackNextQuestionClick}
-            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
-          />
-        </Route>
-        <Route path="/dashboard/:id/feedback/4">
-          <WeaknessesDialog
-            onClose={handleFeedbackDialogsClose}
-            onNextQuestionClick={handleFeedbackNextQuestionClick}
-            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
-          />
-        </Route>
-        <Route path="/dashboard/:id/feedback/5">
-          <RecommendationsDialog
-            onClose={handleFeedbackDialogsClose}
-            onNextQuestionClick={handleFeedbackNextQuestionClick}
-            onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
-          />
-        </Route>
-        <Route path="/dashboard/:id/feedback/6">
-          <AnythingElseDialog
-            onClose={handleFeedbackDialogsClose}
-            onSubmitClick={handleFeedbackSubmitClick}
-          />
-        </Route>
+        <Route
+          path="/dashboard/:id/feedback/1"
+          render={(props) => (
+            <OverallDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onNextQuestionClick={handleFeedbackNextQuestionClick}
+            />
+          )}
+        />
+        <Route
+          path="/dashboard/:id/feedback/2"
+          render={(props) => (
+            <ReviewDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onNextQuestionClick={handleFeedbackNextQuestionClick}
+              onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+            />
+          )}
+        />
+        <Route
+          path="/dashboard/:id/feedback/3"
+          render={(props) => (
+            <StrengthsDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onNextQuestionClick={handleFeedbackNextQuestionClick}
+              onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+            />
+          )}
+        />
+        <Route
+          path="/dashboard/:id/feedback/4"
+          render={(props) => (
+            <WeaknessesDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onNextQuestionClick={handleFeedbackNextQuestionClick}
+              onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+            />
+          )}
+        />
+        <Route
+          path="/dashboard/:id/feedback/5"
+          render={(props) => (
+            <RecommendationsDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onNextQuestionClick={handleFeedbackNextQuestionClick}
+              onPreviousQuestionClick={handleFeedbackPreviousQuestionClick}
+            />
+          )}
+        />
+        <Route
+          path="/dashboard/:id/feedback/6"
+          render={(props) => (
+            <AnythingElseDialog
+              {...props}
+              onClose={handleFeedbackDialogsClose}
+              onSubmitClick={handleFeedbackSubmitClick}
+            />
+          )}
+        />
         <Grid item xs={0} sm={2} />
         <Grid
           item

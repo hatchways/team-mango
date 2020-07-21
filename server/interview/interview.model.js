@@ -17,6 +17,10 @@ const FeedbackSchema = new Schema({
       type: String,
       enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
     },
+    codeOrganization: {
+      type: String,
+      enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],
+    },
     speed: {
       type: String,
       enum: ["needs improvement", "satisfactory", "good", "great", "excellent"],

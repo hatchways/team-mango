@@ -8,6 +8,8 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const styles = (theme) => ({
   root: {
@@ -141,31 +143,24 @@ const feedbackBlueButtonStyles = makeStyles({
     paddingBottom: 15,
     borderRadius: 27,
     backgroundColor: "#516bf6",
-  },
-  text: {
     fontSize: 13,
     color: "white",
     fontWeight: 600,
   },
 });
 
-export const FeedbackBlueButton = ({ text, clickEvent }) => {
+export const FeedbackBlueButton = (props) => {
   const classes = feedbackBlueButtonStyles();
-
-  function handleClick(e) {
-    e.preventDefault();
-    console.log("clicked");
-    clickEvent();
-  }
+  const { children, ...otherProps } = props;
 
   return (
     <Button
-      variant="contained"
+      variant="outlined"
       disableElevation
       className={classes.button}
-      onClick={handleClick}
+      {...otherProps}
     >
-      <Typography className={classes.text}>{text}</Typography>
+      {children}
     </Button>
   );
 };
@@ -179,30 +174,24 @@ const feedbackOutlinedButtonStyles = makeStyles({
     borderRadius: 27,
     backgroundColor: "white",
     border: "1px solid #5e6676",
-  },
-  text: {
     fontSize: 13,
     color: "#5e6676",
     fontWeight: 600,
   },
 });
 
-export const FeedbackOutlinedButton = ({ text, clickEvent }) => {
+export const FeedbackOutlinedButton = (props) => {
   const classes = feedbackOutlinedButtonStyles();
-
-  function handleClick(e) {
-    e.preventDefault();
-    clickEvent();
-  }
+  const { children, ...otherProps } = props;
 
   return (
     <Button
       variant="outlined"
       disableElevation
       className={classes.button}
-      onClick={handleClick}
+      {...otherProps}
     >
-      <Typography className={classes.text}>{text}</Typography>
+      {children}
     </Button>
   );
 };
@@ -215,7 +204,7 @@ const dialogCustomTextFieldStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DialogCustomTextField = ({ onChange }) => {
+export const DialogCustomTextField = ({ onChange, text }) => {
   const classes = dialogCustomTextFieldStyles();
 
   const handleTextInput = (e) => {
@@ -229,11 +218,30 @@ export const DialogCustomTextField = ({ onChange }) => {
       fullWidth
       variant="outlined"
       multiline
+      value={text}
       rows={7}
       placeholder="Your answer..."
       InputProps={{
         classes: { input: classes.input },
       }}
     />
+  );
+};
+
+const Alert = (props) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
+
+export const CustomSnackbar = ({ open, children, severity, onClose }) => {
+  const handleSnackbarClose = () => {
+    onClose();
+  };
+
+  return (
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleSnackbarClose}>
+      <Alert onClose={handleSnackbarClose} severity={severity}>
+        {children}
+      </Alert>
+    </Snackbar>
   );
 };
