@@ -8,6 +8,8 @@ import {
   Box,
   Typography,
   Toolbar,
+  Select,
+  MenuItem,
 } from "@material-ui/core/";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
@@ -19,7 +21,8 @@ import { theme } from "../themes/theme";
 import socket from "../socket/socket";
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/python/python");
-
+require("codemirror/mode/clike/clike");
+require("codemirror/mode/javascript/javascript");
 const codeUIStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -36,6 +39,31 @@ const codeUIStyle = (theme) => ({
   question: {
     padding: "5px 30px 0px",
     fontFamily: '"Open Sans", "Roboto"',
+  },
+  select: {
+    marginBottom: "10px",
+    color: "white",
+    [theme.breakpoints.down("xs")]: {
+      color: "black",
+      "&:before": {
+        borderColor: "black",
+      },
+      "&:after": {
+        borderColor: "black",
+      },
+    },
+    "&:before": {
+      borderColor: "white",
+    },
+    "&:after": {
+      borderColor: "white",
+    },
+  },
+  icon: {
+    fill: "white",
+    [theme.breakpoints.down("xs")]: {
+      fill: "black",
+    },
   },
 });
 const qtitle = "Diagonal Difference";
@@ -56,6 +84,8 @@ function CodeUI(props) {
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
   const history = useHistory();
+
+  const [language, setLanguage] = useState("text/x-python");
   useEffect(() => {
     setQuestion(premadeq);
     handleInRoom();
@@ -82,6 +112,10 @@ function CodeUI(props) {
       /*Route to review*/
       history.push(`/dashboard/${props.match.params.id}/feedback/1`);
     });
+    socket.on("runResults", (res) => {
+      console.log(res);
+      setrunResult(res);
+    });
   }, []);
 
   const handleInRoom = () => {
@@ -89,7 +123,6 @@ function CodeUI(props) {
   };
 
   const updateCode = (newCode) => {
-    setCode(newCode.code);
     socket.emit("new_code", {
       id: props.match.params.id,
       name: user.firstName + " " + user.lastName,
@@ -98,19 +131,23 @@ function CodeUI(props) {
     });
   };
   async function runCode() {
-    const res = await fetch("/code/runcode", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code }),
-    }).then((result) => result.json());
-
-    setrunResult(res);
+    let runingCode = {
+      code: code,
+      language: language,
+      id: props.match.params.id,
+    };
+    socket.emit("runCode", runingCode);
   }
   function endInterview() {
     fetch(`/interviews/endInterview/${props.match.params.id}`)
       .then((res) => socket.emit("endInterview", { id: props.match.params.id }))
       .catch((err) => console.log(err));
   }
+
+  const changeLanguage = (lang) => {
+    console.log(lang.target.value);
+    setLanguage(lang.target.value);
+  };
 
   const { classes } = props;
   return (
@@ -122,6 +159,7 @@ function CodeUI(props) {
               <Typography color="white" variant="h6" style={{ flex: 1 }}>
                 {interview}
               </Typography>
+
               <Button color="inherit" variant="outlined" onClick={endInterview}>
                 End Interview
               </Button>
@@ -142,16 +180,39 @@ function CodeUI(props) {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} sm={7} className={classes.itemGrid}>
+        <Grid
+          item
+          xs={12}
+          sm={7}
+          className={classes.itemGrid}
+          style={{ marginTop: "-43px" }}
+        >
+          <Select
+            value={language}
+            onChange={changeLanguage}
+            className={classes.select}
+            inputProps={{
+              classes: {
+                icon: classes.icon,
+              },
+            }}
+          >
+            <MenuItem value={"text/x-python"}>Python</MenuItem>
+            <MenuItem value={"text/x-java"}>Java</MenuItem>
+            <MenuItem value={"text/javascript"}>Javascript</MenuItem>
+            <MenuItem value={"text/x-csrc"}>C</MenuItem>
+            <MenuItem value={"text/x-c++src"}>C++</MenuItem>
+          </Select>
           <CodeMirror
             value={code}
             options={{
-              mode: "python",
+              mode: language,
               theme: "material",
               lineNumbers: true,
             }}
             onBeforeChange={(editor, data, value) => {
               updateCode(value);
+              setCode(value);
             }}
             onChange={(editor, data, value) => {}}
           />

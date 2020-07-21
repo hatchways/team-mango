@@ -1,20 +1,33 @@
 const express = require("express");
-const router = express.Router();
-
-const verifyToken = require("../helpers/verifyToken");
 
 const { c, cpp, node, python, java } = require("compile-run");
-
-router.post("/runcode", function (req, res) {
-  const code = `print(0/0)`;
-  let resultPromite = python.runSource(req.body.code);
-  resultPromite
-    .then((result) => {
-      res.status(200).json(result.stdout);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-module.exports = router;
+module.exports = {
+  runCode,
+};
+async function runCode(code, langauge) {
+  let resultPromite = {};
+  switch (langauge) {
+    case "text/x-python": {
+      result = await python.runSource(code);
+      break;
+    }
+    case "text/x-java": {
+      result = await java.runSource(code);
+      break;
+    }
+    case "text/javascript": {
+      result = await node.runSource(code);
+      break;
+    }
+    case "text/x-csrc": {
+      result = await c.runSource(code);
+      break;
+    }
+    case "text/x-c++src": {
+      result = await cpp.runSource(code);
+      break;
+    }
+  }
+  if (result.stdout) return result.stdout;
+  else return result.stderr;
+}
