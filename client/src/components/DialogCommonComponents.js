@@ -234,7 +234,7 @@ const Alert = (props) => {
 
 export const CustomSnackbar = ({ open, children, severity, onClose }) => {
   const handleSnackbarClose = () => {
-    onClose(false);
+    onClose();
   };
 
   return (
