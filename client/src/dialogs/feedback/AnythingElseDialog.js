@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
 import {
   DialogTitle,
   DialogContent,
@@ -10,11 +8,8 @@ import {
   QuestionTextAndNo,
   FeedbackBlueButton,
   DialogCustomTextField,
+  CustomSnackbar,
 } from "../../components/DialogCommonComponents";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const useStyles = makeStyles((theme) => ({
   dialogActions: {
@@ -26,8 +21,9 @@ const useStyles = makeStyles((theme) => ({
 const AnythingElseDialog = ({ onClose, onSubmitClick, match }) => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(true);
-  const [openSaveErrorSnackbar, setOpenSaveErrorSnackbar] = useState(false);
-  const [openPleaseFillSnackbar, setOpenPleaseFillSnackbar] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarErrorText, setSnackbarErrorText] = useState("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState("error");
   const [answerText, setAnswerText] = useState("");
 
   useEffect(() => {
@@ -57,17 +53,22 @@ const AnythingElseDialog = ({ onClose, onSubmitClick, match }) => {
         body: JSON.stringify({ anythingElse: answerText }),
       })
         .then((result) => onSubmitClick())
-        .catch((err) => setOpenSaveErrorSnackbar(true));
+        .catch((err) =>
+          handleSnackbarOpen("An error occured. Please try again")
+        );
     } else {
-      setOpenPleaseFillSnackbar(true);
+      handleSnackbarOpen("Please enter review");
     }
   };
 
-  const handlePleaseFillSnackbarClose = () => {
-    setOpenPleaseFillSnackbar(false);
+  const handleSnackbarOpen = (message, severity = "error") => {
+    setSnackbarErrorText(message);
+    setSnackBarSeverity("error");
+    setOpenSnackbar(true);
   };
-  const handleSaveErrorSnackbarClose = () => {
-    setOpenSaveErrorSnackbar(false);
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -78,24 +79,13 @@ const AnythingElseDialog = ({ onClose, onSubmitClick, match }) => {
       aria-labelledby="customized-dialog-title"
       open={openDialog}
     >
-      <Snackbar
-        open={openPleaseFillSnackbar}
-        autoHideDuration={6000}
-        onClose={handlePleaseFillSnackbarClose}
+      <CustomSnackbar
+        open={openSnackbar}
+        severity={snackBarSeverity}
+        onClose={handleSnackbarClose}
       >
-        <Alert onClose={handlePleaseFillSnackbarClose} severity="error">
-          Please enter review
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openSaveErrorSnackbar}
-        autoHideDuration={6000}
-        onClose={handleSaveErrorSnackbarClose}
-      >
-        <Alert onClose={handleSaveErrorSnackbarClose} severity="error">
-          An error occured. Please try again
-        </Alert>
-      </Snackbar>
+        {snackbarErrorText}
+      </CustomSnackbar>
       <DialogTitle
         id="customized-dialog-title"
         onClose={handleClose}

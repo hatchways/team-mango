@@ -8,6 +8,8 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const styles = (theme) => ({
   root: {
@@ -223,5 +225,23 @@ export const DialogCustomTextField = ({ onChange, text }) => {
         classes: { input: classes.input },
       }}
     />
+  );
+};
+
+const Alert = (props) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
+
+export const CustomSnackbar = ({ open, children, severity, onClose }) => {
+  const handleSnackbarClose = () => {
+    onClose(false);
+  };
+
+  return (
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleSnackbarClose}>
+      <Alert onClose={handleSnackbarClose} severity={severity}>
+        {children}
+      </Alert>
+    </Snackbar>
   );
 };

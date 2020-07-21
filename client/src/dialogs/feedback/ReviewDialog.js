@@ -11,10 +11,8 @@ import {
   TableRow,
   Dialog,
   Typography,
-  Snackbar,
 } from "@material-ui/core";
 import MuiTableCell from "@material-ui/core/TableCell";
-import MuiAlert from "@material-ui/lab/Alert";
 import {
   DialogTitle,
   DialogContent,
@@ -22,11 +20,8 @@ import {
   QuestionTextAndNo,
   FeedbackBlueButton,
   FeedbackOutlinedButton,
+  CustomSnackbar,
 } from "../../components/DialogCommonComponents";
-
-const Alert = (props) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-};
 
 const TableCell = withStyles({
   root: {
@@ -88,8 +83,9 @@ const ReviewDialog = ({
   const [speedSelection, setSpeedSelection] = useState("");
   const [debuggingSkillsSelection, setDebuggingSkillsSelection] = useState("");
   const [problemSolvingSelection, setProblemSolvingSelection] = useState("");
-  const [openSaveErrorSnackbar, setOpenSaveErrorSnackbar] = useState(false);
-  const [openFillAllSnackbar, setOpenFillAllSnackbar] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarErrorText, setSnackbarErrorText] = useState("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState("error");
 
   useEffect(() => {
     fetch(`/interviews/feedback/${match.params.id}/given`)
@@ -153,9 +149,11 @@ const ReviewDialog = ({
         body: JSON.stringify(postBody),
       })
         .then((result) => onNextQuestionClick())
-        .catch((err) => setOpenSaveErrorSnackbar(true));
+        .catch((err) =>
+          handleSnackbarOpen("An error occured. Please try again")
+        );
     } else {
-      setOpenFillAllSnackbar(true);
+      handleSnackbarOpen("Please check all the fields");
     }
   };
 
@@ -183,11 +181,14 @@ const ReviewDialog = ({
     setProblemSolvingSelection(e.target.value.toString());
   };
 
-  const handleFillAllSnackbarClose = () => {
-    setOpenFillAllSnackbar(false);
+  const handleSnackbarOpen = (message, severity = "error") => {
+    setSnackbarErrorText(message);
+    setSnackBarSeverity("error");
+    setOpenSnackbar(true);
   };
-  const handleSaveErrorSnackbarClose = () => {
-    setOpenSaveErrorSnackbar(false);
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -198,24 +199,13 @@ const ReviewDialog = ({
       aria-labelledby="customized-dialog-title"
       open={openDialog}
     >
-      <Snackbar
-        open={openFillAllSnackbar}
-        autoHideDuration={6000}
-        onClose={handleFillAllSnackbarClose}
+      <CustomSnackbar
+        open={openSnackbar}
+        severity={snackBarSeverity}
+        onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleFillAllSnackbarClose} severity="error">
-          Please check all the fields
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openSaveErrorSnackbar}
-        autoHideDuration={6000}
-        onClose={handleSaveErrorSnackbarClose}
-      >
-        <Alert onClose={handleSaveErrorSnackbarClose} severity="error">
-          An error occured. Please try again
-        </Alert>
-      </Snackbar>
+        {snackbarErrorText}
+      </CustomSnackbar>
       <DialogTitle
         id="customized-dialog-title"
         onClose={handleClose}
