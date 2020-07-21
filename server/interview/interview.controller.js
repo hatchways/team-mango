@@ -116,7 +116,7 @@ router.get("/feedback/:interviewId", verifyToken, async function (req, res) {
   const interviewId = req.params.interviewId;
 
   await interviewService
-    .getFeedback(user._id, interviewId)
+    .getFeedbackReceived(user._id, interviewId)
     .then((feedback) => res.status(200).json(feedback))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
@@ -130,6 +130,17 @@ router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
 
   await interviewService
     .createFeedback(userId, interviewId, postBody)
+    .then((feedback) => res.status(200).json(feedback))
+    .catch((err) => res.status(500).json({ Error: err.message }));
+});
+
+//Get feedback given to the other participant in a given interview
+router.get("/feedback/:interviewId/given", verifyToken, async function (req, res) {
+  const user = req.user;
+  const interviewId = req.params.interviewId;
+
+  await interviewService
+    .getFeedbackGiven(user._id, interviewId)
     .then((feedback) => res.status(200).json(feedback))
     .catch((err) => res.status(500).json({ Error: err.message }));
 });
