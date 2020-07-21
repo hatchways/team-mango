@@ -84,7 +84,7 @@ function CodeUI(props) {
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
   const history = useHistory();
-  const [cursor, setCursor] = useState({ line: 0, ch: 0 });
+
   const [language, setLanguage] = useState("text/x-python");
   useEffect(() => {
     setQuestion(premadeq);
@@ -143,9 +143,7 @@ function CodeUI(props) {
       .then((res) => socket.emit("endInterview", { id: props.match.params.id }))
       .catch((err) => console.log(err));
   }
-  function saveCursor(pos) {
-    setCursor(pos.to);
-  }
+
   const changeLanguage = (lang) => {
     console.log(lang.target.value);
     setLanguage(lang.target.value);
@@ -212,13 +210,11 @@ function CodeUI(props) {
               theme: "material",
               lineNumbers: true,
             }}
-            cursor={cursor}
             onBeforeChange={(editor, data, value) => {
               updateCode(value);
               setCode(value);
             }}
             onChange={(editor, data, value) => {}}
-            onCursor={(editor, data) => {}}
           />
           <Box bgcolor="#263238" height="200px">
             <AppBar position="static" color="primary">
