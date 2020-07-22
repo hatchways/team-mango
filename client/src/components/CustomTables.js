@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -27,7 +26,6 @@ const pastPracticeTableStyles = makeStyles({
 });
 
 function formatAMPM(date) {
-  console.log("date: " + date);
   let hours = date.getHours();
   let minutes = date.getMinutes();
   const amPm = hours >= 12 ? "PM" : "AM";
@@ -39,7 +37,7 @@ function formatAMPM(date) {
 }
 
 function formatDate(unformattedDate) {
-  //Thursday , April 30, 2020
+  //Format : "Thursday , April 30, 2020"
   const year = unformattedDate.getFullYear();
   const date = unformattedDate.getDate();
   const months = [
@@ -69,7 +67,6 @@ function formatDate(unformattedDate) {
   ];
   const dayIndex = unformattedDate.getDay();
   const dayName = days[dayIndex];
-  //Thursday , April 30, 2020
   return dayName + " , " + monthName + " " + date + ", " + year;
 }
 
@@ -77,22 +74,72 @@ export function PastPracticeTable(props) {
   const classes = pastPracticeTableStyles();
   const location = useLocation();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
-  const [inLobby, setInLobby] = useState(true);
+  const { user } = useContext(UserContext);
   useEffect(() => {
     fetch("interviews/completed")
       .then((result) => result.json())
       .then((data) => {
         data.forEach((element) => {
-          let startDate = new Date(element.startTime);
-          let endDate = new Date(element.endTime);
+          const startDate = new Date(element.startTime);
+          const endDate = new Date(element.endTime);
           element.heldOnDate = formatDate(startDate);
           element.heldOnTime =
             formatAMPM(startDate) + " - " + formatAMPM(endDate);
+          const {
+            codingRating,
+            communicationRating,
+          } = extractCodingAndCommunicationRating(element, user.id);
+          element.codingRating = codingRating;
+          element.communicationRating = communicationRating;
           setCompletedInterviewsList((prevArray) => [...prevArray, element]);
         });
       })
       .catch((err) => console.error(err));
   }, [location.pathname]);
+
+  const extractCodingAndCommunicationRating = (interview, userId) => {
+    let codingRating, communicationRating;
+    const participants = interview.participants;
+    if (participants) {
+      participants.forEach((participant) => {
+        if (participant.user && participant.user === userId) {
+          if (
+            participant.feedbackReceived &&
+            participant.feedbackReceived.review
+          ) {
+            const review = participant.feedbackReceived.review;
+            const { communicationSkills, codeEfficiency, codeOrganization, debuggingSkills, problemSolvingSkills, speed } = review;
+            communicationRating = convertReviewPointsToScore(communicationSkills);
+            const codeRatingAverage = (convertReviewPointsToScore(codeEfficiency) + convertReviewPointsToScore(codeOrganization) + 
+              convertReviewPointsToScore(debuggingSkills)  + convertReviewPointsToScore(problemSolvingSkills) 
+              + convertReviewPointsToScore(speed)) / 5;
+            codingRating = codeRatingAverage;  
+          }
+        }
+      });
+    }
+    return {
+      codingRating: codingRating,
+      communicationRating: communicationRating,
+    };
+  };
+
+  const convertReviewPointsToScore = (reviewPoint) => {
+    switch (reviewPoint) {
+      case "needs improvement":
+        return 1;
+      case "satisfactory":
+        return 2;
+      case "good":
+        return 3;
+      case "great":
+        return 4;
+      case "excellent":
+        return 5;
+      default:
+        return undefined;
+    }
+  };
 
   function RatingComponent(props) {
     const isRatingProvided = props.isRatingProvided;

@@ -112,7 +112,7 @@ const ReviewDialog = ({
             setProblemSolvingSelection(review.problemSolvingSkills);
           }
         }
-      });
+      }).catch(err => {});
   }, [match.params.id]);
 
   const handleClose = () => {
@@ -158,27 +158,27 @@ const ReviewDialog = ({
   };
 
   const communicationSkillsOnChange = (e) => {
-    setCommunicationSkillsSelection(e.target.value.toString());
+    if (e.target.value) setCommunicationSkillsSelection(e.target.value.toString());
   };
 
   const codeEfficiencyOnChange = (e) => {
-    setCodeEfficiencySelection(e.target.value.toString());
+    if (e.target.value) setCodeEfficiencySelection(e.target.value.toString());
   };
 
   const codeOrganizationOnChange = (e) => {
-    setCodeOrganizationSelection(e.target.value.toString());
+    if (e.target.value) setCodeOrganizationSelection(e.target.value.toString());
   };
 
   const speedOnChange = (e) => {
-    setSpeedSelection(e.target.value.toString());
+    if (e.target.value) setSpeedSelection(e.target.value.toString());
   };
 
   const debuggingSkillsOnChange = (e) => {
-    setDebuggingSkillsSelection(e.target.value.toString());
+    if (e.target.value) setDebuggingSkillsSelection(e.target.value.toString());
   };
 
   const problemSolvingOnChange = (e) => {
-    setProblemSolvingSelection(e.target.value.toString());
+    if (e.target.value) setProblemSolvingSelection(e.target.value.toString());
   };
 
   const handleSnackbarOpen = (message, severity = "error") => {

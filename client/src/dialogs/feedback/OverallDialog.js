@@ -63,7 +63,8 @@ const OverallDialog = ({ onClose, onNextQuestionClick, match }) => {
         if (result.overallScore) {
           setCurrentRadioButtonSelection(result.overallScore);
         }
-      });
+      })
+      .catch(err => {});
   }, [match.params.id]);
 
   const handleClose = () => {
@@ -72,7 +73,7 @@ const OverallDialog = ({ onClose, onNextQuestionClick, match }) => {
   };
 
   const handleRadioButtonClick = (e) => {
-    setCurrentRadioButtonSelection(e.target.value.toString());
+    if (e.target.value) setCurrentRadioButtonSelection(e.target.value.toString());
   };
 
   const nextButtonClick = () => {

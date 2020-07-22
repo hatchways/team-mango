@@ -40,7 +40,7 @@ const StrengthsDialog = ({
         if (result.strengths) {
           setAnswerText(result.strengths);
         }
-      });
+      }).catch(err => {});
   }, [match.params.id]);
 
   const handleClose = () => {

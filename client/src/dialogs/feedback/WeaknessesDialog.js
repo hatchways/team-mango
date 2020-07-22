@@ -40,7 +40,7 @@ const WeaknessesDialog = ({
         if (result.weaknesses) {
           setAnswerText(result.weaknesses);
         }
-      });
+      }).catch(err => {});
   }, [match.params.id]);
 
   const handleClose = () => {
