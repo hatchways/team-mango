@@ -26,6 +26,11 @@
   height: 603px !important;
 }
 
+video {
+  max-width: 200px !important;
+  max-height: 200px !important;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

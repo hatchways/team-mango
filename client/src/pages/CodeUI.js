@@ -19,10 +19,13 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import { theme } from "../themes/theme";
 import socket from "../socket/socket";
+import Video from 'twilio-video';
+import ParticipantVideo from "../video-chat/ParticipantVideo";
 require("codemirror/mode/xml/xml");
 require("codemirror/mode/python/python");
 require("codemirror/mode/clike/clike");
 require("codemirror/mode/javascript/javascript");
+
 const codeUIStyle = (theme) => ({
   root: {
     flexGrow: 1,
@@ -65,6 +68,14 @@ const codeUIStyle = (theme) => ({
       fill: "black",
     },
   },
+  remoteParticipant: {
+    width: 200,
+    height: 200,
+    zIndex: 9,
+    position: 'absolute',
+    right: 0,
+    margin: "0 auto",
+  }
 });
 const qtitle = "Diagonal Difference";
 const qdesc =
@@ -84,6 +95,9 @@ function CodeUI(props) {
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
   const history = useHistory();
+  const [videoRoom, setVideoRoom] = useState(null);
+  const [videoParticipants, setVideoParticipants] = useState([]);
+  const [token, setToken] = useState(null);
 
   const [language, setLanguage] = useState("text/x-python");
   useEffect(() => {
@@ -118,6 +132,60 @@ function CodeUI(props) {
     });
   }, []);
 
+  //For video chat room creation
+  useEffect(() => {
+    fetch(`/video/token/${props.match.params.id}`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => setToken(data.token));
+  },[]);
+
+  //For video chat connection
+  useEffect(() => {
+    if (token) {
+      const participantConnected = participant => {
+        setVideoParticipants(prevParticipants => [...prevParticipants, participant]);
+      };
+
+      const participantDisconnected = participant => {
+        setVideoParticipants(prevParticipants =>
+          prevParticipants.filter(p => p !== participant)
+        );
+      };
+
+      Video.connect(token, {
+        name: props.match.params.id
+      }).then(videoRoom => {
+        setVideoRoom(videoRoom);
+        videoRoom.on('participantConnected', participantConnected);
+        videoRoom.on('participantDisconnected', participantDisconnected);
+        videoRoom.participants.forEach(participantConnected);
+      });
+
+      return () => {
+        setVideoRoom(currentRoom => {
+          if (currentRoom && currentRoom.localParticipant.state === 'connected') {
+            currentRoom.localParticipant.tracks.forEach(function(trackPublication) {
+              trackPublication.track.stop();
+            });
+            currentRoom.disconnect();
+            return null;
+          } else {
+            return currentRoom;
+          }
+        });
+      };
+    }
+  }, [props.match.params.id, token]);
+
+  //For video chat other participant video
+  const remoteParticipants = videoParticipants.map(participant => (
+    <ParticipantVideo key={participant.sid} participant={participant} />
+  ));
+
   const handleInRoom = () => {
     inRoom ? setInRoom(false) : setInRoom(true);
   };
@@ -142,6 +210,7 @@ function CodeUI(props) {
     fetch(`/interviews/endInterview/${props.match.params.id}`)
       .then((res) => socket.emit("endInterview", { id: props.match.params.id }))
       .catch((err) => console.log(err));
+    setToken(null);//For video-chat logout
   }
 
   const changeLanguage = (lang) => {
@@ -203,6 +272,8 @@ function CodeUI(props) {
             <MenuItem value={"text/x-csrc"}>C</MenuItem>
             <MenuItem value={"text/x-c++src"}>C++</MenuItem>
           </Select>
+          <div className={classes.remoteParticipant}>{remoteParticipants}</div>
+          {/* <div className={classes.remoteParticipant}>I want this above</div> */}
           <CodeMirror
             value={code}
             options={{
@@ -215,7 +286,9 @@ function CodeUI(props) {
               setCode(value);
             }}
             onChange={(editor, data, value) => {}}
+            style={{position: 'absolute'}}
           />
+            {/* <div className={classes.remoteParticipant}>{remoteParticipants}</div> */}
           <Box bgcolor="#263238" height="200px">
             <AppBar position="static" color="primary">
               <Toolbar variant="dense">
