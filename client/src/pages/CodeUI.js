@@ -142,7 +142,6 @@ function CodeUI(props) {
           userId: user.id,
         },
         function (confimation, otherUser) {
-          console.log(otherUser);
           if (!confimation) history.push("/dashboard");
           else setInterview(`Interview with ${otherUser.name}`);
         }
