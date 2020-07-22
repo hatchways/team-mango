@@ -112,7 +112,8 @@ const ReviewDialog = ({
             setProblemSolvingSelection(review.problemSolvingSkills);
           }
         }
-      }).catch(err => {});
+      })
+      .catch((err) => {});
   }, [match.params.id]);
 
   const handleClose = () => {
@@ -158,7 +159,8 @@ const ReviewDialog = ({
   };
 
   const communicationSkillsOnChange = (e) => {
-    if (e.target.value) setCommunicationSkillsSelection(e.target.value.toString());
+    if (e.target.value)
+      setCommunicationSkillsSelection(e.target.value.toString());
   };
 
   const codeEfficiencyOnChange = (e) => {

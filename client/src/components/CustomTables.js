@@ -108,12 +108,25 @@ export function PastPracticeTable(props) {
             participant.feedbackReceived.review
           ) {
             const review = participant.feedbackReceived.review;
-            const { communicationSkills, codeEfficiency, codeOrganization, debuggingSkills, problemSolvingSkills, speed } = review;
-            communicationRating = convertReviewPointsToScore(communicationSkills);
-            const codeRatingAverage = (convertReviewPointsToScore(codeEfficiency) + convertReviewPointsToScore(codeOrganization) + 
-              convertReviewPointsToScore(debuggingSkills)  + convertReviewPointsToScore(problemSolvingSkills) 
-              + convertReviewPointsToScore(speed)) / 5;
-            codingRating = codeRatingAverage;  
+            const {
+              communicationSkills,
+              codeEfficiency,
+              codeOrganization,
+              debuggingSkills,
+              problemSolvingSkills,
+              speed,
+            } = review;
+            communicationRating = convertReviewPointsToScore(
+              communicationSkills
+            );
+            const codeRatingAverage =
+              (convertReviewPointsToScore(codeEfficiency) +
+                convertReviewPointsToScore(codeOrganization) +
+                convertReviewPointsToScore(debuggingSkills) +
+                convertReviewPointsToScore(problemSolvingSkills) +
+                convertReviewPointsToScore(speed)) /
+              5;
+            codingRating = codeRatingAverage;
           }
         }
       });
