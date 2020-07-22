@@ -99,24 +99,26 @@ function CodeUI(props) {
     fetch(`/interviews/questions/${props.match.params.id}`)
       .then((res) => res.json())
       .then((res) => {
-        res.ownQuestion.description = res.ownQuestion.description.replace(
-          /^(<br>)/,
-          ""
-        );
-        res.peerQuestion.description = res.peerQuestion.description.replace(
-          /^(<br>)/,
-          ""
-        );
+        if (res.ownQuestion && res.peerQuestion) {
+          res.ownQuestion.description = res.ownQuestion.description.replace(
+            /^(<br>)/,
+            ""
+          );
+          res.peerQuestion.description = res.peerQuestion.description.replace(
+            /^(<br>)/,
+            ""
+          );
 
-        setOwnQuestion(res.ownQuestion);
-        setShowingQuestion(res.ownQuestion);
-        let answerLink = res.peerQuestion.title.toLowerCase();
-        answerLink = answerLink.replace(/^[0-9]+\. */g, "");
-        answerLink = answerLink.replace(/ /g, "-");
-        res.peerQuestion.description = res.peerQuestion.description.concat(
-          `<a target="popup" href="https://leetcode.com/problems/${answerLink}/discuss/"><h3 style ="margin-top: -30px; margin-bottom: 50px;">Answer</h3></a>`
-        );
-        setPeerQuestion(res.peerQuestion);
+          setOwnQuestion(res.ownQuestion);
+          setShowingQuestion(res.ownQuestion);
+          let answerLink = res.peerQuestion.title.toLowerCase();
+          answerLink = answerLink.replace(/^[0-9]+\. */g, "");
+          answerLink = answerLink.replace(/ /g, "-");
+          res.peerQuestion.description = res.peerQuestion.description.concat(
+            `<a target="popup" href="https://leetcode.com/problems/${answerLink}/discuss/"><h3 style ="margin-top: -30px; margin-bottom: 50px;">Answer</h3></a>`
+          );
+          setPeerQuestion(res.peerQuestion);
+        }
       })
       .catch((err) => console.log(err));
   }, []);
@@ -213,56 +215,52 @@ function CodeUI(props) {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} className={classes.itemGrid}>
-          {showingQuestion ? (
-            <Box style={{ height: "800px" }}>
-              <Grid container spacing={5} alignItems="center" justify="center">
-                <Grid item xs={0}>
-                  <Button
-                    className={classes.questionButtons}
-                    onClick={handleQuestionChange}
-                    disabled={buttonDisable}
-                  >
-                    <Typography className={classes.questionButtonsText}>
-                      My Question
-                    </Typography>
-                  </Button>
-                </Grid>
-                <Grid item xs={0}>
-                  <Button
-                    className={classes.questionButtons}
-                    onClick={handleQuestionChange}
-                    disabled={!buttonDisable}
-                  >
-                    <Typography className={classes.questionButtonsText}>
-                      Peer Question
-                    </Typography>
-                  </Button>
-                </Grid>
+          <Box style={{ height: "800px" }}>
+            <Grid container spacing={5} alignItems="center" justify="center">
+              <Grid item xs={0}>
+                <Button
+                  className={classes.questionButtons}
+                  onClick={handleQuestionChange}
+                  disabled={buttonDisable}
+                >
+                  <Typography className={classes.questionButtonsText}>
+                    My Question
+                  </Typography>
+                </Button>
               </Grid>
+              <Grid item xs={0}>
+                <Button
+                  className={classes.questionButtons}
+                  onClick={handleQuestionChange}
+                  disabled={!buttonDisable}
+                >
+                  <Typography className={classes.questionButtonsText}>
+                    Peer Question
+                  </Typography>
+                </Button>
+              </Grid>
+            </Grid>
 
-              <Typography
-                className={classes.title}
-                color="primary"
-                variant="h5"
-                backgroundColor="white"
-              >
-                {showingQuestion.title}
-              </Typography>
-              <div
-                className={classes.desc}
-                style={{
-                  height: "720px",
-                  ".br": "display:block; margin-bottom: 0em",
-                }}
-                dangerouslySetInnerHTML={{
-                  __html: showingQuestion.description,
-                }}
-                className={classes.question}
-              ></div>
-            </Box>
-          ) : (
-            window.location.reload()
-          )}
+            <Typography
+              className={classes.title}
+              color="primary"
+              variant="h5"
+              backgroundColor="white"
+            >
+              {showingQuestion.title}
+            </Typography>
+            <div
+              className={classes.desc}
+              style={{
+                height: "720px",
+                ".br": "display:block; margin-bottom: 0em",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: showingQuestion.description,
+              }}
+              className={classes.question}
+            ></div>
+          </Box>
         </Grid>
 
         <Grid

@@ -156,23 +156,24 @@ router.get("/questions/:interviewId", verifyToken, async function (req, res) {
   let peerQuestionId = "";
 
   const interview = await interviewService.getInterview(interviewId);
-  interview.participants.forEach((participant) => {
+  await interview.participants.forEach((participant) => {
     if (participant.user.toString() === userId.toString()) {
       ownQuestionId = participant.question;
     } else {
       peerQuestionId = participant.question;
     }
   });
+
   const ownQuestion = await questionService
     .getQuestionById(ownQuestionId)
-    .catch((err) => res.status(500).json({ Error: err.message }));
+    .catch((err) => res.status(500).json(err));
   const peerQuestion = await questionService
     .getQuestionById(peerQuestionId)
-    .catch((err) => res.status(500).json({ Error: err.message }));
-
-  res
-    .status(200)
-    .json({ peerQuestion: peerQuestion, ownQuestion: ownQuestion });
+    .catch((err) => res.status(500).json(err));
+  if (peerQuestion && ownQuestion)
+    res
+      .status(200)
+      .json({ peerQuestion: peerQuestion, ownQuestion: ownQuestion });
 });
 
 module.exports = router;

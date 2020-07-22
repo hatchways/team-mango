@@ -39,7 +39,7 @@ async function findARandomQuestionByDifficulty(
 
 async function getQuestionById(id) {
   const question = await Question.findById(id).catch((err) => {
-    throw Error("Could not find a question with that id");
+    console.log("Could not find a question with that id");
   });
   return question;
 }
