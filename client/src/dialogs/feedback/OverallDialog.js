@@ -60,10 +60,12 @@ const OverallDialog = ({ onClose, onNextQuestionClick, match }) => {
     fetch(`/interviews/feedback/${match.params.id}/given`)
       .then((result) => result.json())
       .then((result) => {
+        console.log(result);
         if (result.overallScore) {
           setCurrentRadioButtonSelection(result.overallScore);
         }
-      });
+      })
+      .catch((err) => console.log(err));
   }, [match.params.id]);
 
   const handleClose = () => {
