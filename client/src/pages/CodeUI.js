@@ -27,9 +27,8 @@ const codeUIStyle = (theme) => ({
   root: {
     flexGrow: 1,
   },
-  desc: {},
   title: {
-    padding: "20px 30px 20px",
+    padding: "20px 30px 0px 30px",
   },
   questionButtons: {
     width: 80,
@@ -50,11 +49,12 @@ const codeUIStyle = (theme) => ({
     marginTop: theme.spacing(-0.5),
   },
   question: {
+    whiteSpace: "pre-wrap",
     overflow: "auto",
     padding: "5px 30px 0px",
-    marginTop: "-40px",
     fontFamily: '"Open Sans", "Roboto"',
   },
+
   select: {
     marginBottom: "10px",
     color: "white",
@@ -99,6 +99,15 @@ function CodeUI(props) {
     fetch(`/interviews/questions/${props.match.params.id}`)
       .then((res) => res.json())
       .then((res) => {
+        res.ownQuestion.description = res.ownQuestion.description.replace(
+          /^(<br>)/,
+          ""
+        );
+        res.peerQuestion.description = res.peerQuestion.description.replace(
+          /^(<br>)/,
+          ""
+        );
+
         setOwnQuestion(res.ownQuestion);
         setShowingQuestion(res.ownQuestion);
         let answerLink = res.peerQuestion.title.toLowerCase();
@@ -242,7 +251,10 @@ function CodeUI(props) {
               </Typography>
               <div
                 className={classes.desc}
-                style={{ height: "720px" }}
+                style={{
+                  height: "720px",
+                  ".br": "display:block; margin-bottom: 0em",
+                }}
                 dangerouslySetInnerHTML={{
                   __html: showingQuestion.description,
                 }}
@@ -290,7 +302,7 @@ function CodeUI(props) {
             }}
             onChange={(editor, data, value) => {}}
           />
-          <Box bgcolor="#263238" height="200px">
+          <Box bgcolor="#263238" height="210px">
             <AppBar position="static" color="primary">
               <Toolbar variant="dense">
                 <Typography color="white" style={{ flex: 1 }}>
