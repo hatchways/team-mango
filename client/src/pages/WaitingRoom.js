@@ -130,7 +130,13 @@ function WaitingRoom(props) {
         });
     };
   }, [user]);
-
+  function wait(ms) {
+    var start = new Date().getTime();
+    var end = start;
+    while (end < start + ms) {
+      end = new Date().getTime();
+    }
+  }
   function handleStartButtonClick() {
     let otherUserSpot;
     if (participants.userIds.indexOf(user.id) === 1) {
@@ -145,6 +151,7 @@ function WaitingRoom(props) {
         participantID: participants.userIds[otherUserSpot],
       }),
     });
+    wait(500);
     socket.emit("startInterview", {
       id: props.match.params.id,
       participants: participants,

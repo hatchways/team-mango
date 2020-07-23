@@ -40,7 +40,8 @@ const RecommendationsDialog = ({
         if (result.recommendations) {
           setAnswerText(result.recommendations);
         }
-      });
+      })
+      .catch((err) => {});
   }, [match.params.id]);
 
   const handleClose = () => {

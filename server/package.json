@@ -6,7 +6,8 @@
     "dev": "nodemon ./bin/www",
     "debug": "nodemon  --inspect ./bin/www",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --exit --timeout 30000",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "parse": "node parse.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

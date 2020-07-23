@@ -2,13 +2,24 @@ import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-  screen: {
+  root: {
+    right: 0,
+  },
+  local: {
     maxWidth: "200px",
-    maxHeight: "200px"
-  }
+    maxHeight: "200px",
+    right: 0,
+    zIndex: 10,
+  },
+  remote: {
+    maxWidth: "400px",
+    maxHeight: "400px",
+    right: 0,
+    zIndex: 5,
+  },
 }));
 
-const ParticipantVideo = ({ participant }) => {
+const ParticipantVideo = ({ participant, remote }) => {
   const classes = useStyles();
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
@@ -71,10 +82,21 @@ const ParticipantVideo = ({ participant }) => {
     }
   }, [audioTracks]);
 
+  if (remote) {
+    console.log("remote is true");
+    let styleClass = classes.remote;
+  } else {
+    console.log("remote is false");
+    let styleClass = classes.local;
+  }
+
   return (
-    <div className={classes.screen}>
-      <h4>{participant.identity}</h4>
-      <video ref={videoRef} autoPlay={true} />
+    <div className={classes.root}>
+      <video
+        ref={videoRef}
+        autoPlay={true}
+        className={`${remote ? classes.remote : classes.local}`}
+      />
       <audio ref={audioRef} autoPlay={true} muted={true} />
     </div>
   );
