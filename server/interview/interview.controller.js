@@ -4,7 +4,7 @@ const router = express.Router();
 const verifyToken = require("../helpers/verifyToken");
 const interviewService = require("./interview.service");
 const { NotExtended } = require("http-errors");
-
+const questionService = require("../question/question.service");
 //Create interview
 router.post("/", verifyToken, async function (req, res) {
   const postBody = req.body;
@@ -135,7 +135,10 @@ router.post("/feedback/:interviewId", verifyToken, async function (req, res) {
 });
 
 //Get feedback given to the other participant in a given interview
-router.get("/feedback/:interviewId/given", verifyToken, async function (req, res) {
+router.get("/feedback/:interviewId/given", verifyToken, async function (
+  req,
+  res
+) {
   const user = req.user;
   const interviewId = req.params.interviewId;
 
@@ -143,6 +146,34 @@ router.get("/feedback/:interviewId/given", verifyToken, async function (req, res
     .getFeedbackGiven(user._id, interviewId)
     .then((feedback) => res.status(200).json(feedback))
     .catch((err) => res.status(500).json({ Error: err.message }));
+});
+
+//Get Questions
+router.get("/questions/:interviewId", verifyToken, async function (req, res) {
+  const userId = req.user._id;
+  const interviewId = req.params.interviewId;
+  let ownQuestionId = "";
+  let peerQuestionId = "";
+
+  const interview = await interviewService.getInterview(interviewId);
+  await interview.participants.forEach((participant) => {
+    if (participant.user.toString() === userId.toString()) {
+      ownQuestionId = participant.question;
+    } else {
+      peerQuestionId = participant.question;
+    }
+  });
+
+  const ownQuestion = await questionService
+    .getQuestionById(ownQuestionId)
+    .catch((err) => res.status(500).json(err));
+  const peerQuestion = await questionService
+    .getQuestionById(peerQuestionId)
+    .catch((err) => res.status(500).json(err));
+  if (peerQuestion && ownQuestion)
+    res
+      .status(200)
+      .json({ peerQuestion: peerQuestion, ownQuestion: ownQuestion });
 });
 
 module.exports = router;

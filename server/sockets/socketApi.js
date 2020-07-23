@@ -35,7 +35,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("startInterview", function (info) {
-    tempCode = { userIds: info.participants.userIds };
+    tempCode = {
+      userIds: info.participants.userIds,
+      userNames: info.participants.userNames,
+    };
     codeMap.set(info.id, tempCode);
     io.to(info.id).emit("movetoCode", info.id);
   });
@@ -56,14 +59,17 @@ io.on("connection", (socket) => {
 
   socket.on("joinCodeRoom", function (info, fn) {
     let codeObj = codeMap.get(info.id);
-    if (codeObj) {
-      if (codeObj.userIds.indexOf(info.userId) == -1) {
-        fn(false);
+    if (codeObj && codeObj.userIds) {
+      let userIndex = codeObj.userIds.indexOf(info.userId);
+      if (userIndex == -1) {
+        fn(false, { name: " " });
       }
       socket.join(info.id);
       io.to(info.id).emit("update_code", codeObj);
+      if (userIndex == 0) fn(true, { name: codeObj.userNames[1] });
+      else fn(true, { name: codeObj.userNames[0] });
     } else {
-      fn(false);
+      fn(false, { name: " " });
     }
   });
 
