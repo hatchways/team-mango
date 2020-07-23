@@ -33,7 +33,8 @@ const AnythingElseDialog = ({ onClose, onSubmitClick, match }) => {
         if (result.anythingElse) {
           setAnswerText(result.anythingElse);
         }
-      });
+      })
+      .catch((err) => {});
   }, [match.params.id]);
 
   const onTextInputChange = (value) => {

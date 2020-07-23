@@ -172,6 +172,9 @@ async function createFeedback(userId, interviewId, feedbackBody) {
     const user = participant.user;
     //Current user giving to other interview participant
     if (user.toString() !== userId.toString()) {
+      if (participant.feedbackReceived === undefined) {
+        participant.feedbackReceived = {};
+      }
       if (feedbackBody) {
         if (feedbackBody.overallScore)
           participant.feedbackReceived.overallScore = feedbackBody.overallScore;
@@ -238,7 +241,6 @@ async function getFeedbackGiven(userId, interviewId) {
       break;
     }
   }
-
   return feedbackReceived;
 }
 
