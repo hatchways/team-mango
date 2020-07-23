@@ -28,7 +28,19 @@ const codeUIStyle = (theme) => ({
     flexGrow: 1,
   },
   title: {
-    padding: "20px 30px 20px",
+    padding: "20px 30px 0px 30px",
+  },
+  questionButtons: {
+    width: 80,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#516bf6",
+    marginTop: "10px",
+  },
+  questionButtonsText: {
+    fontSize: 11,
+    color: "white",
+    fontWeight: 600,
   },
   containerGrid: {
     marginTop: theme.spacing(-1),
@@ -37,9 +49,12 @@ const codeUIStyle = (theme) => ({
     marginTop: theme.spacing(-0.5),
   },
   question: {
+    whiteSpace: "pre-wrap",
+    overflow: "auto",
     padding: "5px 30px 0px",
     fontFamily: '"Open Sans", "Roboto"',
   },
+
   select: {
     marginBottom: "10px",
     color: "white",
@@ -66,30 +81,61 @@ const codeUIStyle = (theme) => ({
     },
   },
 });
-const qtitle = "Diagonal Difference";
-const qdesc =
-  "Given a square matrix, calculate the absolute difference between the sums of its diagonals. For example,  the square matrix <b> arr </b> is shown below:" +
-  '<div style="margin-top: 10px; background-color:#E9FCFC; padding: 30px ">1 2 3<br/> 4 5 6<br/> 9 8 9 </div> <p>The left to right diagonal = <b> 1 + 5 + 9 + 15 </b>' +
-  ". The right to left diagonal = <b> 3 + 5 + 9 = 17 </b>. Their absolute difference is <b> [ 15 - 17 ] = 2 </b> </br> </br> <b> Function description  </br></br></b> Complete the function" +
-  "in the <i> <b> diagonalDifference </i> </b> editor below. It must return an interger representing the absolute diagnonal difference. diagonalDifference takes the " +
-  "following parameter: arr. an array of integers.";
-const premadeq = { title: qtitle, description: qdesc };
-const interviewTitle = "Interview with John D";
 
 function CodeUI(props) {
   const { user } = useContext(UserContext);
   const [code, setCode] = useState(null);
-  const [question, setQuestion] = useState(" ");
-  const [interview, setInterview] = useState(interviewTitle);
+  const [interview, setInterview] = useState(" ");
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
+  const [ownQuestion, setOwnQuestion] = useState(" ");
+  const [buttonDisable, setButtonDisable] = useState(true);
+  const [showingQuestion, setShowingQuestion] = useState(" ");
+  const [peerQuestion, setPeerQuestion] = useState(" ");
   const history = useHistory();
-
   const [language, setLanguage] = useState("text/x-python");
+
   useEffect(() => {
-    setQuestion(premadeq);
+    fetch(`/interviews/questions/${props.match.params.id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.ownQuestion && res.peerQuestion) {
+          res.ownQuestion.description = res.ownQuestion.description.replace(
+            /^(<br>)/,
+            ""
+          );
+          res.peerQuestion.description = res.peerQuestion.description.replace(
+            /^(<br>)/,
+            ""
+          );
+
+          setOwnQuestion(res.ownQuestion);
+          setShowingQuestion(res.ownQuestion);
+          let answerLink = res.peerQuestion.title.toLowerCase();
+          answerLink = answerLink.replace(/^[0-9]+\. */g, "");
+          answerLink = answerLink.replace(/ /g, "-");
+          res.peerQuestion.description = res.peerQuestion.description.concat(
+            `<a target="popup" href="https://leetcode.com/problems/${answerLink}/discuss/"><h3 style ="margin-top: -30px; margin-bottom: 50px;">Answer</h3></a>`
+          );
+          setPeerQuestion(res.peerQuestion);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  function handleQuestionChange() {
+    if (showingQuestion === ownQuestion) {
+      setButtonDisable(false);
+      setShowingQuestion(peerQuestion);
+    } else {
+      setButtonDisable(true);
+      setShowingQuestion(ownQuestion);
+    }
+  }
+
+  useEffect(() => {
     handleInRoom();
-    if (inRoom) {
+    if (user) {
       socket.emit(
         "joinCodeRoom",
         {
@@ -97,8 +143,9 @@ function CodeUI(props) {
           name: user.firstName + " " + user.lastName,
           userId: user.id,
         },
-        function (confimation) {
+        function (confimation, otherUser) {
           if (!confimation) history.push("/dashboard");
+          else setInterview(`Interview with ${otherUser.name}`);
         }
       );
     }
@@ -145,7 +192,6 @@ function CodeUI(props) {
   }
 
   const changeLanguage = (lang) => {
-    console.log(lang.target.value);
     setLanguage(lang.target.value);
   };
 
@@ -156,7 +202,7 @@ function CodeUI(props) {
         <Grid item xs={12}>
           <AppBar position="static" color="primary">
             <Toolbar variant="dense">
-              <Typography color="white" variant="h6" style={{ flex: 1 }}>
+              <Typography color="white" variant="h5" style={{ flex: 1 }}>
                 {interview}
               </Typography>
 
@@ -168,22 +214,59 @@ function CodeUI(props) {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={5} className={classes.itemGrid}>
-          <Paper style={{ height: "803px" }}>
-            <Typography className={classes.title} color="primary" variant="h4">
-              {question.title}
+        <Grid item xs={12} sm={6} className={classes.itemGrid}>
+          <Box style={{ height: "800px" }}>
+            <Grid container spacing={5} alignItems="center" justify="center">
+              <Grid item xs={0}>
+                <Button
+                  className={classes.questionButtons}
+                  onClick={handleQuestionChange}
+                  disabled={buttonDisable}
+                >
+                  <Typography className={classes.questionButtonsText}>
+                    My Question
+                  </Typography>
+                </Button>
+              </Grid>
+              <Grid item xs={0}>
+                <Button
+                  className={classes.questionButtons}
+                  onClick={handleQuestionChange}
+                  disabled={!buttonDisable}
+                >
+                  <Typography className={classes.questionButtonsText}>
+                    Peer Question
+                  </Typography>
+                </Button>
+              </Grid>
+            </Grid>
+
+            <Typography
+              className={classes.title}
+              color="primary"
+              variant="h5"
+              backgroundColor="white"
+            >
+              {showingQuestion.title}
             </Typography>
             <div
-              dangerouslySetInnerHTML={{ __html: question.description }}
+              className={classes.desc}
+              style={{
+                height: "720px",
+                ".br": "display:block; margin-bottom: 0em",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: showingQuestion.description,
+              }}
               className={classes.question}
             ></div>
-          </Paper>
+          </Box>
         </Grid>
 
         <Grid
           item
           xs={12}
-          sm={7}
+          sm={6}
           className={classes.itemGrid}
           style={{ marginTop: "-43px" }}
         >
@@ -216,7 +299,7 @@ function CodeUI(props) {
             }}
             onChange={(editor, data, value) => {}}
           />
-          <Box bgcolor="#263238" height="200px">
+          <Box bgcolor="#263238" height="210px">
             <AppBar position="static" color="primary">
               <Toolbar variant="dense">
                 <Typography color="white" style={{ flex: 1 }}>
