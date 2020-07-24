@@ -9,7 +9,7 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { UserContext } from "../contexts/UserContext";
-
+import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
@@ -100,7 +100,9 @@ function WaitingRoom(props) {
       .then((result) => result.json())
       .then((res) => {
         let isTrueSet = res === "true";
-        if (!isTrueSet) {
+        if (!isTrueSet && res != "JsonWebTokenError: jwt must be a string") {
+          console.log(res);
+
           history.push("/dashboard");
         }
       });
@@ -116,7 +118,9 @@ function WaitingRoom(props) {
           userId: user.id,
         },
         function (confimation) {
-          if (!confimation) history.push("/dashboard");
+          if (!confimation) {
+            history.push("/dashboard");
+          }
         }
       );
     }
@@ -207,6 +211,8 @@ function WaitingRoom(props) {
 
   const { classes } = props;
   if (user === null) {
+    return <></>;
+  } else if (user === "failed to fetch") {
     return <></>;
   }
   return (

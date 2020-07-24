@@ -107,11 +107,10 @@ function Dashboard(props) {
   const handleFeedbackSubmitClick = () => {
     handleFeedbackDialogsClose();
   };
-
   if (user === null) {
     return <></>;
   } else if (user === "failed to fetch") {
-    return <Redirect to="/login" />;
+    return <></>;
   } else {
     return (
       <Grid

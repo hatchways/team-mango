@@ -16,6 +16,8 @@ import { ColumnHeading } from "./CustomHeadings";
 import { InsideTableButton } from "./CustomButtons";
 import socket from "../socket/socket";
 import { UserContext } from "../contexts/UserContext";
+import QuestionDialog from "../dialogs/QuestionDialog";
+import FeedbackDialog from "../dialogs/FeedbackDialog";
 const pastPracticeTableStyles = makeStyles({
   root: {
     flexGrow: 1,
@@ -71,10 +73,14 @@ function formatDate(unformattedDate) {
 }
 
 export function PastPracticeTable(props) {
+  const [openQuestionDialog, setOpenQuestionDialog] = useState(false);
+  const [openFeedbackDialog, setOpenFeedbackDialog] = useState(false);
   const classes = pastPracticeTableStyles();
   const location = useLocation();
   const [completedInterviewsList, setCompletedInterviewsList] = useState([]);
   const { user } = useContext(UserContext);
+  const [prevInterviewQuetions, setPrevInterviewQuetions] = useState({});
+  const [prevFeedback, setPrevFeedback] = useState({});
   useEffect(() => {
     fetch("interviews/completed")
       .then((result) => result.json())
@@ -153,6 +159,38 @@ export function PastPracticeTable(props) {
         return undefined;
     }
   };
+  function handleOpenQuestionDialog() {
+    setOpenQuestionDialog(true);
+  }
+
+  function handleQuestionDialogClose() {
+    setOpenQuestionDialog(false);
+  }
+  function handleOpenFeedbackDialog() {
+    setOpenFeedbackDialog(true);
+  }
+
+  function handleFeedbackDialogClose() {
+    setOpenFeedbackDialog(false);
+  }
+  function openQuestionDialogClick(id) {
+    fetch(`/interviews/questions/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.ownQuestion && res.peerQuestion) {
+          setPrevInterviewQuetions(res.ownQuestion);
+          setOpenQuestionDialog(true);
+        }
+      });
+  }
+  function openFeedbackDialogClick(id) {
+    fetch(`/interviews/feedback/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        setPrevFeedback(res);
+        setOpenFeedbackDialog(true);
+      });
+  }
 
   function RatingComponent(props) {
     const isRatingProvided = props.isRatingProvided;
@@ -166,64 +204,91 @@ export function PastPracticeTable(props) {
   }
 
   return (
-    <Table className={classes.root} aria-label="Past practice interviews table">
-      <TableHead className={classes.tableHead}>
-        <TableCell>
-          <ColumnHeading text="Held on" />
-        </TableCell>
-        <TableCell align="center">
-          <ColumnHeading text="Coding" />
-        </TableCell>
-        <TableCell align="center">
-          <ColumnHeading text="Communication" />
-        </TableCell>
-        <TableCell align="center">
-          <ColumnHeading text="Questions" />
-        </TableCell>
-        <TableCell align="center">
-          <ColumnHeading text="Detailed Feedback" />
-        </TableCell>
-      </TableHead>
-      <TableBody>
-        {completedInterviewsList.map((interview) => (
-          <TableRow key={interview._id}>
-            <TableCell component="th" scope="row">
-              <Grid container direction="column">
-                <Grid item>
-                  <Typography>{interview.heldOnDate}</Typography>
+    <div>
+      <QuestionDialog
+        open={openQuestionDialog}
+        setOpen={setOpenQuestionDialog}
+        onClose={handleQuestionDialogClose}
+      >
+        {prevInterviewQuetions}
+      </QuestionDialog>
+      <FeedbackDialog
+        open={openFeedbackDialog}
+        setOpen={setOpenFeedbackDialog}
+        onClose={handleFeedbackDialogClose}
+      >
+        {prevFeedback}
+      </FeedbackDialog>
+      <Table
+        className={classes.root}
+        aria-label="Past practice interviews table"
+      >
+        <TableHead className={classes.tableHead}>
+          <TableCell>
+            <ColumnHeading text="Held on" />
+          </TableCell>
+          <TableCell align="center">
+            <ColumnHeading text="Coding" />
+          </TableCell>
+          <TableCell align="center">
+            <ColumnHeading text="Communication" />
+          </TableCell>
+          <TableCell align="center">
+            <ColumnHeading text="Questions" />
+          </TableCell>
+          <TableCell align="center">
+            <ColumnHeading text="Detailed Feedback" />
+          </TableCell>
+        </TableHead>
+        <TableBody>
+          {completedInterviewsList.map((interview) => (
+            <TableRow key={interview._id}>
+              <TableCell component="th" scope="row">
+                <Grid container direction="column">
+                  <Grid item>
+                    <Typography>{interview.heldOnDate}</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography>{interview.heldOnTime}</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography>{interview.heldOnTime}</Typography>
-                </Grid>
-              </Grid>
-            </TableCell>
-            <TableCell align="center">
-              <RatingComponent
-                value={interview.codingRating}
-                isRatingProvided={
-                  interview.codingRating && interview.codingRating >= 0
-                }
-              />
-            </TableCell>
-            <TableCell align="center">
-              <RatingComponent
-                value={interview.communicationRating}
-                isRatingProvided={
-                  interview.communicationRating &&
-                  interview.communicationRating >= 0
-                }
-              />
-            </TableCell>
-            <TableCell align="center">
-              <InsideTableButton>View</InsideTableButton>
-            </TableCell>
-            <TableCell align="center">
-              <InsideTableButton>View</InsideTableButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </TableCell>
+              <TableCell align="center">
+                <RatingComponent
+                  value={interview.codingRating}
+                  isRatingProvided={
+                    interview.codingRating && interview.codingRating >= 0
+                  }
+                />
+              </TableCell>
+              <TableCell align="center">
+                <RatingComponent
+                  value={interview.communicationRating}
+                  isRatingProvided={
+                    interview.communicationRating &&
+                    interview.communicationRating >= 0
+                  }
+                />
+              </TableCell>
+              <TableCell align="center">
+                <InsideTableButton
+                  onClick={() => openQuestionDialogClick(interview._id)}
+                >
+                  Question
+                </InsideTableButton>
+              </TableCell>
+              <TableCell align="center">
+                <InsideTableButton
+                  onClick={() => openFeedbackDialogClick(interview._id)}
+                >
+                  Feedback
+                </InsideTableButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

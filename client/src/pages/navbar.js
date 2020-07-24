@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { withStyles } from "@material-ui/styles";
+import { Redirect, useHistory, useLocation, Route } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -13,7 +14,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { UserContext } from "../contexts/UserContext";
-import { Redirect } from "react-router-dom";
+
 import { theme } from "../themes/theme";
 
 const styles = (theme) => ({
@@ -31,9 +32,11 @@ const styles = (theme) => ({
 });
 
 function Navbar(props) {
+  const history = useHistory();
   const [value, setValue] = React.useState(0);
   const { user } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [link, setLink] = React.useState(null);
   const logout = async (event) => {
     let res = await fetch("/logout");
     window.location.href = "/login";
@@ -44,10 +47,18 @@ function Navbar(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   if (user === null) {
-    return <p>Loading profile...</p>;
+    return <></>;
   } else if (user === "failed to fetch") {
-    return <Redirect to="/login" />;
+    console.log("navbar failed to fetch");
+    console.log(window.location.href);
+    let destination = window.location.href;
+    history.push({
+      pathname: "/login",
+      state: { destinationPath: destination },
+    });
+    window.location.href = "localhost:3000/login";
   } else if (!user.backgroundCompleted) {
     return <Redirect to="/background" />;
   }

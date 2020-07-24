@@ -93,11 +93,11 @@ function SignUp(props) {
   const [severity, setSeverity] = useState("success");
 
   useEffect(() => {
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setPassword('');
-    setPasswordConfirmed('');
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPassword("");
+    setPasswordConfirmed("");
   }, [props.location.pathname]);
 
   const [firstNameMessage, setFirstNameMessage] = useState(
@@ -136,7 +136,7 @@ function SignUp(props) {
   const signIn = () => {
     props.history.push({
       pathname: props.location.pathname === "/signup" ? "/login" : "/signup",
-      state: {},
+      state: props.location.state,
     });
   };
   const handleClick = (e) => {
@@ -195,10 +195,13 @@ function SignUp(props) {
         .then((responseJson) => {
           if ("email" in responseJson) {
             setUser(responseJson);
-            props.history.push({
-              pathname: "/background",
-              state: {},
-            });
+            if (props.location.state) {
+              let destination = props.location.state.destinationPath;
+              props.history.push({
+                pathname: "/background",
+                state: { destinationPath: destination },
+              });
+            } else props.history.push({ pathname: "/background" });
           } else if ("error" in responseJson) {
             setEmailMessage(responseJson.error);
             setSuccessMessage("");
@@ -231,10 +234,11 @@ function SignUp(props) {
         console.log(responseJson);
         if ("email" in responseJson) {
           setUser(responseJson);
-          props.history.push({
-            pathname: "/background",
-            state: {},
-          });
+
+          if (props.location.state) {
+            let destination = props.location.state.destinationPath;
+            window.location.href = destination;
+          } else props.history.push("/dashboard");
         } else if ("message" in responseJson) {
           setMessage(responseJson.message);
           setSeverity("error");
