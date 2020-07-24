@@ -67,7 +67,6 @@ router.put("/:id", verifyToken, async function (req, res) {
 //Get all completed interviews
 router.get("/completed", verifyToken, async function (req, res) {
   const user = req.user;
-  console.log("in completed")
   await interviewService
     .getAllCompletedInterviewsOfAUser(user)
     .then((interviews) => res.status(200).json(interviews))
@@ -80,7 +79,6 @@ router.get("/completed", verifyToken, async function (req, res) {
 //Get all ongoing or upcoming interviews
 router.get("/ongoing", verifyToken, async function (req, res) {
   const user = req.user;
-  console.log("in ongoing")
   await interviewService
     .getAllOngoingOrUpcomingInterviewsOfAUser(user)
     .then((interviews) => res.status(200).json(interviews))
