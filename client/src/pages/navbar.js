@@ -47,16 +47,9 @@ function Navbar(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  function wait(ms) {
-    var start = new Date().getTime();
-    var end = start;
-    while (end < start + ms) {
-      end = new Date().getTime();
-    }
-  }
+
   if (user === null) {
-    wait(1);
-    return <p>Loading profile...</p>;
+    return <></>;
   } else if (user === "failed to fetch") {
     console.log("navbar failed to fetch");
     console.log(window.location.href);
