@@ -84,29 +84,38 @@ const codeUIStyle = (theme) => ({
     },
   },
   videoContainer: {
-    maxWidth: 400,
-    position: "relative",
     right: 0,
-    margin: "0 auto",
+    position: "relative"
   },
   remoteParticipant: {
     position: "absolute",
     margin: "0 auto",
     right: 0,
+    borderRadius: "5px",
     zIndex: 5,
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: 400,
+      position: "static !important"
+    }
   },
   localParticipant: {
     position: "absolute",
     right: 0,
-    margin: "0 auto",
+    marginTop: "auto",
+    borderTopRightRadius: "5px",
     zIndex: 9,
-  },
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: 400,
+      position: "static !important"
+    }
+  }
 });
 
 function CodeUI(props) {
   const { user } = useContext(UserContext);
   const [code, setCode] = useState(null);
   const [interview, setInterview] = useState(" ");
+  const [otherUserFirstName, setOtherUserFirstName] = useState("");
   const [runResult, setrunResult] = useState(null);
   const [inRoom, setInRoom] = useState(false);
   const [ownQuestion, setOwnQuestion] = useState(" ");
@@ -170,7 +179,11 @@ function CodeUI(props) {
         },
         function (confimation, otherUser) {
           if (!confimation) history.push("/dashboard");
-          else setInterview(`Interview with ${otherUser.name}`);
+          else {
+            fullNameSplit = otherUser.split();
+            setOtherUserFirstName(fullNameSplit[0]);
+            setInterview(`Interview with ${otherUser.name}`);
+          }
         }
       );
     }
@@ -305,6 +318,22 @@ function CodeUI(props) {
           </AppBar>
         </Grid>
       </Grid>
+      <div className={classes.videoContainer}>
+            <div className={classes.localParticipant}>
+              {videoRoom ? (
+                <ParticipantVideo
+                  key={videoRoom.localParticipant.sid}
+                  participant={videoRoom.localParticipant}
+                  remote={false}
+                />
+              ) : (
+                ""
+              )}
+            </div>
+            <div className={classes.remoteParticipant}>
+              {remoteParticipants}
+            </div>
+      </div>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} className={classes.itemGrid}>
           <Box style={{ height: "800px" }}>
@@ -332,7 +361,6 @@ function CodeUI(props) {
                 </Button>
               </Grid>
             </Grid>
-
             <Typography
               className={classes.title}
               color="primary"
@@ -354,7 +382,6 @@ function CodeUI(props) {
             ></div>
           </Box>
         </Grid>
-
         <Grid
           item
           xs={12}
@@ -377,23 +404,7 @@ function CodeUI(props) {
             <MenuItem value={"text/javascript"}>Javascript</MenuItem>
             <MenuItem value={"text/x-csrc"}>C</MenuItem>
             <MenuItem value={"text/x-c++src"}>C++</MenuItem>
-          </Select>
-          <div className={classes.videoContainer}>
-            <div className={classes.localParticipant}>
-              {videoRoom ? (
-                <ParticipantVideo
-                  key={videoRoom.localParticipant.sid}
-                  participant={videoRoom.localParticipant}
-                  remote={false}
-                />
-              ) : (
-                ""
-              )}
-            </div>
-            <div className={classes.remoteParticipant}>
-              {remoteParticipants}
-            </div>
-          </div>
+          </Select>         
           <CodeMirror
             value={code}
             options={{
@@ -424,7 +435,7 @@ function CodeUI(props) {
             </Box>
           </Box>
         </Grid>
-      </Grid>
+      </Grid>     
     </div>
   );
 }

@@ -1,28 +1,37 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     right: 0,
   },
   local: {
-    maxWidth: "200px",
-    maxHeight: "200px",
+    maxWidth: 60,
     right: 0,
     zIndex: 10,
+    borderTopRightRadius: "5px",
   },
   remote: {
-    maxWidth: "400px",
-    maxHeight: "400px",
+    maxWidth: 250,
     right: 0,
     zIndex: 5,
+    borderRadius: "5px",
   },
+  dot: {
+    height: "5px",
+    width: "5px",
+    backgroundColor: "#64FF33",
+    borderRadius: "50%",
+    display: "inline-block",
+  }
 }));
 
 const ParticipantVideo = ({ participant, remote }) => {
   const classes = useStyles();
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
+  const { user } = useContext(UserContext);
 
   const videoRef = useRef();
   const audioRef = useRef();
@@ -83,10 +92,8 @@ const ParticipantVideo = ({ participant, remote }) => {
   }, [audioTracks]);
 
   if (remote) {
-    console.log("remote is true");
     let styleClass = classes.remote;
   } else {
-    console.log("remote is false");
     let styleClass = classes.local;
   }
 
@@ -98,6 +105,12 @@ const ParticipantVideo = ({ participant, remote }) => {
         className={`${remote ? classes.remote : classes.local}`}
       />
       <audio ref={audioRef} autoPlay={true} muted={true} />
+      {remote && 
+        <div>
+        <span className={classes.dot}></span>&nbsp;
+        {user.firstName}
+        </div>
+      }
     </div>
   );
 };
