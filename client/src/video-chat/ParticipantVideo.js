@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     marginBottom: 2,
     display: "inline-block",
-  }
+  },
 }));
 
 const ParticipantVideo = ({ participant, remote, otherUserFirstName }) => {
@@ -106,14 +106,14 @@ const ParticipantVideo = ({ participant, remote, otherUserFirstName }) => {
         className={`${remote ? classes.remote : classes.local}`}
       />
       <audio ref={audioRef} autoPlay={true} muted={true} />
-      {remote && 
+      {remote && (
         <div className={classes.names}>
           &nbsp;<span className={classes.dot}></span>&nbsp;&nbsp;
           {user.firstName}
           &nbsp;&nbsp;&nbsp;<span className={classes.dot}></span>&nbsp;&nbsp;
           {otherUserFirstName ? otherUserFirstName : ""}
         </div>
-      }
+      )}
     </div>
   );
 };

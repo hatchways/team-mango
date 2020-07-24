@@ -97,8 +97,8 @@ const codeUIStyle = (theme) => ({
     zIndex: 5,
     [theme.breakpoints.down("xs")]: {
       maxWidth: 400,
-      position: "static !important"
-    }
+      position: "static !important",
+    },
   },
   localParticipant: {
     position: "absolute",
@@ -108,9 +108,9 @@ const codeUIStyle = (theme) => ({
     zIndex: 9,
     [theme.breakpoints.down("xs")]: {
       maxWidth: 400,
-      position: "static !important"
-    }
-  }
+      position: "static !important",
+    },
+  },
 });
 
 function CodeUI(props) {
@@ -182,9 +182,7 @@ function CodeUI(props) {
         function (confimation, otherUser) {
           if (!confimation) history.push("/dashboard");
           else {
-            console.log("otherUser: " + JSON.stringify(otherUser))
             const fullNameSplit = otherUser.name.split(" ");
-            console.log("full anme split: " + JSON.stringify(fullNameSplit));
             setOtherUserFirstName(fullNameSplit[0]);
             setInterview(`Interview with ${otherUser.name}`);
           }
@@ -202,7 +200,6 @@ function CodeUI(props) {
       history.push(`/dashboard/${props.match.params.id}/feedback/1`);
     });
     socket.on("runResults", (res) => {
-      console.log(res);
       setrunResult(res);
     });
   }, []);
@@ -324,20 +321,18 @@ function CodeUI(props) {
         </Grid>
       </Grid>
       <div className={classes.videoContainer}>
-            <div className={classes.localParticipant}>
-              {videoRoom ? (
-                <ParticipantVideo
-                  key={videoRoom.localParticipant.sid}
-                  participant={videoRoom.localParticipant}
-                  remote={false}
-                />
-              ) : (
-                ""
-              )}
-            </div>
-            <div className={classes.remoteParticipant}>
-              {remoteParticipants}
-            </div>
+        <div className={classes.localParticipant}>
+          {videoRoom ? (
+            <ParticipantVideo
+              key={videoRoom.localParticipant.sid}
+              participant={videoRoom.localParticipant}
+              remote={false}
+            />
+          ) : (
+            ""
+          )}
+        </div>
+        <div className={classes.remoteParticipant}>{remoteParticipants}</div>
       </div>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} className={classes.itemGrid}>
@@ -409,7 +404,7 @@ function CodeUI(props) {
             <MenuItem value={"text/javascript"}>Javascript</MenuItem>
             <MenuItem value={"text/x-csrc"}>C</MenuItem>
             <MenuItem value={"text/x-c++src"}>C++</MenuItem>
-          </Select>         
+          </Select>
           <CodeMirror
             value={code}
             options={{
@@ -440,7 +435,7 @@ function CodeUI(props) {
             </Box>
           </Box>
         </Grid>
-      </Grid>     
+      </Grid>
     </div>
   );
 }
