@@ -49,7 +49,6 @@ const codeUIStyle = (theme) => ({
     marginTop: theme.spacing(-0.5),
   },
   question: {
-    whiteSpace: "pre-wrap",
     overflow: "auto",
     padding: "5px 30px 0px",
     fontFamily: '"Open Sans", "Roboto"',
@@ -109,6 +108,7 @@ function CodeUI(props) {
             ""
           );
 
+          console.log(res.peerQuestion.description);
           setOwnQuestion(res.ownQuestion);
           setShowingQuestion(res.ownQuestion);
           let answerLink = res.peerQuestion.title.toLowerCase();
@@ -144,8 +144,9 @@ function CodeUI(props) {
           userId: user.id,
         },
         function (confimation, otherUser) {
-          if (!confimation) history.push("/dashboard");
-          else setInterview(`Interview with ${otherUser.name}`);
+          if (!confimation) {
+            history.push("/dashboard");
+          } else setInterview(`Interview with ${otherUser.name}`);
         }
       );
     }
