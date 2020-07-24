@@ -115,7 +115,10 @@ function Background(props) {
           console.log(responseJson);
           if (responseJson.msg === "updated") {
             setUser(userTmp);
-            props.history.push({ pathname: "/dashboard" });
+            if (props.location.state) {
+              let destination = props.location.state.destinationPath;
+              window.location.href = destination;
+            } else props.history.push("/dashboard");
           } else {
             setMessage("Database connection problem!");
             setOpenSnack(true);
