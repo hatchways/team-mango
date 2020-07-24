@@ -9,13 +9,11 @@ import { withStyles } from "@material-ui/core/styles";
 import { UserContext } from "../contexts/UserContext";
 import { useTheme } from "@material-ui/core/styles";
 
-const QuestionDialogStyle = (theme) => ({
+const FeedbackDialogStyle = (theme) => ({
   root: {
     backgroundColor: "#495074",
   },
-  feedback: {
-    minHeight: "500px",
-  },
+
   dialogPaper: {
     minHeight: "80vh",
     minWidth: "60vh",
@@ -23,7 +21,7 @@ const QuestionDialogStyle = (theme) => ({
   selected: {
     paddingTop: "10px",
     paddingLeft: "10px",
-    paddingBottom: "5px",
+    paddingBottom: "10px",
   },
   closeButton: {
     position: "absolute",
@@ -42,6 +40,7 @@ const QuestionDialogStyle = (theme) => ({
   },
   title: {
     padding: "20px 30px 20px 30px",
+    marginTop: "10px",
   },
   question: {
     padding: "5px 0px 0px",
@@ -58,7 +57,7 @@ const QuestionDialogStyle = (theme) => ({
 });
 const difficultyEnum = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
-function QuestionDialog(props) {
+function FeedbackDialog(props) {
   const { user, setUser } = useContext(UserContext);
 
   const theme = useTheme();
@@ -176,4 +175,4 @@ function QuestionDialog(props) {
   );
 }
 
-export default withStyles(QuestionDialogStyle)(QuestionDialog);
+export default withStyles(FeedbackDialogStyle)(FeedbackDialog);
