@@ -16,18 +16,25 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 250,
     right: 0,
     zIndex: 5,
-    borderRadius: "5px",
+    borderRadius: "5px 5px 0px 0px",
+    backgroundColor: "#494949",
+  },
+  names: {
+    color: "#ffffff",
+    fontWeight: 600,
+    padding: 5,
   },
   dot: {
-    height: "5px",
-    width: "5px",
-    backgroundColor: "#64FF33",
-    borderRadius: "50%",
+    height: 8,
+    width: 8,
+    backgroundColor: "#3ed562",
+    borderRadius: 4,
+    marginBottom: 2,
     display: "inline-block",
   }
 }));
 
-const ParticipantVideo = ({ participant, remote }) => {
+const ParticipantVideo = ({ participant, remote, otherUserFirstName }) => {
   const classes = useStyles();
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
@@ -91,12 +98,6 @@ const ParticipantVideo = ({ participant, remote }) => {
     }
   }, [audioTracks]);
 
-  if (remote) {
-    let styleClass = classes.remote;
-  } else {
-    let styleClass = classes.local;
-  }
-
   return (
     <div className={classes.root}>
       <video
@@ -106,9 +107,11 @@ const ParticipantVideo = ({ participant, remote }) => {
       />
       <audio ref={audioRef} autoPlay={true} muted={true} />
       {remote && 
-        <div>
-        <span className={classes.dot}></span>&nbsp;
-        {user.firstName}
+        <div className={classes.names}>
+          &nbsp;<span className={classes.dot}></span>&nbsp;&nbsp;
+          {user.firstName}
+          &nbsp;&nbsp;&nbsp;<span className={classes.dot}></span>&nbsp;&nbsp;
+          {otherUserFirstName ? otherUserFirstName : ""}
         </div>
       }
     </div>

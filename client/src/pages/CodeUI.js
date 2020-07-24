@@ -52,7 +52,6 @@ const codeUIStyle = (theme) => ({
     marginTop: theme.spacing(-0.5),
   },
   question: {
-    whiteSpace: "pre-wrap",
     overflow: "auto",
     padding: "5px 30px 0px",
     fontFamily: '"Open Sans", "Roboto"',
@@ -84,14 +83,17 @@ const codeUIStyle = (theme) => ({
     },
   },
   videoContainer: {
-    right: 0,
-    position: "relative"
+    right: 10,
+    top: 20,
+    position: "relative",
+    backgroundColor: "#494949",
   },
   remoteParticipant: {
     position: "absolute",
     margin: "0 auto",
     right: 0,
     borderRadius: "5px",
+    backgroundColor: "#494949",
     zIndex: 5,
     [theme.breakpoints.down("xs")]: {
       maxWidth: 400,
@@ -180,7 +182,9 @@ function CodeUI(props) {
         function (confimation, otherUser) {
           if (!confimation) history.push("/dashboard");
           else {
-            fullNameSplit = otherUser.split();
+            console.log("otherUser: " + JSON.stringify(otherUser))
+            const fullNameSplit = otherUser.name.split(" ");
+            console.log("full anme split: " + JSON.stringify(fullNameSplit));
             setOtherUserFirstName(fullNameSplit[0]);
             setInterview(`Interview with ${otherUser.name}`);
           }
@@ -266,6 +270,7 @@ function CodeUI(props) {
       key={participant.sid}
       participant={participant}
       remote={true}
+      otherUserFirstName={otherUserFirstName}
     />
   ));
 
