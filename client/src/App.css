@@ -30,23 +30,6 @@ video {
   right: 0;
 }
 
-/* makeStyles-screen-23:nth-child(odd) > video {
-  object-fit: contain;
-  max-width: 200px !important;
-  z-index: 9;
-}
-
-makeStyles-screen-23:nth-child(even) > video {
-  object-fit: contain;
-  max-width: 400px !important;
-  z-index: 5;
-} */
-
-/* video {
-  max-width: 200px !important;
-  max-height: 200px !important;
-} */
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
